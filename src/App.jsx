@@ -1,6 +1,5 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from './pages/Login';
 import Attractions from './pages/traveler/Attractions';
 import Profile from './pages/traveler/Profile';
 import AiGuide from './pages/traveler/AiGuide';
@@ -13,6 +12,7 @@ import BookingList from './pages/traveler/BookingList';
 import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
+import Login from './pages/Login';
 
 export default function App() {
   return (
