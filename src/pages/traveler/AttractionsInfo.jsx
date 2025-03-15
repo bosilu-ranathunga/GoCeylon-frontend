@@ -37,8 +37,8 @@ const AttractionDetails = () => {
             <div className="flex flex-col gap-4 mt-6">
                 <h2 className="text-xl font-semibold text-center">Choose a Guide</h2>
                 <div className="flex flex-col gap-2">
-                    <button className="bg-gray-700 text-white py-2 rounded-lg shadow-md">Local Guide</button>
-                    <button className="bg-gray-700 text-white py-2 rounded-lg shadow-md">AI Guide</button>
+                    <button className="bg-green-800 text-white py-2 rounded-lg shadow-md">Local Guide</button>
+                    <button className="bg-green-800 text-white py-2 rounded-lg shadow-md">AI Guide</button>
                 </div>
 
                 {/* Show Directions */}
