@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import Quill styles
+
 
 export default function AddAttractions() {
     const [attractionData, setAttractionData] = useState({
@@ -64,6 +67,7 @@ export default function AddAttractions() {
                 {/* Description Field */}
                 <div>
                     <label className="block text-lg font-semibold">Description</label>
+                    <ReactQuill theme="snow" />
                     <textarea
                         name="description"
                         value={attractionData.description}
