@@ -58,28 +58,30 @@ export default function Attractions() {
                     </button>
                 </div>
 
-                {/* Suggested Attractions */}
+                {/* Suggested Attractions (Horizontal Scroll - One Card at a Time) */}
                 <h1 className="text-2xl font-bold my-6 text-center">Suggested Attractions</h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {attractions.slice(0, 3).map((attraction) => (
-                        <div
-                            key={attraction.id}
-                            className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer transition-transform hover:scale-105 relative"
-                        >
-                            <img
-                                src={attraction.image}
-                                alt={attraction.name}
-                                className="w-full h-40 object-cover"
-                            />
-                            <div className='absolute top-[0] right-[0] px-[8px] py-[4px] bg-[#fff] m-[8px] rounded-[8px] text-[#534f4f]' >
-                                Hidden gem
+                <div className="overflow-x-auto pb-4">
+                    <div className="flex space-x-4">
+                        {attractions.slice(0, 3).map((attraction) => (
+                            <div
+                                key={attraction.id}
+                                className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer transition-transform hover:scale-105 w-80 flex-shrink-0"
+                            >
+                                <img
+                                    src={attraction.image}
+                                    alt={attraction.name}
+                                    className="w-full h-40 object-cover"
+                                />
+                                <div className='absolute top-[0] right-[0] px-[8px] py-[4px] bg-[#fff] m-[8px] rounded-[8px] text-[#534f4f]' >
+                                    Hidden gem
+                                </div>
+                                <div className="p-3">
+                                    <h2 className="text-lg font-semibold">{attraction.name}</h2>
+                                    <p className="text-gray-600 text-sm">{attraction.description.substring(0, 80)}...</p>
+                                </div>
                             </div>
-                            <div className="p-3">
-                                <h2 className="text-lg font-semibold">{attraction.name}</h2>
-                                <p className="text-gray-600 text-sm">{attraction.description.substring(0, 80)}...</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
                 {/* All Attractions */}
