@@ -12,7 +12,8 @@ import BookingList from './pages/traveler/BookingList';
 import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
-import Login from './pages/Login';
+import Login from './pages/login';
+import BookingHistory from './pages/traveler/BookingHistory';
 
 export default function App() {
   return (
@@ -28,9 +29,10 @@ export default function App() {
           <Route path='/user/location' element={<AttractionsInfo />} />
           <Route path='/dashboard/add-location' element={<AddAttractions />} />
 
-          <Route path='/user/booking' element={<Booking />} />
-          <Route path='/user/booking/info' element={<BookingInfo />} />
-          <Route path='/user/booking/list' element={<BookingList />} />
+          <Route path='/user/booking' element={<Booking />} /> {/*2 */}
+          <Route path='/user/booking/info' element={<BookingInfo />} />{/* 3*/}
+          <Route path='/user/booking/list' element={<BookingList />} />{/* 1*/}
+          <Route path='/user/bookinghistory' element={<BookingHistory/>}/>{/*4 */}
 
           <Route path='/business/add' element={<AddBusiness />} />
           <Route path='/business/review' element={<Reviews />} />
