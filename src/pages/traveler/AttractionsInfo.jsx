@@ -8,12 +8,12 @@ const AttractionDetails = () => {
     const attraction = {
         id: 1,
         name: "Sigiriya Rock Fortress",
-        mainImage: "https://cdn.pixabay.com/photo/2017/09/04/06/56/sigiriya-2714105_1280.jpg",
+        mainImage: "https://media.istockphoto.com/id/1146786448/photo/aerial-view-from-above-of-sigiriya-or-the-lion-rock-an-ancient-fortress-and-a-palace-with.jpg?s=1024x1024&w=is&k=20&c=ubzO1vUV3kEmaLIyKyPVqEjsxmEDAerySH47gVKVCzc=",
         description: "Sigiriya, also known as Lion Rock, is an ancient rock fortress in Sri Lanka. Built by King Kasyapa, it features beautiful frescoes, a mirror wall, and breathtaking views from the summit.",
         moreImages: [
-            "https://cdn.pixabay.com/photo/2023/06/08/14/42/landscape-8049357_1280.jpg",
-            "https://cdn.pixabay.com/photo/2016/11/29/06/17/sigiriya-1866952_1280.jpg",
-            "https://cdn.pixabay.com/photo/2017/01/07/17/28/sri-lanka-1965287_1280.jpg"
+            "https://media.istockphoto.com/id/1207898566/photo/sigiriya-rock-sri-lanka.jpg?s=612x612&w=0&k=20&c=PLvcXC5ylG_BlsuQft5ZBMFIQlU2uR6plT8EZS7xPsQ=",
+            "https://media.istockphoto.com/id/1401075720/video/aerial-view-of-sigiriya-lion-rock-fortress.jpg?s=640x640&k=20&c=lM48l-VFMd_gyrfSDrVMG3aC1z95GtCCqxkMd3Cax7E=",
+            "https://media.istockphoto.com/id/1441928899/photo/mahout-riding-his-elephant-sigiriya-rock-on-the-background-sri-lanka.jpg?s=612x612&w=0&k=20&c=JC1fW_oI_9535lH8dZvQQZK5CPAZK269u_5XR3HZFIg="
         ]
     };
 
@@ -37,8 +37,8 @@ const AttractionDetails = () => {
             <div className="flex flex-col gap-4 mt-6">
                 <h2 className="text-xl font-semibold text-center">Choose a Guide</h2>
                 <div className="flex flex-col gap-2">
-                    <button className="bg-gray-700 text-white py-2 rounded-lg shadow-md">Local Guide</button>
-                    <button className="bg-gray-700 text-white py-2 rounded-lg shadow-md">AI Guide</button>
+                    <button className="bg-green-800 text-white py-2 rounded-lg shadow-md">Local Guide</button>
+                    <button className="bg-green-800 text-white py-2 rounded-lg shadow-md">AI Guide</button>
                 </div>
 
                 {/* Show Directions */}
