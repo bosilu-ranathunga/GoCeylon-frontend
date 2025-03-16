@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TopAppBar from '../../components/TopAppBar';
 import BottomTabBar from '../../components/BottomTabBar';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import guideImage from '../../assets/images/one.avif';
-import sigiriya from '../../assets/images/sigiriya.avif'; // sigiriya
+import sigiriya from '../../assets/images/sigiriya.avif';
 import gallefort from '../../assets/images/gallefort.avif';
 import yala from '../../assets/images/yala.avif';
 
 export default function Booking() {
+    const [startDate, setStartDate] = useState(new Date());
     const selectedGuide = {
         name: "John Doe",
         image: guideImage,
@@ -34,7 +37,7 @@ export default function Booking() {
         <>
             <TopAppBar /><div><br></br></div>
             <div className="p-6 bg-gradient-to-r from-white to-gray-100 min-h-screen flex flex-col gap-6 max-w-4xl mx-auto border border-gray-300 shadow-xl rounded-xl overflow-hidden">
-                
+
                 {/* Guide Image, Name, Description, and Book Button */}
                 <div className="flex flex-col md:flex-row items-center gap-6 w-full">
                     {/* Left Side: Guide's Image */}
@@ -61,7 +64,7 @@ export default function Booking() {
                 {/* Scrollable Content Section */}
                 <div className="overflow-y-auto max-h-[calc(100vh-350px)]">
 
-                    {/* Attractions -  Horizontal Scroll Layout */}
+                    {/* Attractions - Horizontal Scroll Layout */}
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold text-indigo-800 mb-3">Attractions Covered:</h3>
                         <div className="overflow-x-auto max-h-60">  {/* Horizontal scroll area */}
@@ -92,6 +95,19 @@ export default function Booking() {
                         </div>
                     </div>
 
+
+                     {/* Booking Date Picker Section */}
+                     <div className="mb-6">
+                        <h3 className="text-xl font-semibold text-indigo-800 mb-3">Select Booking Date:</h3>
+                        <DatePicker
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                            minDate={new Date()}
+                            dateFormat="MMMM d, yyyy"
+                            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-green-500 bg-white"
+                        />
+                    </div>
+
                     {/* Reviews Section - Modern Styling */}
                     <div className="overflow-y-auto max-h-52 p-3 bg-white rounded-lg shadow-lg mb-6">
                         <h3 className="text-xl font-semibold text-indigo-800 mb-3">Customer Reviews:</h3>
@@ -112,6 +128,8 @@ export default function Booking() {
                         <h3 className="text-xl font-semibold text-indigo-800">Languages:</h3>
                         <p className="text-gray-700">{selectedGuide.languages.join(", ")}</p><br></br>
                     </div>
+
+                   
 
                 </div>
             </div>
