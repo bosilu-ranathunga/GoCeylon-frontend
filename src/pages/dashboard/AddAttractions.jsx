@@ -153,80 +153,115 @@ export default function AddAttractions() {
     };
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen bg-gray-900 text-white">
             <Sidebar />
-            <div className="flex-1 ml-64 overflow-y-auto h-screen">
-                <div className="bg-white w-full p-12">
-                    <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="flex-1 ml-64 overflow-y-auto h-screen p-8">
+                <div className="bg-white w-full p-10 rounded-lg shadow-xl relative">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-lg font-semibold text-gray-700">Attraction Name:</label>
+                            <label className="block text-lg font-semibold text-gray-800">Attraction Name:</label>
                             <input
                                 type="text"
                                 name="name"
                                 value={attractionData.name}
                                 onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-md"
+                                className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
                             />
-                            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                         </div>
 
                         <div>
-                            <label className="block text-lg font-semibold text-gray-700">Description</label>
-                            <ReactQuill theme="snow" value={attractionData.description} onChange={(value) => setAttractionData(prev => ({ ...prev, description: value }))} />
-                            {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+                            <label className="block text-lg font-semibold text-gray-800">Description</label>
+                            <div className="bg-white">
+                                <ReactQuill
+                                    theme="snow"
+                                    value={attractionData.description}
+                                    onChange={(value) => setAttractionData(prev => ({ ...prev, description: value }))}
+                                    className="text-black"
+                                />
+                            </div>
+                            {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                         </div>
 
                         <div>
-                            <label className="block text-lg font-semibold text-gray-700">Google Location</label>
+                            <label className="block text-lg font-semibold text-gray-800">Google Location</label>
                             <input
                                 type="text"
                                 name="googleLocation"
                                 value={attractionData.googleLocation}
                                 onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-md"
+                                className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
                             />
-                            {errors.googleLocation && <p className="text-red-500 text-sm">{errors.googleLocation}</p>}
+                            {errors.googleLocation && <p className="text-red-500 text-sm mt-1">{errors.googleLocation}</p>}
                         </div>
 
                         <div>
-                            <label className="block text-lg font-semibold text-gray-700">Tags</label>
+                            <label className="block text-lg font-semibold text-gray-800">Tags</label>
                             <Select
                                 isMulti
                                 options={tagOptions}
                                 value={attractionData.tags}
                                 onChange={handleTagChange}
                                 className="w-full"
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        backgroundColor: 'white',
+                                        borderColor: '#e5e7eb',
+                                        color: 'black',
+                                    }),
+                                    singleValue: (base) => ({
+                                        ...base,
+                                        color: 'black',
+                                    }),
+                                    option: (base) => ({
+                                        ...base,
+                                        color: 'black',
+                                    }),
+                                    multiValue: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#d1d5db',
+                                    }),
+                                    multiValueLabel: (base) => ({
+                                        ...base,
+                                        color: 'black',
+                                    }),
+                                    multiValueRemove: (base) => ({
+                                        ...base,
+                                        color: 'red',
+                                    }),
+                                }}
                             />
-                            {errors.tags && <p className="text-red-500 text-sm">{errors.tags}</p>}
+                            {errors.tags && <p className="text-red-500 text-sm mt-1">{errors.tags}</p>}
                         </div>
 
                         {attractionData.pointsOfInterest.map((poi, index) => (
-                            <div key={index} className="space-y-2">
+                            <div key={index} className="space-y-4">
                                 <div>
-                                    <label className="block text-lg font-semibold text-gray-700">Point of Interest ID {index + 1}:</label>
+                                    <label className="block text-lg font-semibold text-gray-800">Point of Interest ID {index + 1}:</label>
                                     <input
                                         type="text"
                                         name="id"
                                         value={poi.id}
                                         onChange={(e) => handlePOIChange(index, e)}
-                                        className="w-full p-3 border border-gray-300 rounded-md"
+                                        className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
                                     />
-                                    {errors[`poiId${index}`] && <p className="text-red-500 text-sm">{errors[`poiId${index}`]}</p>}
+                                    {errors[`poiId${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`poiId${index}`]}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-lg font-semibold text-gray-700">Point of Interest Description {index + 1}:</label>
+                                    <label className="block text-lg font-semibold text-gray-800">Point of Interest Description {index + 1}:</label>
                                     <input
                                         type="text"
                                         name="description"
                                         value={poi.description}
                                         onChange={(e) => handlePOIChange(index, e)}
-                                        className="w-full p-3 border border-gray-300 rounded-md"
+                                        className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
                                     />
-                                    {errors[`poiDescription${index}`] && <p className="text-red-500 text-sm">{errors[`poiDescription${index}`]}</p>}
+                                    {errors[`poiDescription${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`poiDescription${index}`]}</p>}
                                 </div>
 
-                                <button type="button" onClick={() => handleRemovePOI(index)} className="text-red-500 border border-red-500 py-1 px-4 rounded-md hover:bg-red-500 hover:text-white transition duration-300">
+                                <button type="button" onClick={() => handleRemovePOI(index)} className="text-red-600 py-1 px-4 rounded-md hover:bg-red-100">
                                     Remove POI
                                 </button>
                             </div>
@@ -235,35 +270,38 @@ export default function AddAttractions() {
                         <button type="button" onClick={handleAddPOI} className="text-blue-500">Add Another POI</button>
 
                         <div>
-                            <label className="block text-lg font-semibold text-gray-700">Upload Images</label>
+                            <label className="block text-lg font-semibold text-gray-800">Upload Images</label>
                             <input
                                 type="file"
                                 name="images"
                                 multiple
                                 onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 rounded-md"
+                                className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
                             />
-                            {errors.images && <p className="text-red-500 text-sm">{errors.images}</p>}
-                        </div>
-
-                        {imagePreviews.length > 0 && (
                             <div className="grid grid-cols-3 gap-4 mt-4">
                                 {imagePreviews.map((preview, index) => (
                                     <div key={index} className="relative">
-                                        <img src={preview} alt={`Preview ${index}`} className="w-full h-32 object-cover rounded-md" />
+                                        <img src={preview} alt="Preview" className="w-full h-32 object-cover rounded-md" />
                                         <button
                                             type="button"
                                             onClick={() => handleRemoveImage(index)}
-                                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
+                                            className="absolute top-0 right-0 bg-red-500 text-white p-2 rounded-full"
                                         >
                                             X
                                         </button>
                                     </div>
                                 ))}
                             </div>
-                        )}
+                            {errors.images && <p className="text-red-500 text-sm mt-1">{errors.images}</p>}
+                        </div>
 
-                        <button type="submit" className="w-full bg-green-600 text-white text-lg font-semibold py-3 rounded-md">Submit Attraction</button>
+                        {/* Green Submit Button at the Bottom Right of the Form */}
+                        <button
+                            type="submit"
+                            className="absolute bottom-4 right-4 bg-green-500 text-white py-2 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                            Submit
+                        </button>
                     </form>
                 </div>
             </div>
