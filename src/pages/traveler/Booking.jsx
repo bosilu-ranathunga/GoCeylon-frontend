@@ -11,6 +11,11 @@ import yala from '../../assets/images/yala.avif';
 
 export default function Booking() {
     const [startDate, setStartDate] = useState(new Date());
+    const [showModal, setShowModal] = useState(false);  // State for modal visibility
+    const [hours, setHours] = useState(1); // State for selected hours
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [backgroundBlur, setBackgroundBlur] = useState(false);  // State for background blur
+
     const selectedGuide = {
         name: "John Doe",
         image: guideImage,
@@ -33,11 +38,28 @@ export default function Booking() {
         ]
     };
 
+    const handleBookNow = () => {
+        setShowModal(true);
+        setBackgroundBlur(true);  // Enable background blur when modal is shown
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+        setBackgroundBlur(false);  // Disable background blur when modal is closed
+    };
+
+    const handleSubmit = () => {
+        // Handle booking logic here
+        alert(`Booked with ${selectedGuide.name} on ${selectedDate.toDateString()} for ${hours} hour(s)`);
+        setShowModal(false);  // Close the modal after booking
+        setBackgroundBlur(false);  // Remove the background blur after booking
+    };
+
     return (
         <>
-            <TopAppBar /><div><br></br></div>
-            <div className="p-6 bg-gradient-to-r from-white to-gray-100 min-h-screen flex flex-col gap-6 max-w-4xl mx-auto border border-gray-300 shadow-xl rounded-xl overflow-hidden">
-
+            <TopAppBar />
+            <div><br /></div>
+            <div className={`p-6 bg-gradient-to-r from-white to-gray-100 min-h-screen flex flex-col gap-6 max-w-4xl mx-auto border border-gray-300 shadow-xl rounded-xl overflow-hidden ${backgroundBlur ? 'backdrop-blur-sm' : ''}`}>
                 {/* Guide Image, Name, Description, and Book Button */}
                 <div className="flex flex-col md:flex-row items-center gap-6 w-full">
                     {/* Left Side: Guide's Image */}
@@ -55,19 +77,74 @@ export default function Booking() {
                         <p className={`text-lg font-semibold mt-2 ${selectedGuide.available ? 'text-green-600' : 'text-red-600'}`}>
                             {selectedGuide.available ? "Available" : "Not Available"}
                         </p>
-                        <button className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 mt-4 rounded-lg shadow-lg hover:bg-gradient-to-l transition-all">
+                        <button 
+                            onClick={handleBookNow} 
+                            className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 mt-4 rounded-lg shadow-lg hover:bg-gradient-to-l transition-all"
+                        >
                             Book Now
                         </button>
                     </div>
                 </div>
 
+                {/* Modal for Booking (Appears above the booking content) */}
+                {showModal && (
+                    <div className="fixed top-1/4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-lg">
+                        <div className="bg-white p-6 rounded-lg shadow-xl">
+                            <h3 className="text-xl font-semibold text-indigo-800 mb-4">Book {selectedGuide.name}</h3>
+                            
+                            {/* Date Picker */}
+                            <div className="mb-4">
+                                <label className="block text-lg font-medium mb-2">Select Date:</label>
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={(date) => setSelectedDate(date)}
+                                    minDate={new Date()}
+                                    dateFormat="MMMM d, yyyy"
+                                    className="w-full p-3 border rounded-md focus:ring-2 focus:ring-green-500 bg-white"
+                                />
+                            </div>
+
+                            {/* Hours Selector */}
+                            <div className="mb-4">
+                                <label className="block text-lg font-medium mb-2">Select Hours:</label>
+                                <select 
+                                    value={hours} 
+                                    onChange={(e) => setHours(Number(e.target.value))}
+                                    className="w-full p-3 border rounded-md focus:ring-2 focus:ring-green-500 bg-white"
+                                >
+                                    {[1, 2, 3, 4, 5].map((hour) => (
+                                        <option key={hour} value={hour}>
+                                            {hour} {hour > 1 ? "hours" : "hour"}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Book Button */}
+                            <button 
+                                onClick={handleSubmit} 
+                                className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 rounded-lg shadow-lg hover:bg-gradient-to-l transition-all"
+                            >
+                                Confirm Booking
+                            </button>
+                            
+                            {/* Close Button */}
+                            <button 
+                                onClick={handleModalClose} 
+                                className="w-full mt-3 text-center text-gray-600"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Scrollable Content Section */}
                 <div className="overflow-y-auto max-h-[calc(100vh-350px)]">
-
                     {/* Attractions - Horizontal Scroll Layout */}
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold text-indigo-800 mb-3">Attractions Covered:</h3>
-                        <div className="overflow-x-auto max-h-60">  {/* Horizontal scroll area */}
+                        <div className="overflow-x-auto max-h-60">
                             <div className="flex gap-6">
                                 {selectedGuide.attractions.map((attraction, index) => (
                                     <div key={index} className="border rounded-xl shadow-lg overflow-hidden bg-white hover:scale-105 transition-transform">
@@ -95,20 +172,7 @@ export default function Booking() {
                         </div>
                     </div>
 
-
-                     {/* Booking Date Picker Section */}
-                     <div className="mb-6">
-                        <h3 className="text-xl font-semibold text-indigo-800 mb-3">Select Booking Date:</h3>
-                        <DatePicker
-                            selected={startDate}
-                            onChange={(date) => setStartDate(date)}
-                            minDate={new Date()}
-                            dateFormat="MMMM d, yyyy"
-                            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-green-500 bg-white"
-                        />
-                    </div>
-
-                    {/* Reviews Section - Modern Styling */}
+                    {/* Reviews Section */}
                     <div className="overflow-y-auto max-h-52 p-3 bg-white rounded-lg shadow-lg mb-6">
                         <h3 className="text-xl font-semibold text-indigo-800 mb-3">Customer Reviews:</h3>
                         {selectedGuide.reviews.map((review, index) => (
@@ -124,15 +188,17 @@ export default function Booking() {
                     </div>
 
                     {/* Languages Section */}
-                    <div className="p-4 bg-gradient-to-r from-gray-100 to-gray-300 rounded-lg shadow-lg mb-6">
-                        <h3 className="text-xl font-semibold text-indigo-800">Languages:</h3>
-                        <p className="text-gray-700">{selectedGuide.languages.join(", ")}</p><br></br>
+                    <div className="p-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg shadow-md mb-6">
+                        <h3 className="text-xl font-semibold text-indigo-800 mb-3">Languages Spoken:</h3>
+                        <ul className="list-disc pl-5 text-lg text-gray-700">
+                            {selectedGuide.languages.map((language, index) => (
+                                <li key={index}>{language}</li>
+                            ))}
+                        </ul>
                     </div>
-
-                   
-
                 </div>
             </div>
+
             <BottomTabBar />
         </>
     );
