@@ -12,7 +12,7 @@ import BookingList from './pages/traveler/BookingList';
 import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
-import Login from './pages/Login';
+import Login from './pages/login';
 
 export default function App() {
   return (
