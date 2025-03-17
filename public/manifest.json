@@ -1,21 +1,16 @@
 {
-    "short_name": "YourApp",
-    "name": "Your Full App Name",
+    "name": "My React Vite PWA",
+    "short_name": "ReactPWA",
+    "description": "My React Vite Progressive Web App",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
     "icons": [
         {
-            "src": "icon-192x192.png",
+            "src": "/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
-        },
-        {
-            "src": "icons/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
         }
-    ],
-    "start_url": ".",
-    "background_color": "#ffffff",
-    "display": "standalone",
-    "scope": "/",
-    "theme_color": "#000000"
+    ]
 }

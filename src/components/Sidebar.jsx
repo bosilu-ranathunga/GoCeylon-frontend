@@ -48,7 +48,7 @@ const Sidebar = () => {
         `flex items-center gap-3 p-2 rounded ${isActive ? "bg-emerald-700" : "hover:bg-[#ffffff1c]"}`;
 
     return (
-        <div className="w-64 bg-[#212121] text-white p-5">
+        <div className="w-64 bg-[#212121] text-white p-5 h-screen fixed">
             <ul className="space-y-3">
                 <img src={logo} alt="Logo" />
                 {menuItems.map((menu, index) => {
