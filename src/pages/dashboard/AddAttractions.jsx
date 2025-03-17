@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import Sidebar from '../../components/Sidebar';
+import TopBar from '../../components/TopBar';
 
 
 export default function AddAttractions() {
@@ -86,145 +88,143 @@ export default function AddAttractions() {
 
     return (
 
-        <div className="bg-gray-100 min-h-screen flex items-center justify-center px-4 py-6">
-            <div className="bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg">
-                <h1 className="text-2xl md:text-3xl font-bold text-green-700 text-center mb-6">
-                    Add New Attraction
-                </h1>
-                {attractionData.name}
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Name Field */}
-                    <div>
-                        <label className="block text-lg font-semibold text-gray-700">Attraction Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={attractionData.name}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
-                            required
-                        />
-                    </div>
-                    
-                    {/* Description Field */}
-                    <div>
-                        <label className="block text-lg font-semibold text-gray-700">Description</label>
-                        <ReactQuill theme="snow" />
-                        
-                    </div>
-
-                    {/* Google Location */}
-                    <div>
-                        <label className="block text-lg font-semibold text-gray-700">Google Location</label>
-                        <input
-                            type="text"
-                            name="googleLocation"
-                            value={attractionData.googleLocation}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
-                            required
-                        />
-                    </div>
-
-                    {/* Overcrowded & Hidden Gem */}
-                    <div className="flex gap-6">
-                        <label className="flex items-center space-x-2">
+        <div className="flex h-screen">
+            <Sidebar />
+            <div className="flex-1 ml-64 overflow-y-auto h-screen">
+                <div className="bg-white w-full p-12">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Name Field */}
+                        <div>
+                            <label className="block text-lg font-semibold text-gray-700">Attraction Name</label>
                             <input
-                                type="checkbox"
-                                name="overcrowded"
-                                checked={attractionData.overcrowded}
+                                type="text"
+                                name="name"
+                                value={attractionData.name}
                                 onChange={handleChange}
-                                className="h-5 w-5 text-green-600"
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
+                                required
                             />
-                            <span className="text-lg text-gray-700">Overcrowded</span>
-                        </label>
-                        <label className="flex items-center space-x-2">
+                        </div>
+
+                        {/* Description Field */}
+                        <div>
+                            <label className="block text-lg font-semibold text-gray-700">Description</label>
+                            <ReactQuill theme="snow" />
+
+                        </div>
+
+                        {/* Google Location */}
+                        <div>
+                            <label className="block text-lg font-semibold text-gray-700">Google Location</label>
                             <input
-                                type="checkbox"
-                                name="hiddenGem"
-                                checked={attractionData.hiddenGem}
+                                type="text"
+                                name="googleLocation"
+                                value={attractionData.googleLocation}
                                 onChange={handleChange}
-                                className="h-5 w-5 text-green-600"
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
+                                required
                             />
-                            <span className="text-lg text-gray-700">Hidden Gem</span>
-                        </label>
-                    </div>
+                        </div>
 
-                    {/* Tags Selection */}
-                    <div>
-                        <label className="block text-lg font-semibold text-gray-700">Tags</label>
-                        <select
-                            name="tags"
-                            multiple
-                            value={attractionData.tags}
-                            onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
-                        >
-                            <option value="beachside">Beachside Venue</option>
-                            <option value="forest">Forest</option>
-                            <option value="historical">Historical Place</option>
-                            <option value="hiking">Hiking Place</option>
-                        </select>
-                    </div>
+                        {/* Overcrowded & Hidden Gem */}
+                        <div className="flex gap-6">
+                            <label className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    name="overcrowded"
+                                    checked={attractionData.overcrowded}
+                                    onChange={handleChange}
+                                    className="h-5 w-5 text-green-600"
+                                />
+                                <span className="text-lg text-gray-700">Overcrowded</span>
+                            </label>
+                            <label className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    name="hiddenGem"
+                                    checked={attractionData.hiddenGem}
+                                    onChange={handleChange}
+                                    className="h-5 w-5 text-green-600"
+                                />
+                                <span className="text-lg text-gray-700">Hidden Gem</span>
+                            </label>
+                        </div>
 
-                    {/* Image Upload */}
-                    <div>
-                        <label className="block text-lg font-semibold text-gray-700">Upload Images</label>
-                        <input type="file" name="images" accept="image/*" multiple onChange={handleChange} className="hidden" id="imageUpload" />
-                        <label htmlFor="imageUpload" className="block w-full text-center bg-green-600 text-white py-2 rounded-md cursor-pointer hover:bg-green-700 transition">
-                            {attractionData.images.length === 0 ? "Choose Images" : "Choose More Images"}
-                        </label>
+                        {/* Tags Selection */}
+                        <div>
+                            <label className="block text-lg font-semibold text-gray-700">Tags</label>
+                            <select
+                                name="tags"
+                                multiple
+                                value={attractionData.tags}
+                                onChange={handleChange}
+                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
+                            >
+                                <option value="beachside">Beachside Venue</option>
+                                <option value="forest">Forest</option>
+                                <option value="historical">Historical Place</option>
+                                <option value="hiking">Hiking Place</option>
+                            </select>
+                        </div>
 
-                        {/* Image Preview with Remove Button */}
-                        <div className="mt-2 flex flex-wrap">
-                            {attractionData.images.map((file, index) => (
-                                <div key={index} className="relative w-16 h-16">
-                                    <img src={URL.createObjectURL(file)} alt="Preview" className="w-full h-full object-cover rounded-md" />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeImage(index)}
-                                        className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs"
-                                    >
-                                        ✖
-                                    </button>
+                        {/* Image Upload */}
+                        <div>
+                            <label className="block text-lg font-semibold text-gray-700">Upload Images</label>
+                            <input type="file" name="images" accept="image/*" multiple onChange={handleChange} className="hidden" id="imageUpload" />
+                            <label htmlFor="imageUpload" className="block w-full text-center bg-green-600 text-white py-2 rounded-md cursor-pointer hover:bg-green-700 transition">
+                                {attractionData.images.length === 0 ? "Choose Images" : "Choose More Images"}
+                            </label>
+
+                            {/* Image Preview with Remove Button */}
+                            <div className="mt-2 flex flex-wrap">
+                                {attractionData.images.map((file, index) => (
+                                    <div key={index} className="relative w-16 h-16">
+                                        <img src={URL.createObjectURL(file)} alt="Preview" className="w-full h-full object-cover rounded-md" />
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs"
+                                        >
+                                            ✖
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Points of Interest */}
+                        <div>
+                            <label className="block text-lg font-semibold text-gray-700">Points of Interest</label>
+                            {attractionData.pointsOfInterest.map((point, index) => (
+                                <div key={index} className="flex gap-2 items-center mb-2">
+                                    <input
+                                        type="text"
+                                        name="id"
+                                        value={point.id}
+                                        onChange={(e) => handlePointChange(index, e)}
+                                        placeholder="ID"
+                                        className="w-1/3 p-2 border border-gray-300 rounded-md"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="description"
+                                        value={point.description}
+                                        onChange={(e) => handlePointChange(index, e)}
+                                        placeholder="Description"
+                                        className="w-2/3 p-2 border border-gray-300 rounded-md"
+                                    />
+                                    <button type="button" onClick={() => removePoint(index)} className="text-red-600">✖</button>
                                 </div>
                             ))}
+                            <button type="button" onClick={addPoint} className="text-green-600">+ Add Point</button>
                         </div>
-                    </div>
 
-                    {/* Points of Interest */}
-                    <div>
-                        <label className="block text-lg font-semibold text-gray-700">Points of Interest</label>
-                        {attractionData.pointsOfInterest.map((point, index) => (
-                            <div key={index} className="flex gap-2 items-center mb-2">
-                                <input
-                                    type="text"
-                                    name="id"
-                                    value={point.id}
-                                    onChange={(e) => handlePointChange(index, e)}
-                                    placeholder="ID"
-                                    className="w-1/3 p-2 border border-gray-300 rounded-md"
-                                />
-                                <input
-                                    type="text"
-                                    name="description"
-                                    value={point.description}
-                                    onChange={(e) => handlePointChange(index, e)}
-                                    placeholder="Description"
-                                    className="w-2/3 p-2 border border-gray-300 rounded-md"
-                                />
-                                <button type="button" onClick={() => removePoint(index)} className="text-red-600">✖</button>
-                            </div>
-                        ))}
-                        <button type="button" onClick={addPoint} className="text-green-600">+ Add Point</button>
-                    </div>
-
-                    {/* Submit Button */}
-                    <button type="submit" className="w-full bg-green-600 text-white text-lg font-semibold py-3 rounded-md hover:bg-green-700 transition">
-                        Submit Attraction
-                    </button>
-                </form>
+                        {/* Submit Button */}
+                        <button type="submit" className="w-full bg-green-600 text-white text-lg font-semibold py-3 rounded-md hover:bg-green-700 transition">
+                            Submit Attraction
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );
