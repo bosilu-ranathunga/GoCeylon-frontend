@@ -95,7 +95,7 @@ export default function AddAttractions() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Name Field */}
                         <div>
-                            <label className="block text-lg font-semibold text-gray-700">Attraction Name</label>
+                            <label className="block text-lg font-semibold text-gray-700">Attraction Name:</label>
                             <input
                                 type="text"
                                 name="name"
