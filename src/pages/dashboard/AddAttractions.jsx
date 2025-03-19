@@ -153,7 +153,7 @@ export default function AddAttractions() {
     };
 
     return (
-        <div className="flex h-screen bg-gray-900 text-white">
+        <div className="flex h-screen bg-[#eee] text-white">
             <Sidebar />
             <div className="flex-1 ml-64 overflow-y-auto h-screen p-8">
                 <div className="bg-white w-full p-10 rounded-lg shadow-xl relative">
