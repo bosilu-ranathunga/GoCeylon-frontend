@@ -77,11 +77,13 @@ const AttractionsPage = () => {
                 {filteredLocations.length > 0 ? (
                     filteredLocations.map(location => (
                         <div key={location._id} className="border rounded-xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300 ease-in-out">
-                            <img
-                                src={location.image_url[0]}
-                                alt={location.name}
-                                className="w-full h-56 object-cover rounded-t-xl"
-                            />
+                            <div className="relative w-full h-56 sm:h-64 md:h-72 lg:h-80">
+                                <img
+                                    src={location.image_url[0]}
+                                    alt={location.name}
+                                    className="absolute inset-0 w-full h-full object-cover rounded-t-xl"
+                                />
+                            </div>
                             <div className="p-6 bg-white">
                                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">{location.name}</h3>
                                 <p className="text-gray-600 text-base">{location.description}</p>
