@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import Select from "react-select"; // Import react-select
+import Select from "react-select";
+import axios from "axios"; // Import axios
 
 const AddAttractionForm = () => {
     const [attractionData, setAttractionData] = useState({
         name: "",
         description: "",
         google_map_url: "",
-        tags: [], // Now using react-select
-        images: [],
+        tags: [],
+        images: [], // Store multiple images as an array
         points: [{ point: "", text: "" }]
     });
 
     const [errors, setErrors] = useState({});
-    const [imagePreviews, setImagePreviews] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState([]); // Store image preview URLs
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        console.log(`Field changed: ${name} = ${value}`); // Debugging log
         setAttractionData({ ...attractionData, [name]: value });
     };
 
@@ -30,35 +32,61 @@ const AddAttractionForm = () => {
 
     const handleTagChange = (selectedOptions) => {
         const selectedTags = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        console.log("Selected tags: ", selectedTags); // Debugging log
         setAttractionData({ ...attractionData, tags: selectedTags });
     };
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        setAttractionData({ ...attractionData, images: files });
-        setImagePreviews(files.map(file => URL.createObjectURL(file)));
+        console.log("Selected images: ", files); // Debugging log
+
+        // Append new images instead of replacing old ones
+        setAttractionData(prevData => ({
+            ...prevData,
+            images: [...prevData.images, ...files]
+        }));
+
+        // Generate and append previews
+        const newPreviews = files.map(file => URL.createObjectURL(file));
+        setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    };
+
+    const removeImage = (index) => {
+        console.log(`Removing image at index: ${index}`); // Debugging log
+        // Remove from both the previews and the files list
+        setImagePreviews(prevPreviews => prevPreviews.filter((_, i) => i !== index));
+        setAttractionData(prevData => ({
+            ...prevData,
+            images: prevData.images.filter((_, i) => i !== index)
+        }));
     };
 
     const handlePointChange = (index, field, value) => {
+        console.log(`Point changed at index ${index}: ${field} = ${value}`); // Debugging log
         const updatedPoints = [...attractionData.points];
         updatedPoints[index][field] = value;
         setAttractionData({ ...attractionData, points: updatedPoints });
     };
 
     const addPoint = () => {
-        setAttractionData({
-            ...attractionData,
-            points: [...attractionData.points, { point: "", text: "" }]
-        });
+        console.log("Adding new point..."); // Debugging log
+        setAttractionData(prevData => ({
+            ...prevData,
+            points: [...prevData.points, { point: "", text: "" }]
+        }));
     };
 
     const removePoint = (index) => {
-        const updatedPoints = attractionData.points.filter((_, i) => i !== index);
-        setAttractionData({ ...attractionData, points: updatedPoints });
+        console.log(`Removing point at index: ${index}`); // Debugging log
+        setAttractionData(prevData => ({
+            ...prevData,
+            points: prevData.points.filter((_, i) => i !== index)
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Form submission triggered."); // Debugging log
 
         let validationErrors = {};
         if (!attractionData.name.trim()) validationErrors.name = "Name is required";
@@ -73,7 +101,10 @@ const AddAttractionForm = () => {
         });
 
         setErrors(validationErrors);
-        if (Object.keys(validationErrors).length > 0) return;
+        if (Object.keys(validationErrors).length > 0) {
+            console.log("Validation errors: ", validationErrors); // Debugging log
+            return;
+        }
 
         try {
             const formData = new FormData();
@@ -83,16 +114,24 @@ const AddAttractionForm = () => {
             formData.append("tags", JSON.stringify(attractionData.tags));
             formData.append("points", JSON.stringify(attractionData.points));
 
+            // Append multiple images correctly
             attractionData.images.forEach((image) => {
                 formData.append("images", image);
             });
 
-            const response = await fetch("http://localhost:3000/location", {
-                method: "POST",
-                body: formData
+            // Debugging the formData (since console.log can't print FormData directly)
+            console.log("Form data before submission:", attractionData);
+
+            const response = await axios.post("http://localhost:3000/location/", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             });
 
-            if (response.ok) {
+            console.log("Response from server:", response); // Debugging log
+
+            // Updated condition to handle all successful status codes
+            if (response.status >= 200 && response.status < 300) {
                 alert("Attraction added successfully!");
                 setAttractionData({
                     name: "",
@@ -104,27 +143,46 @@ const AddAttractionForm = () => {
                 });
                 setImagePreviews([]);
             } else {
-                const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                throw new Error("Failed to add attraction.");
             }
+
         } catch (error) {
-            console.error("Error submitting attraction:", error);
-            alert("Failed to add attraction");
+            console.error("Error submitting attraction:", error); // Debugging log
+            alert("Failed to add attraction. Check the console for details.");
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white rounded-lg shadow-md">
-            <input type="text" name="name" placeholder="Attraction Name" value={attractionData.name} onChange={handleChange} className="border p-2 w-full" />
+            <input
+                type="text"
+                name="name"
+                placeholder="Attraction Name"
+                value={attractionData.name}
+                onChange={handleChange}
+                className="border p-2 w-full"
+            />
             {errors.name && <p className="text-red-500">{errors.name}</p>}
 
-            <textarea name="description" placeholder="Description" value={attractionData.description} onChange={handleChange} className="border p-2 w-full"></textarea>
+            <textarea
+                name="description"
+                placeholder="Description"
+                value={attractionData.description}
+                onChange={handleChange}
+                className="border p-2 w-full"
+            />
             {errors.description && <p className="text-red-500">{errors.description}</p>}
 
-            <input type="text" name="google_map_url" placeholder="Google Map URL" value={attractionData.google_map_url} onChange={handleChange} className="border p-2 w-full" />
+            <input
+                type="text"
+                name="google_map_url"
+                placeholder="Google Map URL"
+                value={attractionData.google_map_url}
+                onChange={handleChange}
+                className="border p-2 w-full"
+            />
             {errors.google_map_url && <p className="text-red-500">{errors.google_map_url}</p>}
 
-            {/* Updated Tag Selection with react-select */}
             <Select
                 isMulti
                 options={tagOptions}
@@ -134,45 +192,69 @@ const AddAttractionForm = () => {
             />
             {errors.tags && <p className="text-red-500">{errors.tags}</p>}
 
-            <input type="file" multiple accept="image/*" onChange={handleImageChange} className="border p-2 w-full" />
+            <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageChange}
+                className="border p-2 w-full"
+            />
             {errors.images && <p className="text-red-500">{errors.images}</p>}
+
+            {/* Rendering Points Input Fields */}
+            {attractionData.points.map((point, index) => (
+                <div key={index} className="space-y-2">
+                    <input
+                        type="text"
+                        placeholder={`Point ${index + 1} ID`}
+                        value={point.point}
+                        onChange={(e) => handlePointChange(index, 'point', e.target.value)}
+                        className="border p-2 w-full"
+                    />
+                    {errors[`point${index}`] && <p className="text-red-500">{errors[`point${index}`]}</p>}
+
+                    <textarea
+                        placeholder={`Point ${index + 1} Description`}
+                        value={point.text}
+                        onChange={(e) => handlePointChange(index, 'text', e.target.value)}
+                        className="border p-2 w-full"
+                    />
+                    {errors[`text${index}`] && <p className="text-red-500">{errors[`text${index}`]}</p>}
+
+                    <button
+                        type="button"
+                        onClick={() => removePoint(index)}
+                        className="text-red-500"
+                    >
+                        Remove Point {index + 1}
+                    </button>
+                </div>
+            ))}
+
+            <button
+                type="button"
+                onClick={addPoint}
+                className="bg-blue-500 text-white px-4 py-2"
+            >
+                Add Point
+            </button>
 
             {imagePreviews.length > 0 && (
                 <div className="flex space-x-2">
                     {imagePreviews.map((src, index) => (
-                        <img key={index} src={src} className="w-20 h-20 rounded" alt="Preview" />
+                        <div key={index} className="relative">
+                            <img src={src} className="w-20 h-20 rounded" alt="Preview" />
+                            <button
+                                type="button"
+                                className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full"
+                                onClick={() => removeImage(index)}
+                            >
+                                X
+                            </button>
+                        </div>
                     ))}
                 </div>
             )}
-
-            <div className="space-y-2">
-                <h3 className="font-semibold text-lg">Points of Interest</h3>
-                {attractionData.points.map((poi, index) => (
-                    <div key={index} className="flex space-x-2">
-                        <input
-                            type="text"
-                            placeholder="Point ID"
-                            value={poi.point}
-                            onChange={(e) => handlePointChange(index, "point", e.target.value)}
-                            className="border p-2 w-1/3"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Description"
-                            value={poi.text}
-                            onChange={(e) => handlePointChange(index, "text", e.target.value)}
-                            className="border p-2 w-2/3"
-                        />
-                        <button type="button" onClick={() => removePoint(index)} className="bg-red-500 text-white px-3 py-1">
-                            X
-                        </button>
-                    </div>
-                ))}
-
-                <button type="button" onClick={addPoint} className="bg-blue-500 text-white px-4 py-2">
-                    Add Point
-                </button>
-            </div>
 
             <button type="submit" className="bg-green-500 text-white px-4 py-2 w-full">Add Attraction</button>
         </form>
