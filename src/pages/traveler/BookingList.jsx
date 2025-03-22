@@ -1,61 +1,56 @@
-import React from 'react';
+// BookingList.jsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import one from '../../assets/images/one.avif'; // Image 1
-import second from '../../assets/images/second.jpg'; // Image 2
-import third from '../../assets/images/third.avif'; // Image 3
-import { FaArrowLeft, FaStar } from 'react-icons/fa'; // For icons
+import axios from 'axios';
+import { FaArrowLeft, FaPhoneAlt } from 'react-icons/fa';
 
 export default function BookingList() {
     const navigate = useNavigate();
+    const [guides, setGuides] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Sample data for guides with ratings
-    const guides = [
-        { id: 1, name: "John Doe", image: one, available: true, rating: 4.5, guided: 231 },
-        { id: 2, name: "Jane Smith", image: second, available: false, rating: 4.0, guided: 190 },
-        { id: 3, name: "Robert Brown", image: third, available: true, rating: 4.8, guided: 145 }
-    ];
+    useEffect(() => {
+        axios.get('http://localhost:3000/guides')
+            .then(response => {
+                const guideList = Array.isArray(response.data) ? response.data : response.data.guides;
+                setGuides(guideList);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching guides:', error);
+                setError(error);
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) return <div className='text-center text-green-600 font-semibold'>Loading...</div>;
+    if (error) return <div className='text-red-500 font-semibold'>Error: {error.message}</div>;
 
     return (
-        <div className="bg-white min-h-screen p-6 flex flex-col gap-6 max-w-lg mx-auto border border-gray-300 rounded-xl shadow-lg">
-            <div className="flex items-center justify-between">
-                <button 
-                    onClick={() => navigate(-1)} 
-                    className="text-2xl font-bold text-gray-800 hover:text-gray-600 transition duration-200"
-                >
+        <div className='bg-white min-h-screen p-6 flex flex-col gap-6 max-w-3xl mx-auto border border-gray-300 rounded-xl shadow-lg'>
+            <div className='flex items-center justify-between mb-4'>
+                <button onClick={() => navigate(-1)} className='text-green-700 text-2xl'>
                     <FaArrowLeft />
                 </button>
-                <h2 className="text-2xl font-bold text-gray-900 text-center flex-1">Available Guides</h2>
+                <h2 className='text-3xl font-bold text-green-700 text-center flex-1'>Available Guides</h2>
             </div>
-            <button className="text-sm font-semibold text-blue-500 self-end mt-4 hover:text-blue-700 transition duration-200">
-                See All
-            </button>
-            
-            {guides.map((guide) => (
-                <div 
-                    key={guide.id} 
-                    className={`flex items-center p-5 bg-white rounded-xl shadow-md mb-4 ${guide.available ? 'border-l-4 border-green-500' : 'border-l-4 border-red-500'}`}
-                >
-                    <div className="w-20 h-20 overflow-hidden rounded-full border-2 border-gray-300">
-                        <img 
-                            src={guide.image} 
-                            alt={guide.name} 
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                    
-                    <div className="ml-5 flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">{guide.name}</h3>
-                        <p className="text-sm text-gray-600">Guided: {guide.guided} people</p>
-                        <p className={`text-sm font-semibold mt-2 ${guide.available ? 'text-green-500' : 'text-red-500'}`}>
-                            {guide.available ? "Available" : "Not Available"}
-                        </p>
-                        <div className="flex items-center mt-2">
-                            <FaStar className="text-yellow-500" />
-                            <span className="ml-2 text-sm text-gray-600">{guide.rating}</span>
+
+            {guides.length > 0 ? (
+                guides.map(guide => (
+                    <div key={guide._id} className='flex items-center p-5 bg-green-50 border border-green-300 rounded-xl shadow-md mb-4 hover:bg-green-100 transition duration-200'>
+                        <div className='ml-5 flex-1'>
+                            <h3 className='text-xl font-semibold text-green-800'>{guide.g_name}</h3>
+                          {/*}  <p className='text-sm text-green-700'>Language: {guide.language}</p>
+                            <p className='text-sm text-green-700'>Price: ${guide.price} / hr</p>
+                            <p className='text-sm text-green-700'>Location: {guide.location.join(', ')}</p>
+                            <p className='text-sm text-green-700 flex items-center'><FaPhoneAlt className='mr-2' />{guide.contact_number}</p>*/}
                         </div>
                     </div>
-                </div>
-            ))}
+                ))
+            ) : (
+                <p className='text-green-600 font-semibold'>No guides available...</p>
+            )}
         </div>
     );
 }
