@@ -38,7 +38,7 @@ export default function AIGuide() {
                         </div>
                     ))}
                 </div>
-                <div className="flex bg-white border-t p-4 items-center fixed w-full bottom-20">
+                <div className="flex bg-white border-t p-4 w-full bottom-20 fixed items-center">
                     <input
                         className="flex-1 border p-2 rounded-lg mr-2"
                         placeholder="Type your message..."

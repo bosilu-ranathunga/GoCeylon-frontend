@@ -18,6 +18,18 @@ const RfidList = () => {
         { id: 1, name: 'John Doe', age: 28, status: 'Active' },
         { id: 2, name: 'Jane Smith', age: 34, status: 'Inactive' },
         { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
+        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
         // Add more data...
     ], []);
 
