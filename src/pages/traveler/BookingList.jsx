@@ -31,7 +31,7 @@ export default function BookingList() {
         navigate('/user/booking', { state: { guide } });
     };
     
-
+   
 
     return (
         <div className='bg-white min-h-screen p-6 flex flex-col gap-6 max-w-3xl mx-auto border border-gray-300 rounded-xl shadow-lg'>
