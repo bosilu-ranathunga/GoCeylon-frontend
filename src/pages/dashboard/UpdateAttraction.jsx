@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
+import Sidebar from "../../components/Sidebar";
 import axios from "axios";
 
 const UpdateAttractionForm = () => {
@@ -164,57 +165,63 @@ const UpdateAttractionForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white rounded-lg shadow-md">
-            <input type="text" name="name" value={attractionData.name} onChange={handleChange} placeholder="Attraction Name" className="border p-2 w-full" />
-            <textarea name="description" value={attractionData.description} onChange={handleChange} placeholder="Description" className="border p-2 w-full" />
-            <input type="text" name="google_map_url" value={attractionData.google_map_url} onChange={handleChange} placeholder="Google Map URL" className="border p-2 w-full" />
 
-            <Select isMulti options={tagOptions} value={tagOptions.filter(option => attractionData.tags.includes(option.value))} onChange={handleTagChange} className="border p-2 w-full" />
+        <div className="flex h-screen bg-[#eee]">
+            <Sidebar />
+            <div className="flex-1 ml-64 overflow-y-auto h-screen p-8">
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white rounded-lg shadow-md">
+                    <input type="text" name="name" value={attractionData.name} onChange={handleChange} placeholder="Attraction Name" className="border p-2 w-full" />
+                    <textarea name="description" value={attractionData.description} onChange={handleChange} placeholder="Description" className="border p-2 w-full" />
+                    <input type="text" name="google_map_url" value={attractionData.google_map_url} onChange={handleChange} placeholder="Google Map URL" className="border p-2 w-full" />
 
-            <input type="file" multiple accept="image/*" onChange={handleImageChange} className="border p-2 w-full" />
+                    <Select isMulti options={tagOptions} value={tagOptions.filter(option => attractionData.tags.includes(option.value))} onChange={handleTagChange} className="border p-2 w-full" />
 
-            <div className="flex flex-wrap gap-2">
-                {attractionData.existingImages.map((src, index) => (
-                    <div key={index} className="relative">
-                        <img src={src} className="w-20 h-20 rounded" alt="Existing" />
-                        <button type="button" className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full" onClick={() => removeExistingImage(index)}>X</button>
+                    <input type="file" multiple accept="image/*" onChange={handleImageChange} className="border p-2 w-full" />
+
+                    <div className="flex flex-wrap gap-2">
+                        {attractionData.existingImages.map((src, index) => (
+                            <div key={index} className="relative">
+                                <img src={src} className="w-20 h-20 rounded" alt="Existing" />
+                                <button type="button" className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full" onClick={() => removeExistingImage(index)}>X</button>
+                            </div>
+                        ))}
+                        {imagePreviews.map((src, index) => (
+                            <div key={index} className="relative">
+                                <img src={src} className="w-20 h-20 rounded" alt="Preview" />
+                                <button type="button" className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full" onClick={() => removeNewImage(index)}>X</button>
+                            </div>
+                        ))}
                     </div>
-                ))}
-                {imagePreviews.map((src, index) => (
-                    <div key={index} className="relative">
-                        <img src={src} className="w-20 h-20 rounded" alt="Preview" />
-                        <button type="button" className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full" onClick={() => removeNewImage(index)}>X</button>
+
+                    {/* Points Section */}
+                    <div>
+                        <h3>Points of Interest</h3>
+                        {attractionData.points.map((point, index) => (
+                            <div key={index} className="flex gap-4 mb-2">
+                                <input
+                                    type="text"
+                                    value={point.point}
+                                    onChange={(e) => handlePointChange(index, 'point', e.target.value)}
+                                    placeholder={`Point ${index + 1} ID`}
+                                    className="border p-2 w-full"
+                                />
+                                <input
+                                    type="text"
+                                    value={point.text}
+                                    onChange={(e) => handlePointChange(index, 'text', e.target.value)}
+                                    placeholder={`Point ${index + 1} Description`}
+                                    className="border p-2 w-full"
+                                />
+                                <button type="button" onClick={() => removePoint(index)} className="bg-red-500 text-white px-2 py-1 rounded">Remove</button>
+                            </div>
+                        ))}
+                        <button type="button" onClick={addPoint} className="bg-blue-500 text-white px-4 py-2 w-full">Add New Point</button>
                     </div>
-                ))}
+
+                    <button type="submit" className="bg-green-500 text-white px-4 py-2 w-full">Update Attraction</button>
+                </form>
             </div>
-
-            {/* Points Section */}
-            <div>
-                <h3>Points of Interest</h3>
-                {attractionData.points.map((point, index) => (
-                    <div key={index} className="flex gap-4 mb-2">
-                        <input
-                            type="text"
-                            value={point.point}
-                            onChange={(e) => handlePointChange(index, 'point', e.target.value)}
-                            placeholder={`Point ${index + 1} ID`}
-                            className="border p-2 w-full"
-                        />
-                        <input
-                            type="text"
-                            value={point.text}
-                            onChange={(e) => handlePointChange(index, 'text', e.target.value)}
-                            placeholder={`Point ${index + 1} Description`}
-                            className="border p-2 w-full"
-                        />
-                        <button type="button" onClick={() => removePoint(index)} className="bg-red-500 text-white px-2 py-1 rounded">Remove</button>
-                    </div>
-                ))}
-                <button type="button" onClick={addPoint} className="bg-blue-500 text-white px-4 py-2 w-full">Add New Point</button>
-            </div>
-
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 w-full">Update Attraction</button>
-        </form>
+        </div>
     );
 };
 

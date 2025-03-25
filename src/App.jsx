@@ -20,6 +20,8 @@ import Tracking from './pages/dashboard/Tracking';
 import RfidList from './pages/dashboard/RfidList';
 import Location from './pages/dashboard/Location';
 import UpdateAttraction from './pages/dashboard/UpdateAttraction';
+import Guides from './pages/dashboard/guides';
+import Business from './pages/dashboard/business';
 
 export default function App() {
   return (
@@ -31,7 +33,6 @@ export default function App() {
           <Route path='/user/profile' element={<Profile />} />
           <Route path='/user/' element={<Attractions />} />
           <Route path='/user/location' element={<AttractionsInfo />} />
-          <Route path='/dashboard/add-location' element={<AddAttractions />} />
 
           <Route path='/user/booking' element={<Booking />} />
           <Route path='/user/booking/info' element={<BookingInfo />} />
@@ -44,15 +45,16 @@ export default function App() {
           <Route path='/user/guide' element={<AiGuide />} />
           <Route path='/user/dashboard/rfid' element={<AiGuide />} />
 
+
           <Route path='/admin/dashboard' element={<Dashboard />} />
           <Route path='/admin/locations' element={<Location />} />
           <Route path='/admin/add-locations' element={<AddAttractions />} />
-          {/* Corrected route for UpdateAttraction */}
-          <Route path="/update-location/:id" element={<UpdateAttraction />} />
-
+          <Route path="/admin/update-location/:id" element={<UpdateAttraction />} />
+          <Route path='/admin/business' element={<Business />} />
           <Route path='/admin/add-rfid' element={<NewRFID />} />
           <Route path='/admin/rfid' element={<RfidList />} />
           <Route path='/admin/tracking' element={<Tracking />} />
+          <Route path='/admin/guides' element={<Guides />} />
 
           <Route path='/test' element={<Test />} />
         </Routes>
