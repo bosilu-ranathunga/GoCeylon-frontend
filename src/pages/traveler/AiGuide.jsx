@@ -3,7 +3,7 @@ import { useState } from "react";
 import TopAppBar from '../../components/TopAppBar';
 import BottomTabBar from '../../components/BottomTabBar';
 
-export default function AIGuide() {
+export default function AiGuide() {
     const [messages, setMessages] = useState([
         { role: "bot", text: "Hello! How can I assist you today?" },
     ]);
