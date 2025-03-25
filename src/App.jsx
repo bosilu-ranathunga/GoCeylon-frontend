@@ -56,7 +56,7 @@ export default function App() {
           <Route path='/admin/tracking' element={<Tracking />} />
 
 
-          <Route path='/test' element={<Test />} />
+          <Route path='/' element={<Attractions />} />
 
         </Routes>
       </BrowserRouter>
