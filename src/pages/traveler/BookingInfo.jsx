@@ -1,24 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-//import axios from "../../services/axios";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export default function BookingInfo() {
-    const { id } = useParams();
-    const [booking, setBooking] = useState(null);
+const BookingInfo = () => {
+    const { state } = useLocation();
+    const booking = state?.booking || {}; 
+    const navigate = useNavigate();
 
-   /* useEffect(() => {
-        axios.get(`/bookings/${id}`)
-            .then(response => setBooking(response.data))
-            .catch(error => console.error("Error fetching booking info:", error));
-    }, [id]);*/
+    console.log("Booking Data:", booking); 
 
-    if (!booking) return <p>Loading booking details...</p>;
+    if (!state || !booking || Object.keys(booking).length === 0) {
+        return (
+            <div className="text-center text-red-600 font-semibold">
+                No booking details available.
+            </div>
+        );
+    }
 
     return (
-        <div className="bg-white min-h-screen p-6 flex flex-col gap-6 max-w-lg mx-auto border border-gray-300 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-900">Booking Confirmed!</h2>
-            <p className="text-lg">Guide: {booking.guideName}</p>
-            <p>Booking ID: {booking.id}</p>
+        <div className="bg-white min-h-screen p-6 flex flex-col gap-6 max-w-2xl mx-auto border border-gray-300 rounded-xl shadow-lg">
+            <h2 className="text-3xl font-bold text-green-700 text-center">
+                Booking Confirmation
+            </h2>
+            <div className="p-5 bg-green-50 border border-green-300 rounded-xl shadow-md">
+                <p className="text-lg font-semibold text-green-800">
+                    Guide ID: {booking.b_guide || "N/A"}
+                </p>
+                <p className="text-sm text-green-700">Date: {booking.b_date || "N/A"}</p>
+                <p className="text-sm text-green-700">Time: {booking.b_time || "N/A"}</p>
+                <p className="text-sm text-green-700">Location: {booking.b_location || "N/A"}</p>
+                <p className="text-sm text-green-700 font-bold">Price: ${booking.price || "N/A"}</p>
+                <p className={`text-sm font-semibold ${booking.status === 'pending' ? 'text-yellow-600' : 'text-green-700'}`}>
+                    Status: {booking.status || "N/A"}
+                </p>
+            </div>
+
+            <button 
+                onClick={() => navigate('/')} 
+                className="bg-green-600 text-white text-lg font-semibold py-2 rounded-lg hover:bg-green-700 transition duration-200"
+            >
+                Back to Home
+            </button>
         </div>
     );
-}
+};
+
+export default BookingInfo;
