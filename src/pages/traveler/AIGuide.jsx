@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from "react";
 import TopAppBar from '../../components/TopAppBar';
 import BottomTabBar from '../../components/BottomTabBar';
+import { FaPaperPlane } from 'react-icons/fa';
 
 export default function AIGuide() {
     const [messages, setMessages] = useState([
@@ -23,11 +24,8 @@ export default function AIGuide() {
     return (
         <>
             <TopAppBar />
-            <div className="flex flex-col bg-gray-100 border h-screen w-full max-w-md mx-auto">
-                <div className="flex bg-blue-600 p-4 shadow-md text-white font-semibold items-center">
-                    AI AIGuide
-                </div>
-                <div className="flex-1 p-4 overflow-y-auto space-y-2">
+            <div className="container mx-auto p-6 mt-[4rem] bg-gray-50 min-h-screen">
+                <div className="flex-1 overflow-y-auto space-y-2">
                     {messages.map((msg, index) => (
                         <div
                             key={index}
@@ -38,18 +36,21 @@ export default function AIGuide() {
                         </div>
                     ))}
                 </div>
-                <div className="flex bg-white border-t p-4 w-full bottom-20 fixed items-center">
-                    <input
-                        className="flex-1 border p-2 rounded-lg mr-2"
-                        placeholder="Type your message..."
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                    />
-                    <button onClick={handleSend} className="bg-blue-500 p-2 rounded-lg text-white">
-                        send
-                    </button>
-                </div>
+            </div>
+            <div className="flex bg-white p-4 w-full bottom-[5rem] fixed items-center justify-between">
+                <input
+                    className="flex-1 border border-gray-300 p-3 rounded-lg mr-4 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 transition-all"
+                    placeholder="Type your message..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                />
+                <button
+                    onClick={handleSend}
+                    className="bg-[#007a55] p-3 rounded-full text-white shadow-md transition-colors duration-200 ease-in-out"
+                >
+                    <FaPaperPlane className="text-xl" />
+                </button>
             </div>
             <BottomTabBar />
         </>

@@ -46,7 +46,7 @@ const AttractionsPage = () => {
     return (
         <>
             <TopAppBar />
-            <div className="container mx-auto p-6 bg-gray-50 min-h-screen">
+            <div className="container mx-auto p-6 mt-[4rem] bg-gray-50 min-h-screen">
                 <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8">Explore Attractions</h1>
 
                 {/* Search Bar */}
