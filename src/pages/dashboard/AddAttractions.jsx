@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import Sidebar from '../../components/Sidebar';
 import Select from "react-select";
 import axios from "axios"; // Import axios
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const AddAttractionForm = () => {
+
     const [attractionData, setAttractionData] = useState({
         name: "",
         description: "",
@@ -153,111 +157,150 @@ const AddAttractionForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white rounded-lg shadow-md">
-            <input
-                type="text"
-                name="name"
-                placeholder="Attraction Name"
-                value={attractionData.name}
-                onChange={handleChange}
-                className="border p-2 w-full"
-            />
-            {errors.name && <p className="text-red-500">{errors.name}</p>}
+        <div className="flex h-screen bg-[#eee]">
+            <Sidebar />
+            <div className="flex-1 ml-64 overflow-y-auto h-screen p-8">
 
-            <textarea
-                name="description"
-                placeholder="Description"
-                value={attractionData.description}
-                onChange={handleChange}
-                className="border p-2 w-full"
-            />
-            {errors.description && <p className="text-red-500">{errors.description}</p>}
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white rounded-lg shadow-md">
 
-            <input
-                type="text"
-                name="google_map_url"
-                placeholder="Google Map URL"
-                value={attractionData.google_map_url}
-                onChange={handleChange}
-                className="border p-2 w-full"
-            />
-            {errors.google_map_url && <p className="text-red-500">{errors.google_map_url}</p>}
+                    <div>
+                        <label htmlFor="name" className="block text-lg font-semibold text-gray-700 mb-1">Attraction Name</label>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            placeholder="Attraction Name"
+                            value={attractionData.name}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.name && <p className="text-red-500">{errors.name}</p>}
+                    </div>
 
-            <Select
-                isMulti
-                options={tagOptions}
-                value={tagOptions.filter(option => attractionData.tags.includes(option.value))}
-                onChange={handleTagChange}
-                className="border p-2 w-full"
-            />
-            {errors.tags && <p className="text-red-500">{errors.tags}</p>}
+                    <div>
+                        <label htmlFor="description" className="block text-lg font-semibold text-gray-700 mb-1">Description</label>
+                        <ReactQuill
+                            id="description"
+                            theme="snow"
+                            value={attractionData.description}
+                            onChange={(value) => setAttractionData(prev => ({ ...prev, description: value }))}
+                            className="text-black"
+                        />
 
-            <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                className="border p-2 w-full"
-            />
-            {errors.images && <p className="text-red-500">{errors.images}</p>}
-
-            {/* Rendering Points Input Fields */}
-            {attractionData.points.map((point, index) => (
-                <div key={index} className="space-y-2">
-                    <input
-                        type="text"
-                        placeholder={`Point ${index + 1} ID`}
-                        value={point.point}
-                        onChange={(e) => handlePointChange(index, 'point', e.target.value)}
-                        className="border p-2 w-full"
-                    />
-                    {errors[`point${index}`] && <p className="text-red-500">{errors[`point${index}`]}</p>}
-
+                        {/*
                     <textarea
-                        placeholder={`Point ${index + 1} Description`}
-                        value={point.text}
-                        onChange={(e) => handlePointChange(index, 'text', e.target.value)}
-                        className="border p-2 w-full"
+                        name="description"
+                        placeholder="Description"
+                        value={attractionData.description}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
                     />
-                    {errors[`text${index}`] && <p className="text-red-500">{errors[`text${index}`]}</p>}
+                    {errors.description && <p className="text-red-500">{errors.description}</p>}
+                    */}
+                    </div>
 
-                    <button
-                        type="button"
-                        onClick={() => removePoint(index)}
-                        className="text-red-500"
-                    >
-                        Remove Point {index + 1}
-                    </button>
-                </div>
-            ))}
+                    <div>
+                        <label htmlFor="google_map_url" className="block text-lg font-semibold text-gray-700 mb-1">Google Map URL</label>
+                        <input
+                            id="google_map_url"
+                            type="text"
+                            name="google_map_url"
+                            placeholder="Google Map URL"
+                            value={attractionData.google_map_url}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.google_map_url && <p className="text-red-500">{errors.google_map_url}</p>}
+                    </div>
 
-            <button
-                type="button"
-                onClick={addPoint}
-                className="bg-blue-500 text-white px-4 py-2"
-            >
-                Add Point
-            </button>
+                    <div>
+                        <label htmlFor="tags" className="block text-lg font-semibold text-gray-700 mb-1">Tags</label>
+                        <Select
+                            id="tags"
+                            isMulti
+                            options={tagOptions}
+                            value={tagOptions.filter(option => attractionData.tags.includes(option.value))}
+                            onChange={handleTagChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.tags && <p className="text-red-500">{errors.tags}</p>}
+                    </div>
 
-            {imagePreviews.length > 0 && (
-                <div className="flex space-x-2">
-                    {imagePreviews.map((src, index) => (
-                        <div key={index} className="relative">
-                            <img src={src} className="w-20 h-20 rounded" alt="Preview" />
-                            <button
-                                type="button"
-                                className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full"
-                                onClick={() => removeImage(index)}
-                            >
-                                X
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
+                    <div>
+                        <label htmlFor="images" className="block text-lg font-semibold text-gray-700 mb-1">Images</label>
+                        <input
+                            id="images"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.images && <p className="text-red-500">{errors.images}</p>}
+                        {imagePreviews.length > 0 && (
+                            <div className="flex space-x-2">
+                                {imagePreviews.map((src, index) => (
+                                    <div key={index} className="relative">
+                                        <img src={src} className="w-20 h-20 rounded" alt="Preview" />
+                                        <button
+                                            type="button"
+                                            className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full"
+                                            onClick={() => removeImage(index)}
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 w-full">Add Attraction</button>
-        </form>
+                    <div>
+                        {/* Rendering Points Input Fields */}
+                        {attractionData.points.map((point, index) => (
+                            <div key={index} className="space-y-2">
+                                <input
+                                    type="text"
+                                    placeholder={`Point ${index + 1} ID`}
+                                    value={point.point}
+                                    onChange={(e) => handlePointChange(index, 'point', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                                />
+                                {errors[`point${index}`] && <p className="text-red-500">{errors[`point${index}`]}</p>}
+
+                                <textarea
+                                    placeholder={`Point ${index + 1} Description`}
+                                    value={point.text}
+                                    onChange={(e) => handlePointChange(index, 'text', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                                />
+                                {errors[`text${index}`] && <p className="text-red-500">{errors[`text${index}`]}</p>}
+
+                                <button
+                                    type="button"
+                                    onClick={() => removePoint(index)}
+                                    className="text-red-500"
+                                >
+                                    Remove Point {index + 1}
+                                </button>
+                            </div>
+                        ))}
+
+                        <button
+                            type="button"
+                            onClick={addPoint}
+                            className="bg-blue-500 text-white px-4 py-2"
+                        >
+                            Add Point
+                        </button>
+
+                    </div>
+
+                    <button type="submit" className="bg-emerald-700 text-white px-4 py-2 w-full">Add Attraction</button>
+
+                </form>
+            </div>
+        </div>
     );
 };
 

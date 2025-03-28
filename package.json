@@ -10,10 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.8",
+    "@mui/styled-engine-sc": "^6.4.6",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/vite": "^4.0.12",
     "@tanstack/react-table": "^8.21.2",
-    "axios": "^1.8.3",
+    "axios": "^1.8.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-draft-wysiwyg": "^1.15.0",
@@ -22,6 +25,8 @@
     "react-quill": "^2.0.0",
     "react-router-dom": "^7.3.0",
     "react-select": "^5.10.1",
+    "socket.io-client": "^4.8.1",
+    "styled-components": "^6.1.16",
     "tailwindcss": "^4.0.12"
   },
   "devDependencies": {

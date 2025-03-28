@@ -1,17 +1,20 @@
-import React from 'react'
-import { FaBars } from "react-icons/fa"; // Hamburger icon
+import React from 'react';
+import { FaBars, FaCamera, FaHome } from "react-icons/fa"; // Icons for menu, camera, and home
+import { HiDotsVertical } from "react-icons/hi";
 
 export default function TopAppBar() {
     return (
-
-        <div className="fixed bg-emerald-700 text-white top-0 left-0 right-0 w-ful shadow-xs flex items-center justify-between px-4 py-4 z-10">
-            <div className='flex items-center'>
-                <FaBars size={24} />
-                <span className="text-2xl font-bold not-first:px-2">GoCeylon</span>
+        <div className="flex bg-emerald-700 justify-between shadow-xs text-white w-full fixed items-center left-0 px-4 py-4 right-0 top-0 z-10">
+            {/* Left Side: Menu Icon & Title */}
+            <div className='flex gap-3 items-center'>
+                <span className="text-2xl font-bold">GoCeylon</span>
             </div>
-            <div className="w-8" />
-        </div>
 
+            {/* Right Side: Camera Icon & Home Icon */}
+            <div className='flex gap-4 items-center'>
+                <FaCamera size={24} />
+                <HiDotsVertical size={24} />
+            </div>
+        </div>
     );
 }
-
