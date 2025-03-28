@@ -3,7 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration'; // Import the service worker registration
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+            console.log('Service Worker registered with scope:', registration.scope);
+        }).catch((error) => {
+            console.log('Service Worker registration failed:', error);
+        });
+    });
+}
 
 ReactDOM.render(
     <React.StrictMode>
@@ -11,8 +20,5 @@ ReactDOM.render(
     </React.StrictMode>,
     document.getElementById('root')
 );
-
-// Enable the service worker to make your app a PWA
-serviceWorkerRegistration.register();
 
 reportWebVitals();

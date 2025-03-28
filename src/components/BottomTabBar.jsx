@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaHome, FaSearch, FaBell, FaUser } from "react-icons/fa";
+import { IoBookmarks } from "react-icons/io5";
+import { SiCodemagic } from "react-icons/si";
+import { IoMdBookmark } from "react-icons/io";
+
 
 const tabs = [
     { name: "Home", icon: FaHome, path: "/user/" },
-    { name: "Search", icon: FaSearch, path: "/user/guide" },
-    { name: "Notifications", icon: FaBell, path: "/user/booking" },
+    { name: "AI", icon: SiCodemagic, path: "/user/guide" },
+    { name: "Bookings", icon: IoMdBookmark, path: "/user/booking" },
     { name: "Profile", icon: FaUser, path: "/user/profile" },
 ];
 
@@ -13,7 +17,7 @@ export default function BottomTabBar() {
     const location = useLocation();
 
     return (
-        <div className="fixed bottom-0 left-0 w-full bg-white shadow-2xl flex justify-around py-2 ">
+        <div className="flex bg-white justify-around shadow-2xl w-full bottom-0 fixed left-0 py-2">
             {tabs.map((tab) => (
                 <Link
                     key={tab.name}
@@ -24,7 +28,7 @@ export default function BottomTabBar() {
                         }`}
                 >
                     <tab.icon size={24} />
-                    <span className="text-xs">{tab.name}</span>
+                    <span className="text-xs pt-1">{tab.name}</span>
                 </Link>
             ))}
         </div>
