@@ -14,7 +14,6 @@ import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
 import Login from './pages/login';
-import Login from './pages/login';
 import Test from './pages/Tests';
 import Dashboard from './pages/dashboard/Dashboard';
 import AiGuide from './pages/traveler/AiGuide';
@@ -37,7 +36,7 @@ export default function App() {
           <Route path='/register3' element={<BusinessmanRegister />} />
           <Route path='/user/profile' element={<Profile />} />
           <Route path='/user/' element={<Attractions />} />
-          <Route path='/user/location' element={<AttractionsInfo />} />
+          <Route path='/user/location/:id' element={<AttractionsInfo />} />
 
           <Route path='/user/booking' element={<Booking />} />
           <Route path='/user/booking/info' element={<BookingInfo />} />
