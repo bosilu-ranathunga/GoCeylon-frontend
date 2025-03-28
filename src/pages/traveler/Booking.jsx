@@ -1,131 +1,143 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaArrowLeft } from 'react-icons/fa';
 
 export default function Booking() {
+    const location = useLocation();
     const navigate = useNavigate();
-    const { state } = useLocation();
-    const guide = state?.guide;
+    const { guide } = location.state || {}; 
 
-    const [b_date, setBDate] = useState('');
-    const [b_time, setBTime] = useState('');
-    const [b_location, setBLocation] = useState('');
-    const [price, setPrice] = useState(guide?.price || 0);
-    const [status, setStatus] = useState('pending');
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [bookingDate, setBookingDate] = useState('');
+    const [bookingTime, setBookingTime] = useState('');
+    const [bookingLocation, setBookingLocation] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    if (!guide) {
+        return <div className='text-center text-red-600 font-semibold'>No guide selected.</div>;
+    }
 
-        if (!b_date || !b_time || !b_location) {
-            setError('All fields are required');
+    const handleBooking = async () => {
+        if (!bookingDate || !bookingTime || !bookingLocation) {
+            alert('Please fill in all fields.');
             return;
         }
-
+    
+        const bookingData = {
+            b_date: bookingDate,
+            b_time: bookingTime,
+            b_location: bookingLocation,
+            b_user: '67dc5f1a395ce4427f1411d6', // Example user ID
+            b_guide: guide._id, // Guide ID
+            price: guide.price, // Guide price
+            status: 'pending'
+        };
+    
         try {
-            const bookingData = {
-                b_date,
-                b_time,
-                b_location,
-                b_user: 'user-id-placeholder',  // Replace with actual user ID
-                b_guide: guide._id,
-                price,
-                status,
-            };
-
+            setLoading(true);
             const response = await axios.post('http://localhost:3000/booking', bookingData);
-
+            setLoading(false);
+    
             if (response.status === 201) {
-                setSuccess(true);
-                setError(null);
-                setBDate('');
-                setBTime('');
-                setBLocation('');
+                alert('Guide booked successfully!');
+                setShowModal(false);
+                console.log(response.data);
+                navigate('/user/booking/info', { state: { booking: response.data } }); // ✅ Navigate with booking details
             }
         } catch (error) {
-            setError('Error creating booking. Please try again.');
-            setSuccess(false);
+            console.error('Error booking guide:', error.response?.data || error.message);
+            setLoading(false);
+            alert(`Failed to book the guide: ${error.response?.data?.message || 'Unknown error'}`);
         }
     };
+    
+
+ 
+
 
     return (
-        <div className='bg-white min-h-screen p-6 flex flex-col gap-6 max-w-3xl mx-auto border border-gray-300 rounded-xl shadow-lg'>
-            <div className='flex items-center justify-between mb-4'>
-                <button onClick={() => navigate(-1)} className='text-green-700 text-2xl'>
-                    <FaArrowLeft />
-                </button>
-                <h2 className='text-3xl font-bold text-green-700 text-center flex-1'>Book a Guide</h2>
+        <div className='bg-white min-h-screen p-6 flex flex-col gap-6 max-w-2xl mx-auto border border-gray-300 rounded-xl shadow-lg'>
+            <h2 className='text-3xl font-bold text-green-700 text-center'>Book a Guide</h2>
+            <div className='p-5 bg-green-50 border border-green-300 rounded-xl shadow-md'>
+                <h3 className='text-xl font-semibold text-green-800'>{guide.g_name}</h3>
+                <p className='text-sm text-green-700'>Language: {guide.language}</p>
+                <p className='text-sm text-green-700'>Price: ${guide.price} / hr</p>
+                <p className='text-sm text-green-700'>Location: {guide.location.join(', ')}</p>
+                <p className='text-sm text-green-700'>Contact: {guide.contact_number}</p>
+                <p className={`text-sm font-semibold ${guide.availability ? 'text-green-700' : 'text-red-600'}`}>
+                    {guide.availability ? 'Available' : 'Not Available'}
+                </p>
             </div>
+            <button 
+                onClick={() => setShowModal(true)} 
+                className='bg-green-600 text-white text-lg font-semibold py-2 rounded-lg hover:bg-green-700 transition duration-200'
+            >
+                Book Guide
+            </button>
 
-            {guide && (
-                <div className='p-5 bg-green-50 border border-green-300 rounded-xl shadow-md mb-4'>
-                    <h3 className='text-xl font-semibold text-green-800'>{guide.g_name}</h3>
-                    <p className='text-sm text-green-700'>Language: {guide.language}</p>
-                    <p className='text-sm text-green-700'>Price: ${guide.price} / hr</p>
-                    <p className='text-sm text-green-700'>Location: {guide.location.join(', ')}</p>
-                    <p className={`text-sm font-semibold ${guide.availability ? 'text-green-700' : 'text-red-600'}`}>
-                        {guide.availability ? 'Available' : 'Not Available'}
-                    </p>
+            {/* Popup Modal */}
+            {showModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+                        <h2 className="text-xl font-bold text-green-700 mb-4">Confirm Booking</h2>
+                        <p className="text-sm text-gray-700 mb-3">Guide: <strong>{guide.g_name}</strong></p>
+
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Booking Date:</label>
+                        <input 
+                            type="date" 
+                            value={bookingDate} 
+                            onChange={(e) => setBookingDate(e.target.value)} 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                        />
+
+                        <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Select Time:</label>
+                        <input 
+                            type="time" 
+                            value={bookingTime} 
+                            onChange={(e) => setBookingTime(e.target.value)} 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                        />
+
+                        <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Enter Location:</label>
+                        <input 
+                            type="text" 
+                            placeholder="Enter location" 
+                            value={bookingLocation} 
+                            onChange={(e) => setBookingLocation(e.target.value)} 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                        />
+
+                        <p className="text-lg font-bold text-green-800 mt-3">Price: ${guide.price}</p>
+
+                        <div className="flex justify-end gap-3 mt-4">
+                            <button 
+                                onClick={() => setShowModal(false)} 
+                                className="bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleBooking} 
+                                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                                disabled={loading}
+                            >
+                                {loading ? 'Booking...' : 'Confirm'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
-
-            <form onSubmit={handleSubmit} className='space-y-4'>
-                {error && <div className='text-red-500 font-semibold'>{error}</div>}
-                {success && <div className='text-green-600 font-semibold'>Booking created successfully!</div>}
-
-                <div className='flex flex-col'>
-                    <label className='text-sm text-green-700' htmlFor='b_date'>
-                        Date
-                    </label>
-                    <input
-                        type='date'
-                        id='b_date'
-                        className='p-3 border border-gray-300 rounded-lg'
-                        value={b_date}
-                        onChange={(e) => setBDate(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className='flex flex-col'>
-                    <label className='text-sm text-green-700' htmlFor='b_time'>
-                        Time
-                    </label>
-                    <input
-                        type='time'
-                        id='b_time'
-                        className='p-3 border border-gray-300 rounded-lg'
-                        value={b_time}
-                        onChange={(e) => setBTime(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className='flex flex-col'>
-                    <label className='text-sm text-green-700' htmlFor='b_location'>
-                        Location
-                    </label>
-                    <input
-                        type='text'
-                        id='b_location'
-                        className='p-3 border border-gray-300 rounded-lg'
-                        value={b_location}
-                        onChange={(e) => setBLocation(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className='flex justify-end'>
-                    <button
-                        type='submit'
-                        className='bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200'
-                    >
-                        Book Now
-                    </button>
-                </div>
-            </form>
         </div>
     );
 }
+
+
+
+
+
+
+
+
+
+
+
