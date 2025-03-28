@@ -38,10 +38,10 @@ export default function Booking() {
             const response = await axios.post('http://localhost:3000/booking', bookingData);
             setLoading(false);
     
-            if (response.status === 201) {
+            if (response.status === 201 && response.data) {
                 alert('Guide booked successfully!');
                 setShowModal(false);
-                console.log(response.data);
+                console.log("Booking Data:", response.data);
                 navigate('/user/booking/info', { state: { booking: response.data } }); // ✅ Navigate with booking details
             }
         } catch (error) {
@@ -50,10 +50,6 @@ export default function Booking() {
             alert(`Failed to book the guide: ${error.response?.data?.message || 'Unknown error'}`);
         }
     };
-    
-
- 
-
 
     return (
         <div className='bg-white min-h-screen p-6 flex flex-col gap-6 max-w-2xl mx-auto border border-gray-300 rounded-xl shadow-lg'>
@@ -130,14 +126,3 @@ export default function Booking() {
         </div>
     );
 }
-
-
-
-
-
-
-
-
-
-
-

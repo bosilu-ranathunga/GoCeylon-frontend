@@ -1,14 +1,13 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const BookingInfo = () => {
     const { state } = useLocation();
-    const booking = state?.booking || {}; 
-    const navigate = useNavigate();
+    const booking = state?.booking; 
 
     console.log("Booking Data:", booking); 
 
-    if (!state || !booking || Object.keys(booking).length === 0) {
+    if (!booking) {
         return (
             <div className="text-center text-red-600 font-semibold">
                 No booking details available.
@@ -33,13 +32,6 @@ const BookingInfo = () => {
                     Status: {booking.status || "N/A"}
                 </p>
             </div>
-
-            <button 
-                onClick={() => navigate('/')} 
-                className="bg-green-600 text-white text-lg font-semibold py-2 rounded-lg hover:bg-green-700 transition duration-200"
-            >
-                Back to Home
-            </button>
         </div>
     );
 };

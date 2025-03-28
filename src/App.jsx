@@ -12,9 +12,9 @@ import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
 import Login from './pages/login';
-<<<<<<< HEAD
+
 import BookingHistory from './pages/traveler/BookingHistory';
-=======
+
 import Test from './pages/Tests';
 import Dashboard from './pages/dashboard/Dashboard';
 import AiGuide from './pages/traveler/AiGuide';
@@ -25,7 +25,7 @@ import Location from './pages/dashboard/Location';
 import UpdateAttraction from './pages/dashboard/UpdateAttraction';
 import Guides from './pages/dashboard/guides';
 import Business from './pages/dashboard/business';
->>>>>>> bosilu's-branch
+
 
 export default function App() {
   return (
