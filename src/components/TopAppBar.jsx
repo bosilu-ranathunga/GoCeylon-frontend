@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaBars, FaCamera, FaHome } from "react-icons/fa"; // Icons for menu, camera, and home
 import { HiDotsVertical } from "react-icons/hi";
+import { Link } from 'react-router-dom';
 
 export default function TopAppBar() {
     return (
@@ -12,7 +13,10 @@ export default function TopAppBar() {
 
             {/* Right Side: Camera Icon & Home Icon */}
             <div className='flex gap-4 items-center'>
-                <FaCamera size={24} />
+                <Link key="scaner" to="/user/scaner">
+                    <FaCamera size={24} />
+                </Link>
+
                 <HiDotsVertical size={24} />
             </div>
         </div>
