@@ -1,310 +1,307 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import Sidebar from '../../components/Sidebar';
+import Select from "react-select";
+import axios from "axios"; // Import axios
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import Select from 'react-select';
-import Sidebar from '../../components/Sidebar';
-import TopBar from '../../components/TopBar';
 
-const tagOptions = [
-    { value: 'beachside', label: 'Beachside Venue' },
-    { value: 'forest', label: 'Forest' },
-    { value: 'historical', label: 'Historical Place' },
-    { value: 'hiking', label: 'Hiking Place' },
-    { value: 'overcrowded', label: 'Overcrowded' },
-    { value: 'hiddenGem', label: 'Hidden Gem' }
-];
+const AddAttractionForm = () => {
 
-export default function AddAttractions() {
     const [attractionData, setAttractionData] = useState({
-        name: '',
-        description: '',
-        googleLocation: '',
+        name: "",
+        description: "",
+        google_map_url: "",
         tags: [],
-        images: [],
-        pointsOfInterest: [{ id: '', description: '' }]
+        images: [], // Store multiple images as an array
+        points: [{ point: "", text: "" }]
     });
 
-    const [imagePreviews, setImagePreviews] = useState([]);
     const [errors, setErrors] = useState({});
+    const [imagePreviews, setImagePreviews] = useState([]); // Store image preview URLs
 
     const handleChange = (e) => {
-        const { name, value, type, files } = e.target;
-        if (type === 'file') {
-            const selectedFiles = Array.from(files);
-            const validImages = selectedFiles.filter(file =>
-                file.type.startsWith('image/') // Validate file type is image
-            );
-
-            if (validImages.length === selectedFiles.length) {
-                // Generate preview URLs for valid image files
-                const newPreviews = validImages.map(file => URL.createObjectURL(file));
-
-                setAttractionData((prevState) => ({
-                    ...prevState,
-                    images: [...prevState.images, ...validImages]
-                }));
-
-                setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
-            } else {
-                alert('Only image files are allowed');
-            }
-        } else {
-            setAttractionData((prevState) => ({
-                ...prevState,
-                [name]: value
-            }));
-        }
+        const { name, value } = e.target;
+        console.log(`Field changed: ${name} = ${value}`); // Debugging log
+        setAttractionData({ ...attractionData, [name]: value });
     };
+
+    const tagOptions = [
+        { value: "beach", label: "Beach" },
+        { value: "mountain", label: "Mountain" },
+        { value: "historical", label: "Historical" },
+        { value: "cultural", label: "Cultural" },
+        { value: "adventure", label: "Adventure" },
+        { value: "wildlife", label: "Wildlife" }
+    ];
 
     const handleTagChange = (selectedOptions) => {
-        setAttractionData((prevState) => ({
-            ...prevState,
-            tags: selectedOptions
+        const selectedTags = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        console.log("Selected tags: ", selectedTags); // Debugging log
+        setAttractionData({ ...attractionData, tags: selectedTags });
+    };
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        console.log("Selected images: ", files); // Debugging log
+
+        // Append new images instead of replacing old ones
+        setAttractionData(prevData => ({
+            ...prevData,
+            images: [...prevData.images, ...files]
+        }));
+
+        // Generate and append previews
+        const newPreviews = files.map(file => URL.createObjectURL(file));
+        setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    };
+
+    const removeImage = (index) => {
+        console.log(`Removing image at index: ${index}`); // Debugging log
+        // Remove from both the previews and the files list
+        setImagePreviews(prevPreviews => prevPreviews.filter((_, i) => i !== index));
+        setAttractionData(prevData => ({
+            ...prevData,
+            images: prevData.images.filter((_, i) => i !== index)
         }));
     };
 
-    const handlePOIChange = (index, e) => {
-        const { name, value } = e.target;
-        const updatedPOIs = [...attractionData.pointsOfInterest];
-        updatedPOIs[index] = { ...updatedPOIs[index], [name]: value };
-        setAttractionData((prevState) => ({
-            ...prevState,
-            pointsOfInterest: updatedPOIs
+    const handlePointChange = (index, field, value) => {
+        console.log(`Point changed at index ${index}: ${field} = ${value}`); // Debugging log
+        const updatedPoints = [...attractionData.points];
+        updatedPoints[index][field] = value;
+        setAttractionData({ ...attractionData, points: updatedPoints });
+    };
+
+    const addPoint = () => {
+        console.log("Adding new point..."); // Debugging log
+        setAttractionData(prevData => ({
+            ...prevData,
+            points: [...prevData.points, { point: "", text: "" }]
         }));
     };
 
-    const handleAddPOI = () => {
-        setAttractionData((prevState) => ({
-            ...prevState,
-            pointsOfInterest: [...prevState.pointsOfInterest, { id: '', description: '' }]
+    const removePoint = (index) => {
+        console.log(`Removing point at index: ${index}`); // Debugging log
+        setAttractionData(prevData => ({
+            ...prevData,
+            points: prevData.points.filter((_, i) => i !== index)
         }));
     };
 
-    const handleRemovePOI = (index) => {
-        const updatedPOIs = [...attractionData.pointsOfInterest];
-        updatedPOIs.splice(index, 1);
-        setAttractionData((prevState) => ({
-            ...prevState,
-            pointsOfInterest: updatedPOIs
-        }));
-    };
-
-    const handleRemoveImage = (index) => {
-        const updatedImages = [...attractionData.images];
-        updatedImages.splice(index, 1);
-        const updatedPreviews = [...imagePreviews];
-        updatedPreviews.splice(index, 1);
-
-        setAttractionData((prevState) => ({
-            ...prevState,
-            images: updatedImages
-        }));
-        setImagePreviews(updatedPreviews);
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Form submission triggered."); // Debugging log
 
         let validationErrors = {};
+        if (!attractionData.name.trim()) validationErrors.name = "Name is required";
+        if (!attractionData.description.trim()) validationErrors.description = "Description is required";
+        if (!attractionData.google_map_url.trim()) validationErrors.google_map_url = "Google Map URL is required";
+        if (attractionData.tags.length === 0) validationErrors.tags = "At least one tag is required";
+        if (attractionData.images.length === 0) validationErrors.images = "At least one image is required";
 
-        // Validate Attraction Name
-        if (!attractionData.name.trim()) {
-            validationErrors.name = "Attraction Name is required";
-        }
-
-        // Validate Description
-        if (!attractionData.description.trim()) {
-            validationErrors.description = "Description is required";
-        }
-
-        // Validate Google Location (Coordinates Format: Latitude, Longitude)
-        const locationPattern = /^-?\d{1,2}\.\d+,\s*-?\d{1,3}\.\d+$/;
-        if (!attractionData.googleLocation.trim()) {
-            validationErrors.googleLocation = "Google Location is required";
-        } else if (!locationPattern.test(attractionData.googleLocation.trim())) {
-            validationErrors.googleLocation = "Enter a valid location (Latitude, Longitude)";
-        }
-
-        // Validate Tags
-        if (attractionData.tags.length === 0) {
-            validationErrors.tags = "At least one tag must be selected";
-        }
-
-        // Validate Points of Interest
-        attractionData.pointsOfInterest.forEach((poi, index) => {
-            if (!poi.id.trim()) {
-                validationErrors[`poiId${index}`] = `Point of Interest ID is required for POI ${index + 1}`;
-            }
-            if (!poi.description.trim()) {
-                validationErrors[`poiDescription${index}`] = `Description is required for POI ${index + 1}`;
-            }
+        attractionData.points.forEach((poi, index) => {
+            if (!poi.point.trim()) validationErrors[`point${index}`] = `Point ${index + 1} is missing a Point ID`;
+            if (!poi.text.trim()) validationErrors[`text${index}`] = `Point ${index + 1} is missing a Description`;
         });
 
-        // Validate Images
-        if (attractionData.images.length === 0) {
-            validationErrors.images = "At least one image must be uploaded";
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) {
+            console.log("Validation errors: ", validationErrors); // Debugging log
+            return;
         }
 
-        setErrors(validationErrors);
+        try {
+            const formData = new FormData();
+            formData.append("name", attractionData.name);
+            formData.append("description", attractionData.description);
+            formData.append("google_map_url", attractionData.google_map_url);
+            formData.append("tags", JSON.stringify(attractionData.tags));
+            formData.append("points", JSON.stringify(attractionData.points));
 
-        if (Object.keys(validationErrors).length === 0) {
-            console.log('Attraction Data Submitted:', attractionData);
+            // Append multiple images correctly
+            attractionData.images.forEach((image) => {
+                formData.append("images", image);
+            });
+
+            // Debugging the formData (since console.log can't print FormData directly)
+            console.log("Form data before submission:", attractionData);
+
+            const response = await axios.post("http://localhost:3000/location/", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            console.log("Response from server:", response); // Debugging log
+
+            // Updated condition to handle all successful status codes
+            if (response.status >= 200 && response.status < 300) {
+                alert("Attraction added successfully!");
+                setAttractionData({
+                    name: "",
+                    description: "",
+                    google_map_url: "",
+                    tags: [],
+                    images: [],
+                    points: [{ point: "", text: "" }]
+                });
+                setImagePreviews([]);
+            } else {
+                throw new Error("Failed to add attraction.");
+            }
+
+        } catch (error) {
+            console.error("Error submitting attraction:", error); // Debugging log
+            alert("Failed to add attraction. Check the console for details.");
         }
     };
 
     return (
-        <div className="flex h-screen bg-[#eee] text-white">
+        <div className="flex h-screen bg-[#eee]">
             <Sidebar />
             <div className="flex-1 ml-64 overflow-y-auto h-screen p-8">
-                <div className="bg-white w-full p-10 rounded-lg shadow-xl relative">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-lg font-semibold text-gray-800">Attraction Name:</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={attractionData.name}
-                                onChange={handleChange}
-                                className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
-                            />
-                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-                        </div>
 
-                        <div>
-                            <label className="block text-lg font-semibold text-gray-800">Description</label>
-                            <div className="bg-white">
-                                <ReactQuill
-                                    theme="snow"
-                                    value={attractionData.description}
-                                    onChange={(value) => setAttractionData(prev => ({ ...prev, description: value }))}
-                                    className="text-black"
-                                />
-                            </div>
-                            {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
-                        </div>
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white rounded-lg shadow-md">
 
-                        <div>
-                            <label className="block text-lg font-semibold text-gray-800">Google Location</label>
-                            <input
-                                type="text"
-                                name="googleLocation"
-                                value={attractionData.googleLocation}
-                                onChange={handleChange}
-                                className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
-                            />
-                            {errors.googleLocation && <p className="text-red-500 text-sm mt-1">{errors.googleLocation}</p>}
-                        </div>
+                    <div>
+                        <label htmlFor="name" className="block text-lg font-semibold text-gray-700 mb-1">Attraction Name</label>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            placeholder="Attraction Name"
+                            value={attractionData.name}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.name && <p className="text-red-500">{errors.name}</p>}
+                    </div>
 
-                        <div>
-                            <label className="block text-lg font-semibold text-gray-800">Tags</label>
-                            <Select
-                                isMulti
-                                options={tagOptions}
-                                value={attractionData.tags}
-                                onChange={handleTagChange}
-                                className="w-full"
-                                styles={{
-                                    control: (base) => ({
-                                        ...base,
-                                        backgroundColor: 'white',
-                                        borderColor: '#e5e7eb',
-                                        color: 'black',
-                                    }),
-                                    singleValue: (base) => ({
-                                        ...base,
-                                        color: 'black',
-                                    }),
-                                    option: (base) => ({
-                                        ...base,
-                                        color: 'black',
-                                    }),
-                                    multiValue: (base) => ({
-                                        ...base,
-                                        backgroundColor: '#d1d5db',
-                                    }),
-                                    multiValueLabel: (base) => ({
-                                        ...base,
-                                        color: 'black',
-                                    }),
-                                    multiValueRemove: (base) => ({
-                                        ...base,
-                                        color: 'red',
-                                    }),
-                                }}
-                            />
-                            {errors.tags && <p className="text-red-500 text-sm mt-1">{errors.tags}</p>}
-                        </div>
+                    <div>
+                        <label htmlFor="description" className="block text-lg font-semibold text-gray-700 mb-1">Description</label>
+                        <ReactQuill
+                            id="description"
+                            theme="snow"
+                            value={attractionData.description}
+                            onChange={(value) => setAttractionData(prev => ({ ...prev, description: value }))}
+                            className="text-black"
+                        />
 
-                        {attractionData.pointsOfInterest.map((poi, index) => (
-                            <div key={index} className="space-y-4">
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800">Point of Interest ID {index + 1}:</label>
-                                    <input
-                                        type="text"
-                                        name="id"
-                                        value={poi.id}
-                                        onChange={(e) => handlePOIChange(index, e)}
-                                        className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    />
-                                    {errors[`poiId${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`poiId${index}`]}</p>}
-                                </div>
+                        {/*
+                    <textarea
+                        name="description"
+                        placeholder="Description"
+                        value={attractionData.description}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                    />
+                    {errors.description && <p className="text-red-500">{errors.description}</p>}
+                    */}
+                    </div>
 
-                                <div>
-                                    <label className="block text-lg font-semibold text-gray-800">Point of Interest Description {index + 1}:</label>
-                                    <input
-                                        type="text"
-                                        name="description"
-                                        value={poi.description}
-                                        onChange={(e) => handlePOIChange(index, e)}
-                                        className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    />
-                                    {errors[`poiDescription${index}`] && <p className="text-red-500 text-sm mt-1">{errors[`poiDescription${index}`]}</p>}
-                                </div>
+                    <div>
+                        <label htmlFor="google_map_url" className="block text-lg font-semibold text-gray-700 mb-1">Google Map URL</label>
+                        <input
+                            id="google_map_url"
+                            type="text"
+                            name="google_map_url"
+                            placeholder="Google Map URL"
+                            value={attractionData.google_map_url}
+                            onChange={handleChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.google_map_url && <p className="text-red-500">{errors.google_map_url}</p>}
+                    </div>
 
-                                <button type="button" onClick={() => handleRemovePOI(index)} className="text-red-600 py-1 px-4 rounded-md hover:bg-red-100">
-                                    Remove POI
-                                </button>
-                            </div>
-                        ))}
+                    <div>
+                        <label htmlFor="tags" className="block text-lg font-semibold text-gray-700 mb-1">Tags</label>
+                        <Select
+                            id="tags"
+                            isMulti
+                            options={tagOptions}
+                            value={tagOptions.filter(option => attractionData.tags.includes(option.value))}
+                            onChange={handleTagChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.tags && <p className="text-red-500">{errors.tags}</p>}
+                    </div>
 
-                        <button type="button" onClick={handleAddPOI} className="text-blue-500">Add Another POI</button>
-
-                        <div>
-                            <label className="block text-lg font-semibold text-gray-800">Upload Images</label>
-                            <input
-                                type="file"
-                                name="images"
-                                multiple
-                                onChange={handleChange}
-                                className="w-full p-4 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-green-500"
-                            />
-                            <div className="grid grid-cols-3 gap-4 mt-4">
-                                {imagePreviews.map((preview, index) => (
+                    <div>
+                        <label htmlFor="images" className="block text-lg font-semibold text-gray-700 mb-1">Images</label>
+                        <input
+                            id="images"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                        />
+                        {errors.images && <p className="text-red-500">{errors.images}</p>}
+                        {imagePreviews.length > 0 && (
+                            <div className="flex space-x-2">
+                                {imagePreviews.map((src, index) => (
                                     <div key={index} className="relative">
-                                        <img src={preview} alt="Preview" className="w-full h-32 object-cover rounded-md" />
+                                        <img src={src} className="w-20 h-20 rounded" alt="Preview" />
                                         <button
                                             type="button"
-                                            onClick={() => handleRemoveImage(index)}
-                                            className="absolute top-0 right-0 bg-red-500 text-white p-2 rounded-full"
+                                            className="absolute top-0 right-0 bg-red-500 text-white px-2 rounded-full"
+                                            onClick={() => removeImage(index)}
                                         >
                                             X
                                         </button>
                                     </div>
                                 ))}
                             </div>
-                            {errors.images && <p className="text-red-500 text-sm mt-1">{errors.images}</p>}
-                        </div>
+                        )}
+                    </div>
 
-                        {/* Green Submit Button at the Bottom Right of the Form */}
+                    <div>
+                        {/* Rendering Points Input Fields */}
+                        {attractionData.points.map((point, index) => (
+                            <div key={index} className="space-y-2">
+                                <input
+                                    type="text"
+                                    placeholder={`Point ${index + 1} ID`}
+                                    value={point.point}
+                                    onChange={(e) => handlePointChange(index, 'point', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                                />
+                                {errors[`point${index}`] && <p className="text-red-500">{errors[`point${index}`]}</p>}
+
+                                <textarea
+                                    placeholder={`Point ${index + 1} Description`}
+                                    value={point.text}
+                                    onChange={(e) => handlePointChange(index, 'text', e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                                />
+                                {errors[`text${index}`] && <p className="text-red-500">{errors[`text${index}`]}</p>}
+
+                                <button
+                                    type="button"
+                                    onClick={() => removePoint(index)}
+                                    className="text-red-500"
+                                >
+                                    Remove Point {index + 1}
+                                </button>
+                            </div>
+                        ))}
+
                         <button
-                            type="submit"
-                            className="absolute bottom-4 right-4 bg-green-500 text-white py-2 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            type="button"
+                            onClick={addPoint}
+                            className="bg-blue-500 text-white px-4 py-2"
                         >
-                            Submit
+                            Add Point
                         </button>
-                    </form>
-                </div>
+
+                    </div>
+
+                    <button type="submit" className="bg-emerald-700 text-white px-4 py-2 w-full">Add Attraction</button>
+
+                </form>
             </div>
         </div>
     );
-}
+};
+
+export default AddAttractionForm;

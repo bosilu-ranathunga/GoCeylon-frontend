@@ -8,8 +8,8 @@ import { IoMdBookmark } from "react-icons/io";
 
 const tabs = [
     { name: "Home", icon: FaHome, path: "/user/" },
-    { name: "Search", icon: SiCodemagic, path: "/user/guide" },
-    { name: "Notifications", icon: IoMdBookmark, path: "/user/booking" },
+    { name: "AI", icon: SiCodemagic, path: "/user/guide" },
+    { name: "Bookings", icon: IoMdBookmark, path: "/user/bookinghistory" },
     { name: "Profile", icon: FaUser, path: "/user/profile" },
 ];
 

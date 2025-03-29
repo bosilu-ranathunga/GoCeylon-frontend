@@ -4,6 +4,8 @@ import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { MdOutlineDashboard, MdLogout } from "react-icons/md";
 import { GoDotFill } from "react-icons/go";
 import { FaUmbrellaBeach, FaUser } from "react-icons/fa6";
+import { FaShop } from "react-icons/fa6";
+import { CiShop } from "react-icons/ci";
 import { BiRfid } from "react-icons/bi";
 import logo from "../assets/logo.png";
 
@@ -21,20 +23,15 @@ const Sidebar = () => {
                 { name: "Locations List", icon: <GoDotFill />, path: "/admin/locations" },
             ],
         },
-        {
-            name: "Guides",
-            icon: <FaUser />,
-            submenu: [
-                { name: "New Guide", icon: <GoDotFill />, path: "/admin/add-guides" },
-                { name: "Guides List", icon: <GoDotFill />, path: "/admin/guides" },
-            ],
-        },
+        { name: "Guides", icon: <FaUser />, path: "/admin/guides" },
+        { name: "Business", icon: <FaShop />, path: "/admin/business" },
         {
             name: "RFID Info",
             icon: <BiRfid />,
             submenu: [
                 { name: "New RFID", icon: <GoDotFill />, path: "/admin/add-rfid" },
                 { name: "RFID List", icon: <GoDotFill />, path: "/admin/rfid" },
+                { name: "RFID Tracking", icon: <GoDotFill />, path: "/admin/tracking" },
             ],
         },
         { name: "Logout", icon: <MdLogout />, path: "/logout" },
