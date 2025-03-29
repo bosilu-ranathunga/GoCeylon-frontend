@@ -13,7 +13,7 @@ import BookingList from './pages/traveler/BookingList';
 import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
-import Login from './pages/login';
+import Login from './pages/Login';
 import Test from './pages/Tests';
 import Dashboard from './pages/dashboard/Dashboard';
 import AiGuide from './pages/traveler/AiGuide';
