@@ -25,6 +25,7 @@ import UpdateAttraction from './pages/dashboard/UpdateAttraction';
 import Guides from './pages/dashboard/guides';
 import Business from './pages/dashboard/business';
 import UpdateRFID from './pages/dashboard/UpdateRFID';
+import Scanner from './pages/traveler/Scaner';
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
           <Route path='/user/booking' element={<Booking />} />
           <Route path='/user/booking/info' element={<BookingInfo />} />
           <Route path='/user/booking/list' element={<BookingList />} />
+          <Route path='/user/scaner' element={<Scanner />} />
 
           <Route path='/business/add' element={<AddBusiness />} />
           <Route path='/business/review' element={<Reviews />} />
