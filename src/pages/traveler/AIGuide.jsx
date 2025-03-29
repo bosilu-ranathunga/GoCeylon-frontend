@@ -4,7 +4,7 @@ import TopAppBar from '../../components/TopAppBar';
 import BottomTabBar from '../../components/BottomTabBar';
 import { FaPaperPlane } from 'react-icons/fa';
 
-export default function AIGuide() {
+export default function AiGuide() {
     const [messages, setMessages] = useState([
         { role: "bot", text: "Hello! How can I assist you today?" },
     ]);
