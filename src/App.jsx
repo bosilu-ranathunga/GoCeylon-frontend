@@ -22,8 +22,8 @@ import Tracking from './pages/dashboard/Tracking';
 import RfidList from './pages/dashboard/RfidList';
 import Location from './pages/dashboard/Location';
 import UpdateAttraction from './pages/dashboard/UpdateAttraction';
-import Guides from './pages/dashboard/guides';
-import Business from './pages/dashboard/business';
+import Guides from './pages/dashboard/Guides';
+import Business from './pages/dashboard/Business';
 import UpdateRFID from './pages/dashboard/UpdateRFID';
 import Scanner from './pages/traveler/Scaner';
 
