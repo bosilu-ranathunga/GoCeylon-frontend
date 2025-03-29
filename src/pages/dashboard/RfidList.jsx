@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Sidebar from "../../components/Sidebar";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 import {
     useReactTable,
     getCoreRowModel,
@@ -10,55 +12,60 @@ import {
 } from '@tanstack/react-table';
 
 const RfidList = () => {
+    const navigate = useNavigate();  // Initialize useNavigate hook
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
+    const [data, setData] = useState([]);
 
-    // Sample data
-    const data = useMemo(() => [
-        { id: 1, name: 'John Doe', age: 28, status: 'Active' },
-        { id: 2, name: 'Jane Smith', age: 34, status: 'Inactive' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        { id: 3, name: 'Bob Johnson', age: 45, status: 'Active' },
-        // Add more data...
-    ], []);
+    // Fetch data from API
+    const fetchData = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/rfid');
+            if (response.data.success) {
+                setData(response.data.data);
+            } else {
+                console.error('Failed to fetch data');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    // Fetch data on component mount
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     // Define columns
     const columns = useMemo(() => [
         {
-            header: 'ID',
-            accessorKey: 'id',
-            enableSorting: false,
+            header: 'RFID Tag Code',
+            accessorKey: 'rfidTagCode',
         },
         {
-            header: 'Name',
-            accessorKey: 'name',
-            cell: info => <span className="font-medium">{info.getValue()}</span>,
+            header: 'Full Name',
+            accessorKey: 'fullName',
         },
         {
-            header: 'Age',
-            accessorKey: 'age',
+            header: 'Email',
+            accessorKey: 'email',
         },
         {
-            header: 'Status',
-            accessorKey: 'status',
-            cell: info => (
-                <span className={`px-2 py-1 rounded ${info.getValue() === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {info.getValue()}
-                </span>
-            ),
+            header: 'Phone Number',
+            accessorKey: 'phoneNumber',
         },
-        // Add actions column
+        {
+            header: 'Nationality',
+            accessorKey: 'nationality',
+        },
+        {
+            header: 'Passport Number',
+            accessorKey: 'passportNumber',
+        },
+        {
+            header: 'Wallet Amount',
+            accessorKey: 'walletAmount',
+        },
         {
             header: 'Actions',
             id: 'actions',
@@ -71,34 +78,40 @@ const RfidList = () => {
                         View
                     </button>
                     <button
-                        onClick={() => handleUpdate(row.original)}
+                        onClick={() => handleUpdate(row.original._id)}  // Navigate to update page
                         className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                     >
                         Edit
                     </button>
                     <button
-                        onClick={() => handleDelete(row.original.id)}
+                        onClick={() => handleDelete(row.original._id)}
                         className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                     >
                         Delete
                     </button>
                 </div>
             ),
-            enableSorting: false,
         },
     ], []);
 
     // Action handlers
-    const handleDelete = (id) => {
-        // Add your delete logic here
-        console.log('Delete item with id:', id);
-        alert(`Delete item with id: ${id}`);
+    const handleDelete = async (id) => {
+        try {
+            const response = await axios.delete(`http://localhost:3000/rfid/${id}`);
+            if (response.data.success) {
+                alert(`Successfully deleted RFID with ID: ${id}`);
+                fetchData(); // Refresh the data after deletion
+            } else {
+                console.error('Failed to delete');
+            }
+        } catch (error) {
+            console.error('Error deleting RFID:', error);
+        }
     };
 
-    const handleUpdate = (data) => {
-        // Add your update logic here
-        console.log('Update data:', data);
-        alert(`Update data: ${JSON.stringify(data)}`);
+    const handleUpdate = (id) => {
+        // Navigate to the update page with the RFID ID
+        navigate(`/update-rfid/${id}`);
     };
 
     const handleView = (data) => {
@@ -131,13 +144,13 @@ const RfidList = () => {
                     <div className="p-6 mx-auto">
                         {/* Header and Search */}
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">RFID Management</h2>
                             <div className="relative w-full sm:max-w-xs">
                                 <input
                                     type="text"
                                     value={globalFilter}
                                     onChange={e => setGlobalFilter(e.target.value)}
-                                    placeholder="Search users..."
+                                    placeholder="Search RFID..."
                                     className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 />
                                 <svg
@@ -173,10 +186,11 @@ const RfidList = () => {
                                                             header.column.columnDef.header,
                                                             header.getContext()
                                                         )}
-                                                        {{
-                                                            asc: <span className="text-blue-600">↑</span>,
-                                                            desc: <span className="text-blue-600">↓</span>,
-                                                        }[header.column.getIsSorted()] ?? null}
+                                                        {header.column.getIsSorted() && (
+                                                            <span className="text-blue-600">
+                                                                {header.column.getIsSorted() === 'asc' ? '↑' : '↓'}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </th>
                                             ))}
@@ -186,19 +200,10 @@ const RfidList = () => {
 
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {table.getRowModel().rows.map(row => (
-                                        <tr
-                                            key={row.id}
-                                            className="hover:bg-gray-50 transition-colors even:bg-gray-50"
-                                        >
+                                        <tr key={row.id} className="hover:bg-gray-50 transition-colors even:bg-gray-50">
                                             {row.getVisibleCells().map(cell => (
-                                                <td
-                                                    key={cell.id}
-                                                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
-                                                >
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext()
-                                                    )}
+                                                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </td>
                                             ))}
                                         </tr>
@@ -234,8 +239,7 @@ const RfidList = () => {
                                     Previous
                                 </button>
                                 <span className="px-4 py-2 text-sm text-gray-700">
-                                    Page {table.getState().pagination.pageIndex + 1} of{' '}
-                                    {table.getPageCount()}
+                                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                                 </span>
                                 <button
                                     onClick={() => table.nextPage()}

@@ -24,6 +24,7 @@ import Location from './pages/dashboard/Location';
 import UpdateAttraction from './pages/dashboard/UpdateAttraction';
 import Guides from './pages/dashboard/guides';
 import Business from './pages/dashboard/business';
+import UpdateRFID from './pages/dashboard/UpdateRFID';
 
 export default function App() {
   return (
@@ -57,6 +58,7 @@ export default function App() {
           <Route path='/admin/business' element={<Business />} />
           <Route path='/admin/add-rfid' element={<NewRFID />} />
           <Route path='/admin/rfid' element={<RfidList />} />
+          <Route path="/update-rfid/:id" element={<UpdateRFID />} />
           <Route path='/admin/tracking' element={<Tracking />} />
           <Route path='/admin/guides' element={<Guides />} />
 
