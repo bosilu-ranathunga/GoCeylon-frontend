@@ -16,7 +16,6 @@ export default function Booking() {
     if (!guide) {
         return <div className='text-center text-red-600 font-semibold'>No guide selected.</div>;
     }
-
     const handleBooking = async () => {
         if (!bookingDate || !bookingTime || !bookingLocation) {
             alert('Please fill in all fields.');
@@ -41,15 +40,18 @@ export default function Booking() {
             if (response.status === 201 && response.data) {
                 alert('Guide booked successfully!');
                 setShowModal(false);
-                console.log("Booking Data:", response.data);
-                navigate('/user/booking/info', { state: { booking: response.data } }); // ✅ Navigate with booking details
+    
+                // ✅ Directly navigate after successful booking
+                console.log("🔄 Navigating to BookingInfo with:", response.data);
+                navigate('/user/booking/info', { state: { booking: response.data } }); 
             }
         } catch (error) {
-            console.error('Error booking guide:', error.response?.data || error.message);
+            console.error('❌ Booking Error:', error.response?.data || error.message);
             setLoading(false);
             alert(`Failed to book the guide: ${error.response?.data?.message || 'Unknown error'}`);
         }
     };
+    
 
     return (
         <div className='bg-white min-h-screen p-6 flex flex-col gap-6 max-w-2xl mx-auto border border-gray-300 rounded-xl shadow-lg'>
@@ -113,6 +115,7 @@ export default function Booking() {
                                 Cancel
                             </button>
                             <button 
+                            
                                 onClick={handleBooking} 
                                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
                                 disabled={loading}

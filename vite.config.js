@@ -27,7 +27,7 @@ export default defineConfig({
     port: 5173, // Your Vite dev server port
     strictPort: true, // Ensure the port is not changed
     hmr: {
-      host: '192.168.8.112', // Use your local network IP
+      host: 'localhost', // Use your local network IP
     },
     watch: {
       usePolling: true, // Ensure file changes are detected
