@@ -65,6 +65,7 @@ export default function App() {
           <Route path='/admin/guides' element={<Guides />} />
 
           <Route path='/test' element={<Test />} />
+          <Route path='/test2' element={<Test />} />
         </Routes>
       </BrowserRouter>
     </>
