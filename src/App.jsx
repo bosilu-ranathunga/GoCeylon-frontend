@@ -1,9 +1,7 @@
-import React from 'react'
+import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Attractions from './pages/traveler/Attractions';
-//import Profile from './pages/traveler/Profile';
-import Guideprofile from './pages/traveler/Guideprofile';
-import Businessmanprofile from './pages/traveler/Businessmanprofile';
+import Profile from './pages/traveler/Profile';
 import Booking from './pages/traveler/Booking';
 import UserRegister from './pages/UserRegister';
 import GuideRegister from './pages/GuideRegister';
@@ -23,6 +21,11 @@ import NewRFID from './pages/dashboard/NewRFID';
 import Tracking from './pages/dashboard/Tracking';
 import RfidList from './pages/dashboard/RfidList';
 import Location from './pages/dashboard/Location';
+import UpdateAttraction from './pages/dashboard/UpdateAttraction';
+import Guides from './pages/dashboard/Guides';
+import Business from './pages/dashboard/Business';
+import UpdateRFID from './pages/dashboard/UpdateRFID';
+import Scanner from './pages/traveler/Scaner';
 
 export default function App() {
   return (
@@ -33,17 +36,14 @@ export default function App() {
           <Route path='/register1' element={<UserRegister />} />
           <Route path='/register2' element={<GuideRegister />} />
           <Route path='/register3' element={<BusinessmanRegister />} />
-          {/*<Route path='/user/profile' element={<Profile />} />*/}
-          <Route path='/guide/profile' element={<Guideprofile />} />
-          <Route path='/businessman/profile' element={<Businessmanprofile />} />
-
+          <Route path='/user/profile' element={<Profile />} />
           <Route path='/user/' element={<Attractions />} />
-          <Route path='/user/location' element={<AttractionsInfo />} />
-          <Route path='/dashboard/add-location' element={<AddAttractions />} />
+          <Route path='/user/location/:id' element={<AttractionsInfo />} />
 
           <Route path='/user/booking' element={<Booking />} />
           <Route path='/user/booking/info' element={<BookingInfo />} />
           <Route path='/user/booking/list' element={<BookingList />} />
+          <Route path='/user/scaner' element={<Scanner />} />
 
           <Route path='/business/add' element={<AddBusiness />} />
           <Route path='/business/review' element={<Reviews />} />
@@ -56,16 +56,17 @@ export default function App() {
           <Route path='/admin/dashboard' element={<Dashboard />} />
           <Route path='/admin/locations' element={<Location />} />
           <Route path='/admin/add-locations' element={<AddAttractions />} />
-
+          <Route path="/admin/update-location/:id" element={<UpdateAttraction />} />
+          <Route path='/admin/business' element={<Business />} />
           <Route path='/admin/add-rfid' element={<NewRFID />} />
           <Route path='/admin/rfid' element={<RfidList />} />
+          <Route path="/update-rfid/:id" element={<UpdateRFID />} />
           <Route path='/admin/tracking' element={<Tracking />} />
-
+          <Route path='/admin/guides' element={<Guides />} />
 
           <Route path='/test' element={<Test />} />
-
         </Routes>
       </BrowserRouter>
     </>
-  )
+  );
 }
