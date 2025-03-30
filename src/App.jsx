@@ -17,7 +17,7 @@ import BusUpdate from './pages/business/Update';
 import Login from './pages/Login';
 import Test from './pages/Tests';
 import Dashboard from './pages/dashboard/Dashboard';
-import AiGuide from './pages/traveler/AiGuide';
+import AiGuide from './pages/traveler/AiGuide.jsx';
 import NewRFID from './pages/dashboard/NewRFID';
 import Tracking from './pages/dashboard/Tracking';
 import RfidList from './pages/dashboard/RfidList';
