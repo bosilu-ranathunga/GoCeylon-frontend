@@ -62,12 +62,6 @@ export default function App() {
           <Route path="/admin/tracking" element={<PrivateRoute element={<Tracking />} allowedUserType="admin" />} />
           <Route path="/admin/guides" element={<PrivateRoute element={<Guides />} allowedUserType="admin" />} />
 
-          {/*
-          <Route path='/business/add' element={<AddBusiness />} />
-          <Route path='/business/review' element={<Reviews />} />
-          <Route path='/business/update' element={<BusUpdate />} />
-          */}
-
           <Route path="/403" element={<Test />} />
 
         </Routes>
