@@ -33,7 +33,7 @@ const Login = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
+      const response = await axios.post('http://192.168.8.112:3000/api/auth/login', { email, password });
       const { token } = response.data;
 
       // Save the token in localStorage
@@ -60,7 +60,7 @@ const Login = () => {
     <div className="h-screen flex items-center justify-center relative">
       <div className="bg-white bg-opacity-80 p-10 max-w-md w-full z-10 relative">
         <div className="text-left mb-6">
-          <h2 className="text-3xl font-semibold text-gray-800">Login To GoCeylon</h2>
+          <h2 className="text-3xl font-semibold text-gray-800">Login To GoCeylon -</h2>
           <p className="text-sm mt-2 text-gray-500">Discover Sri Lanka’s stunning destinations, rich culture, and unforgettable tours.</p>
         </div>
 
