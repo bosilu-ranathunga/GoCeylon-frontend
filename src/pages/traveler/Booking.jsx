@@ -9,27 +9,29 @@ export default function Booking() {
 
     const [showModal, setShowModal] = useState(false);
     const [bookingDate, setBookingDate] = useState('');
-    const [bookingTime, setBookingTime] = useState('');
+    const [bookingTime, setBookingTime] = useState('');  // Kept b_time as the name but for hours
     const [bookingLocation, setBookingLocation] = useState('');
+    const [status, setStatus] = useState('pending'); // Added status state
     const [loading, setLoading] = useState(false);
-
+    
     if (!guide) {
         return <div className='text-center text-red-600 font-semibold'>No guide selected.</div>;
     }
+
     const handleBooking = async () => {
-        if (!bookingDate || !bookingTime || !bookingLocation) {
+        if (!bookingDate || !bookingTime || !bookingLocation || !status) {
             alert('Please fill in all fields.');
             return;
         }
     
         const bookingData = {
             b_date: bookingDate,
-            b_time: bookingTime,
+            b_time: bookingTime,  // Still using b_time but representing hours
             b_location: bookingLocation,
             b_user: '67dc5f1a395ce4427f1411d6', // Example user ID
             b_guide: guide._id, // Guide ID
-            price: guide.price, // Guide price
-            status: 'pending'
+            price: guide.price * bookingTime, // Guide price * number of hours
+            status: status // Added status field
         };
     
         try {
@@ -41,17 +43,15 @@ export default function Booking() {
                 alert('Guide booked successfully!');
                 setShowModal(false);
     
-                // ✅ Directly navigate after successful booking
-                console.log("🔄 Navigating to BookingInfo with:", response.data);
+                console.log(" Navigating to BookingInfo with:", response.data);
                 navigate('/user/booking/info', { state: { booking: response.data } }); 
             }
         } catch (error) {
-            console.error('❌ Booking Error:', error.response?.data || error.message);
+            console.error(' Booking Error:', error.response?.data || error.message);
             setLoading(false);
             alert(`Failed to book the guide: ${error.response?.data?.message || 'Unknown error'}`);
         }
     };
-    
 
     return (
         <div className='bg-white min-h-screen p-6 flex flex-col gap-6 max-w-2xl mx-auto border border-gray-300 rounded-xl shadow-lg'>
@@ -85,14 +85,16 @@ export default function Booking() {
                             type="date" 
                             value={bookingDate} 
                             onChange={(e) => setBookingDate(e.target.value)} 
+                            min={new Date().toISOString().split('T')[0]} // Restrict past dates
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                         />
 
-                        <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Select Time:</label>
+                        <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Select Duration (Hours):</label>
                         <input 
-                            type="time" 
-                            value={bookingTime} 
+                            type="number" 
+                            value={bookingTime}  // still using bookingTime
                             onChange={(e) => setBookingTime(e.target.value)} 
+                            min="1" // Ensure the number of hours is at least 1
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                         />
 
@@ -105,7 +107,18 @@ export default function Booking() {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                         />
 
-                        <p className="text-lg font-bold text-green-800 mt-3">Price: ${guide.price}</p>
+                        <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Select Status:</label>
+                        <select 
+                            value={status} 
+                            onChange={(e) => setStatus(e.target.value)} 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                        >
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+
+                        <p className="text-lg font-bold text-green-800 mt-3">Total Price: ${guide.price * bookingTime}</p>
 
                         <div className="flex justify-end gap-3 mt-4">
                             <button 
@@ -115,7 +128,6 @@ export default function Booking() {
                                 Cancel
                             </button>
                             <button 
-                            
                                 onClick={handleBooking} 
                                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
                                 disabled={loading}

@@ -71,7 +71,7 @@ export default function BookingList() {
                 filteredGuides.map(guide => (
                     <div 
                         key={guide._id} 
-                        className='flex items-center p-6 bg-green-50 border border-green-200 rounded-xl shadow-md mb-6 hover:bg-green-100 transition duration-300 cursor-pointer'
+                        className='flex items-center p-6 bg-green-50 border border-green-200 rounded-xl shadow-md mb-6 hover:bg-green-0 transition duration-300 cursor-pointer'
                         onClick={() => handleGuideClick(guide)}
                     >
                         <div className='ml-6 flex-1'>
