@@ -1,5 +1,4 @@
 import React from 'react';
-{/*import { BrowserRouter, Routes, Route, Router, Navigate } from "react-router-dom";*/ }
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Attractions from './pages/traveler/Attractions';
 import Profile from './pages/traveler/Profile';
