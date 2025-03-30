@@ -33,7 +33,7 @@ const Login = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://192.168.8.112:5173/api/auth/login', { email, password });
+      const response = await axios.post('http://192.168.8.112:3000/api/auth/login', { email, password });
       const { token } = response.data;
 
       // Save the token in localStorage
