@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+/*import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,24 +50,24 @@ export default function Profile({ userId }) {
             <div className="flex flex-col items-center">
               {editing ? (
                 <>
-                  {/* Input fields for editing user details */}
-                  <Input name="name" value={formData.name} onChange={handleChange} className="mb-2" />
+                  {/* Input fields for editing user details */
+                 /* <Input name="name" value={formData.name} onChange={handleChange} className="mb-2" />
                   <Input name="email" value={formData.email} onChange={handleChange} className="mb-2" />
                   
-                  {/* Save button to update details */}
-                  <Button onClick={handleSave} className="w-full mt-2">Save</Button>
+                  {/* Save button to update details */
+                  /*<Button onClick={handleSave} className="w-full mt-2">Save</Button>
                 </>
               ) : (
                 <>
-                  {/* Display user details */}
-                  <h2 className="text-xl font-semibold">{user.name}</h2>
+                  {/* Display user details */
+                 /* <h2 className="text-xl font-semibold">{user.name}</h2>
                   <p className="text-gray-500">{user.email}</p>
                   
-                  {/* Edit button to enable form fields */}
-                  <Button onClick={() => setEditing(true)} className="w-full mt-4">Edit Profile</Button>
+                  {/* Edit button to enable form fields */
+                 /* <Button onClick={() => setEditing(true)} className="w-full mt-4">Edit Profile</Button>
                 </>
               )}
-              {/* Logout button */}
+           
               <Button onClick={handleLogout} className="w-full mt-4 bg-red-500 hover:bg-red-600">Logout</Button>
             </div>
           ) : (
@@ -78,3 +78,4 @@ export default function Profile({ userId }) {
     </div>
   );
 }
+*/

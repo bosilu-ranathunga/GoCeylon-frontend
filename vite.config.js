@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import path from 'path'; // Import path module
 
 export default defineConfig({
   plugins: [
@@ -22,15 +23,21 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'), // Add this line
+    },
+  },
   server: {
-    host: '0.0.0.0', // Allows external access
-    port: 5173, // Your Vite dev server port
-    strictPort: true, // Ensure the port is not changed
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+    protocol: "ws",
     hmr: {
-      host: '192.168.8.112', // Use your local network IP
+      host: '192.168.8.112',
     },
     watch: {
-      usePolling: true, // Ensure file changes are detected
+      usePolling: true,
     },
-  }
-})
+  },
+});
