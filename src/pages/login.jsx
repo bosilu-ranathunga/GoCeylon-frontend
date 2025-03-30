@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from "axios";
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 import backgroundImage from '../assets/images/pexels-dreamypixel-547116.jpg'; // Adjust the path based on your folder structure
 
@@ -18,6 +19,7 @@ const Login = () => {
     }
     else if(type==='Guide'){
       navigate('/register2');
+
 
     }
     else if(type==='Businessman')
