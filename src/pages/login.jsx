@@ -34,7 +34,7 @@ const Login = () => {
     try {
       const response = await axios.post('https://your-api.com/login', { email, password });
       console.log('Login Successful:', response.data);
-      navigate('/dashboard'); // Redirect after successful login
+      navigate('/dashboard');
     } catch (err) {
       console.error('Login Failed:', err);
       setError(err.response?.data?.message || 'Login failed. Please try again.');
@@ -114,6 +114,7 @@ const Login = () => {
             </button>
           </div>
         </div>
+
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ import BookingList from './pages/traveler/BookingList';
 import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
-import Login from './pages/login';
+import Login from './pages/Login';
 import Test from './pages/Tests';
 import Dashboard from './pages/dashboard/Dashboard';
 import AiGuide from './pages/traveler/AiGuide';
@@ -29,15 +29,13 @@ export default function App() {
     <>
       <BrowserRouter>
         <Routes>
-
-
           <Route path='/login' element={<Login />} />
           <Route path='/register1' element={<UserRegister />} />
           <Route path='/register2' element={<GuideRegister />} />
           <Route path='/register3' element={<BusinessmanRegister />} />
-         {/*<Route path='/user/profile' element={<Profile />} />*/}
-          <Route path='/guide/profile' element={<Guideprofile/>} />
-          <Route path='/businessman/profile' element={<Businessmanprofile/>}/>
+          {/*<Route path='/user/profile' element={<Profile />} />*/}
+          <Route path='/guide/profile' element={<Guideprofile />} />
+          <Route path='/businessman/profile' element={<Businessmanprofile />} />
 
           <Route path='/user/' element={<Attractions />} />
           <Route path='/user/location' element={<AttractionsInfo />} />
