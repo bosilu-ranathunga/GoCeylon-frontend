@@ -45,8 +45,8 @@ const Login = () => {
         navigate('/');
       } else if (userType === 'tourist') {
         navigate('/user');
-      } else {
-        navigate('/');
+      } else if (userType === 'admin') {
+        navigate('/admin/dashboard');
       }
     } catch (err) {
       console.error('Login Failed:', err);
@@ -60,7 +60,7 @@ const Login = () => {
     <div className="h-screen flex items-center justify-center relative">
       <div className="bg-white bg-opacity-80 p-10 max-w-md w-full z-10 relative">
         <div className="text-left mb-6">
-          <h2 className="text-3xl font-semibold text-gray-800">Login To GoCeylon -</h2>
+          <h2 className="text-3xl font-semibold text-gray-800">Login To GoCeylon</h2>
           <p className="text-sm mt-2 text-gray-500">Discover Sri Lanka’s stunning destinations, rich culture, and unforgettable tours.</p>
         </div>
 

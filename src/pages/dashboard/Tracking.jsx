@@ -20,7 +20,13 @@ const Tracking = () => {
     // Fetch data from API
     const fetchData = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/api/scaner/rfid");
+            const token = localStorage.getItem("authToken");  // Assuming the token is saved in localStorage
+
+            const response = await axios.get("http://localhost:3000/api/scaner/rfid", {
+                headers: {
+                    "Authorization": `Bearer ${token}`, // Include token in the request header
+                }
+            });
             setData(response.data.data);
         } catch (error) {
             console.error("Error fetching data:", error);
