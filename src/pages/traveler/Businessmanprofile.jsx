@@ -6,4 +6,3 @@ function Businessmanprofile() {
   )
 }
 
-export default Businessmanprofile

@@ -6,6 +6,15 @@ import Profile from './pages/traveler/Profile';
 import Booking from './pages/traveler/Booking';
 import UserRegister from './pages/UserRegister';
 import GuideRegister from './pages/GuideRegister';
+
+import React from 'react';
+{/*import { BrowserRouter, Routes, Route, Router, Navigate } from "react-router-dom";*/ }
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Attractions from './pages/traveler/Attractions';
+import Profile from './pages/traveler/Profile';
+import Booking from './pages/traveler/Booking';
+import UserRegister from './pages/UserRegister';
+import GuideRegister from './pages/GuideRegister';
 import BusinessmanRegister from './pages/BusinessmanRegister'
 import AttractionsInfo from './pages/traveler/AttractionsInfo';
 import AddAttractions from './pages/dashboard/AddAttractions';
@@ -62,6 +71,12 @@ export default function App() {
           <Route path="/admin/tracking" element={<PrivateRoute element={<Tracking />} allowedUserType="admin" />} />
           <Route path="/admin/guides" element={<PrivateRoute element={<Guides />} allowedUserType="admin" />} />
 
+          {/*
+          <Route path='/business/add' element={<AddBusiness />} />
+          <Route path='/business/review' element={<Reviews />} />
+          <Route path='/business/update' element={<BusUpdate />} />
+          */}
+
           <Route path="/403" element={<Test />} />
 
         </Routes>
@@ -69,3 +84,4 @@ export default function App() {
     </>
   );
 }
+
