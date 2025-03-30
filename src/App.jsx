@@ -5,15 +5,6 @@ import Profile from './pages/traveler/Profile';
 import Booking from './pages/traveler/Booking';
 import UserRegister from './pages/UserRegister';
 import GuideRegister from './pages/GuideRegister';
-
-import React from 'react';
-{/*import { BrowserRouter, Routes, Route, Router, Navigate } from "react-router-dom";*/ }
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Attractions from './pages/traveler/Attractions';
-import Profile from './pages/traveler/Profile';
-import Booking from './pages/traveler/Booking';
-import UserRegister from './pages/UserRegister';
-import GuideRegister from './pages/GuideRegister';
 import BusinessmanRegister from './pages/BusinessmanRegister'
 import AttractionsInfo from './pages/traveler/AttractionsInfo';
 import AddAttractions from './pages/dashboard/AddAttractions';
