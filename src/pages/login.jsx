@@ -6,6 +6,8 @@ import { GrLocation } from 'react-icons/gr';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+
+  const [userType, setUserType] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,11 +32,22 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
-      const response = await axios.post('https://your-api.com/login', { email, password });
-      console.log('Login Successful:', response.data);
-      navigate('/dashboard');
+      const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
+      const { token } = response.data;
+
+      // Save the token in localStorage
+      localStorage.setItem('authToken', token);
+
+      // Redirect user based on userType (optional)
+      const userType = response.data.user.userType;
+      if (userType === 'guide') {
+        navigate('/');
+      } else if (userType === 'tourist') {
+        navigate('/user');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       console.error('Login Failed:', err);
       setError(err.response?.data?.message || 'Login failed. Please try again.');
@@ -48,7 +61,7 @@ const Login = () => {
       <div className="bg-white bg-opacity-80 p-10 max-w-md w-full z-10 relative">
         <div className="text-left mb-6">
           <h2 className="text-3xl font-semibold text-gray-800">Login To GoCeylon</h2>
-          <p className="text-sm text-gray-500">Discover Sri Lanka’s stunning destinations, rich culture, and unforgettable tours.</p>
+          <p className="text-sm mt-2 text-gray-500">Discover Sri Lanka’s stunning destinations, rich culture, and unforgettable tours.</p>
         </div>
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -100,11 +113,11 @@ const Login = () => {
         <div className="mt-8">
           <p className="text-center text-gray-500 text-sm">Or Sign Up with</p>
           <div className="grid grid-cols-3 gap-4 mt-4">
-            <button onClick={() => handleUserTypeChange('Guide')} className="p-3 flex flex-col items-center justify-center border border-gray-300 rounded-lg hover:border-emerald-500 transition-all">
+            <button onClick={() => handleUserTypeChange('Tourist')} className="p-3 flex flex-col items-center justify-center border border-gray-300 rounded-lg hover:border-emerald-500 transition-all">
               <LuUser className="text-[#007a55] text-2xl" />
               <span className="text-sm mt-1 text-gray-600">Tourist</span>
             </button>
-            <button onClick={() => handleUserTypeChange('Tourist')} className="p-3 flex flex-col items-center justify-center border border-gray-300 rounded-lg hover:border-emerald-500 transition-all">
+            <button onClick={() => handleUserTypeChange('Guide')} className="p-3 flex flex-col items-center justify-center border border-gray-300 rounded-lg hover:border-emerald-500 transition-all">
               <GrLocation className="text-[#007a55] text-2xl" />
               <span className="text-sm mt-1 text-gray-600">Guide</span>
             </button>
