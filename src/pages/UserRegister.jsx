@@ -97,7 +97,7 @@ export default function Register() {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-white p-8 rounded-lg w-96">
+      <div className="bg-white bg-opacity-80 p-10 max-w-md w-full z-10 relative">
         {step === 1 && (
           <div>
             <h2 className="text-3xl font-semibold text-gray-800 mb-4">Register</h2>
