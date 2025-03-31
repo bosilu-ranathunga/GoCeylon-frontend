@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Attractions from './pages/traveler/Attractions';
-//import Profile from './pages/traveler/Profile';
+import Profile from './pages/traveler/Profile';
 import Guideprofile from './pages/traveler/Guideprofile';
 import Businessmanprofile from './pages/traveler/Businessmanprofile';
 import Booking from './pages/traveler/Booking';
@@ -35,7 +35,7 @@ export default function App() {
           <Route path='/register1' element={<UserRegister />} />
           <Route path='/register2' element={<GuideRegister />} />
           <Route path='/register3' element={<BusinessmanRegister />} />
-         {/*<Route path='/user/profile' element={<Profile />} />*/}
+          <Route path='/user/profile' element={<Profile />} />
           <Route path='/guide/profile' element={<Guideprofile/>} />
           <Route path='/businessman/profile' element={<Businessmanprofile/>}/>
 
