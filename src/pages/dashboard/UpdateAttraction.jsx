@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
 import Sidebar from "../../components/Sidebar";
+import API_BASE_URL from "../../config/config";
 import axios from "axios";
 
 const UpdateAttractionForm = () => {
@@ -19,10 +20,12 @@ const UpdateAttractionForm = () => {
     const [imagePreviews, setImagePreviews] = useState([]);
     const [errors, setErrors] = useState({});
 
+    const token = localStorage.getItem("authToken");
+
     useEffect(() => {
         const fetchAttraction = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/location/${id}`);
+                const response = await axios.get(`${API_BASE_URL}/location/${id}`,);
                 const data = response.data;
 
                 console.log("Fetched attraction data:", data);
@@ -149,8 +152,8 @@ const UpdateAttractionForm = () => {
 
             console.log("FormData content:", [...formData.entries()]);
 
-            const response = await axios.put(`http://localhost:3000/location/${id}`, formData, {
-                headers: { "Content-Type": "multipart/form-data" }
+            const response = await axios.put(`${API_BASE_URL}/location/${id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data", "Authorization": `Bearer ${token}` }
             });
 
             if (response.status >= 200 && response.status < 300) {

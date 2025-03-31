@@ -1,24 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Logout = () => {
     const navigate = useNavigate();
 
-    const handleLogout = () => {
+    useEffect(() => {
         // Clear the token from local storage or session storage
-        localStorage.removeItem('authToken');  // Replace with your storage method (localStorage, sessionStorage)
-
-        // Optionally, you can also reset any state that tracks user authentication here, like in a context provider
+        localStorage.removeItem('authToken');  // Replace with your storage method
 
         // Redirect to the login page
         navigate('/login');
-    };
+    }, [navigate]);
 
-    return (
-        <button onClick={handleLogout}>
-            Logout
-        </button>
-    );
+    return;
 };
 
 export default Logout;

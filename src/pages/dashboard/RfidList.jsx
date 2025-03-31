@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import Sidebar from "../../components/Sidebar";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from "../../config/config";
 import {
     useReactTable,
     getCoreRowModel,
@@ -17,10 +18,16 @@ const RfidList = () => {
     const [globalFilter, setGlobalFilter] = useState('');
     const [data, setData] = useState([]);
 
+    const token = localStorage.getItem("authToken");
+
     // Fetch data from API
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/rfid');
+            const response = await axios.get(`${API_BASE_URL}/rfid`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            });
             if (response.data.success) {
                 setData(response.data.data);
             } else {
@@ -55,7 +62,7 @@ const RfidList = () => {
             accessorKey: 'phoneNumber',
         },
         {
-            header: 'Nationality',
+            header: 'Country',
             accessorKey: 'nationality',
         },
         {
@@ -63,7 +70,7 @@ const RfidList = () => {
             accessorKey: 'passportNumber',
         },
         {
-            header: 'Wallet Amount',
+            header: 'Wallet',
             accessorKey: 'walletAmount',
         },
         {
@@ -71,12 +78,6 @@ const RfidList = () => {
             id: 'actions',
             cell: ({ row }) => (
                 <div className="flex space-x-2">
-                    <button
-                        onClick={() => handleView(row.original)}
-                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                    >
-                        View
-                    </button>
                     <button
                         onClick={() => handleUpdate(row.original._id)}  // Navigate to update page
                         className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
@@ -97,7 +98,11 @@ const RfidList = () => {
     // Action handlers
     const handleDelete = async (id) => {
         try {
-            const response = await axios.delete(`http://localhost:3000/rfid/${id}`);
+            const response = await axios.delete(`${API_BASE_URL}/rfid/${id}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            });
             if (response.data.success) {
                 alert(`Successfully deleted RFID with ID: ${id}`);
                 fetchData(); // Refresh the data after deletion

@@ -1,12 +1,12 @@
-// context/ModalContext.jsx
-import React, { createContext, useContext, useState } from 'react'; // Add React import
-import Modal from '../components/Modal'; // Ensure correct path
+import React, { createContext, useContext, useState } from 'react';
+import Modal from '../components/Modal';
 
 const ModalContext = createContext();
 
 export const ModalProvider = ({ children }) => {
     const [modalState, setModalState] = useState({
         isOpen: false,
+        type: '',
         title: '',
         content: null,
         buttons: []
@@ -15,6 +15,7 @@ export const ModalProvider = ({ children }) => {
     const showModal = (config) => {
         setModalState({
             isOpen: true,
+            type: config.type,
             title: config.title,
             content: config.content,
             buttons: config.buttons || []
@@ -31,6 +32,7 @@ export const ModalProvider = ({ children }) => {
             <Modal
                 isOpen={modalState.isOpen}
                 onClose={closeModal}
+                type={modalState.type}
                 title={modalState.title}
                 buttons={modalState.buttons}
             >

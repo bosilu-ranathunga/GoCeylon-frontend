@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/config";
 
 export default function Register() {
   const [step, setStep] = useState(1);
@@ -61,7 +62,7 @@ export default function Register() {
     if (Object.keys(formErrors).length > 0) return;  // If errors exist, prevent form submission
 
     try {
-      const response = await axios.post("http://localhost:3000/users", {
+      const response = await axios.post(`${API_BASE_URL}/users`, {
         name: formData.name,
         email: formData.email,
         password: formData.password,
