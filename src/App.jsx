@@ -10,6 +10,7 @@ import AttractionsInfo from './pages/traveler/AttractionsInfo';
 import AddAttractions from './pages/dashboard/AddAttractions';
 import BookingInfo from './pages/traveler/BookingInfo';
 import BookingList from './pages/traveler/BookingList';
+import BookingHistory from './pages/traveler/BookingHistory'
 import AddBusiness from './pages/business/AddBusiness';
 import Reviews from './pages/business/Reviews';
 import BusUpdate from './pages/business/Update';
@@ -45,8 +46,9 @@ export default function App() {
           <Route path='/user/profile' element={<PrivateRoute element={<Profile />} allowedUserType="tourist" />} />
           <Route path='/user/booking' element={<PrivateRoute element={<Booking />} allowedUserType="tourist" />} />
           <Route path='/user/location/:id' element={<PrivateRoute element={<AttractionsInfo />} allowedUserType="tourist" />} />
-          <Route path='/user/booking/info' element={<PrivateRoute element={<BookingInfo />} allowedUserType="tourist" />} />
+          <Route path='/user/booking/info/:id' element={<PrivateRoute element={<BookingInfo />} allowedUserType="tourist" />} />
           <Route path='/user/booking/list' element={<PrivateRoute element={<BookingList />} allowedUserType="tourist" />} />
+          <Route path='/user/bookinghistory' element={<PrivateRoute element={<BookingHistory />} allowedUserType="tourist" />} />
           <Route path='/user/scaner' element={<PrivateRoute element={<Scanner />} allowedUserType="tourist" />} />
           <Route path='/user/guide' element={<PrivateRoute element={<AiGuide />} allowedUserType="tourist" />} />
 

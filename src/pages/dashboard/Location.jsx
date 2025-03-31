@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import Sidebar from "../../components/Sidebar";
+import API_BASE_URL from "../../config/config";
 import {
     useReactTable,
     getCoreRowModel,
@@ -15,9 +16,11 @@ const Location = () => {
     const [globalFilter, setGlobalFilter] = useState('');
     const [locations, setLocations] = useState([]);
 
+    const token = localStorage.getItem("authToken");
+
     // Fetch locations from the backend
     useEffect(() => {
-        axios.get('http://localhost:3000/location/')
+        axios.get(`${API_BASE_URL}/location/`)
             .then(response => {
                 setLocations(response.data.locations);
             })
@@ -29,7 +32,11 @@ const Location = () => {
     // Function to handle location deletion
     const deleteLocation = async (locationId) => {
         try {
-            await axios.delete(`http://localhost:3000/location/${locationId}`);
+            await axios.delete(`${API_BASE_URL}/location/${locationId}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`, // Include token in the request header
+                }
+            });
             setLocations(locations.filter(location => location._id !== locationId));
         } catch (error) {
             console.error('Error deleting location:', error);

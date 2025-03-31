@@ -3,6 +3,7 @@ import Select from "react-select";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import { useModal } from '../../context/ModalContext';
+import API_BASE_URL from "../../config/config";
 
 const countries = [
     { value: "US", label: "United States" },
@@ -14,6 +15,8 @@ const countries = [
     { value: "FR", label: "France" },
     { value: "DE", label: "Germany" },
 ];
+
+const token = localStorage.getItem("authToken");
 
 const InputField = ({ label, name, type, value, onChange, error }) => (
     <div className="w-full">
@@ -94,8 +97,8 @@ export default function NewRFID() {
         console.log("Sending traveler data:", traveler);
         setLoading(true);
         try {
-            const response = await axios.post("http://localhost:3000/rfid", traveler, {
-                headers: { "Content-Type": "application/json" },
+            const response = await axios.post(`${API_BASE_URL}/rfid`, traveler, {
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
             });
             console.log("Traveler Added:", response.data);
             showModal({

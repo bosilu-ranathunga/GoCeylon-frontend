@@ -4,6 +4,7 @@ import { LuUser } from 'react-icons/lu';
 import { LuBriefcaseBusiness } from 'react-icons/lu';
 import { GrLocation } from 'react-icons/gr';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from "../config/config";
 
 const Login = () => {
 
@@ -33,7 +34,7 @@ const Login = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post('http://192.168.8.112:3000/api/auth/login', { email, password });
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
       const { token } = response.data;
 
       // Save the token in localStorage

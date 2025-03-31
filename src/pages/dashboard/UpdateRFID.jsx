@@ -4,6 +4,7 @@ import Select from "react-select";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import { useModal } from '../../context/ModalContext';
+import API_BASE_URL from "../../config/config";
 
 const countries = [
     { value: "US", label: "United States" },
@@ -49,10 +50,14 @@ export default function UpdateRFID() {
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
 
+    const token = localStorage.getItem("authToken");
+
     useEffect(() => {
         const fetchTraveler = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/rfid/${id}`);
+                const response = await axios.get(`${API_BASE_URL}/rfid/${id}`, {
+                    headers: { "Authorization": `Bearer ${token}` },
+                });
                 const apiData = response.data.data;
 
                 console.log(apiData);
@@ -123,8 +128,11 @@ export default function UpdateRFID() {
 
         setUpdating(true);
         try {
-            const response = await axios.put(`http://localhost:3000/rfid/${id}`, traveler, {
-                headers: { "Content-Type": "application/json" },
+            const response = await axios.put(`${API_BASE_URL}/rfid/${id}`, traveler, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
             });
             console.log("Traveler Updated:", response.data);
             showModal({

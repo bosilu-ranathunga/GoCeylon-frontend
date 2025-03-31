@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import Sidebar from '../../components/Sidebar';
 import Select from "react-select";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import API_BASE_URL from "../../config/config";
 
 const AddAttractionForm = () => {
 
@@ -126,8 +127,11 @@ const AddAttractionForm = () => {
             // Debugging the formData (since console.log can't print FormData directly)
             console.log("Form data before submission:", attractionData);
 
-            const response = await axios.post("http://localhost:3000/location/", formData, {
+            const token = localStorage.getItem("authToken");
+
+            const response = await axios.post(`${API_BASE_URL}/location/`, formData, {
                 headers: {
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
                 },
             });
