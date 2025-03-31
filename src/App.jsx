@@ -28,7 +28,8 @@ import UpdateRFID from './pages/dashboard/UpdateRFID';
 import Scanner from './pages/traveler/Scaner';
 import PrivateRoute from './components/PrivateRoute';
 import Logout from './pages/Logout';
-
+import Businesslist from './pages/business/Businesslist';
+import UserBusinesslist from './pages/business/UserBusinesslist';
 export default function App() {
   return (
     <>
@@ -61,12 +62,9 @@ export default function App() {
           <Route path="/admin/tracking" element={<PrivateRoute element={<Tracking />} allowedUserType="admin" />} />
           <Route path="/admin/guides" element={<PrivateRoute element={<Guides />} allowedUserType="admin" />} />
 
-          {/*
           <Route path='/business/add' element={<AddBusiness />} />
-          <Route path='/business/review' element={<Reviews />} />
-          <Route path='/business/update' element={<BusUpdate />} />
-          */}
-
+          <Route path='/business/userbusinesslist' element={<UserBusinesslist />} />
+          <Route path='/business/list' element={<Businesslist/>}/>
           <Route path="/403" element={<Test />} />
 
         </Routes>
