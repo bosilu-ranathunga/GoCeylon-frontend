@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import API_BASE_URL from "../../config/config";
+import { useModal } from '../../context/ModalContext';
+import { MdDelete } from "react-icons/md";
+import { BiSolidEdit } from "react-icons/bi";
 import {
     useReactTable,
     getCoreRowModel,
@@ -11,10 +15,16 @@ import {
     flexRender,
 } from '@tanstack/react-table';
 
+
 const Location = () => {
+
+    const navigate = useNavigate();
+
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [locations, setLocations] = useState([]);
+
+    const { showModal, closeModal } = useModal();
 
     const token = localStorage.getItem("authToken");
 
@@ -31,20 +41,39 @@ const Location = () => {
 
     // Function to handle location deletion
     const deleteLocation = async (locationId) => {
-        try {
-            await axios.delete(`${API_BASE_URL}/location/${locationId}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`, // Include token in the request header
+        showModal({
+            type: 'delete',
+            title: 'Are you sure you want to delete this?',
+            content: 'Once you are delete this item you can\'t undo this process.',
+            buttons: [
+                {
+                    label: 'Confirm',
+                    onClick: async () => {
+                        try {
+                            await axios.delete(`${API_BASE_URL}/location/${locationId}`, {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`, // Include token in the request header
+                                }
+                            });
+                            setLocations(locations.filter(location => location._id !== locationId));
+                        } catch (error) {
+                            console.error('Error deleting location:', error);
+                        }
+                        closeModal();
+                    },
+                    className: 'w-full px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700'
+                }, {
+                    label: 'Cancel',
+                    onClick: closeModal,
+                    className: 'w-full px-4 py-2 text-white bg-gray-500 border border-gray-500 rounded hover:bg-gray-600'
                 }
-            });
-            setLocations(locations.filter(location => location._id !== locationId));
-        } catch (error) {
-            console.error('Error deleting location:', error);
-        }
+            ]
+        });
+
     };
 
     const handleUpdate = (id) => {
-        window.location.href = `/admin/update-location/${id}`;
+        navigate(`/admin/update-location/${id}`);
     };
 
 
@@ -66,22 +95,16 @@ const Location = () => {
             cell: ({ row }) => (
                 <div className="flex space-x-2">
                     <button
-                        onClick={() => alert(`View: ${JSON.stringify(row.original)}`)}
-                        className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                    >
-                        View
-                    </button>
-                    <button
                         onClick={() => handleUpdate(row.original._id)}
-                        className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                        className="px-2 py-1 w-15 bg-emerald-600 text-white rounded cursor-pointer flex flex-row items-center gap-[5px]"
                     >
-                        Edit
+                        <BiSolidEdit />Edit
                     </button>
                     <button
                         onClick={() => deleteLocation(row.original._id)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                        className="px-2 py-1 bg-red-500 text-white rounded cursor-pointer flex flex-row items-center gap-[5px]"
                     >
-                        Delete
+                        <MdDelete />Delete
                     </button>
                 </div>
             ),
@@ -113,7 +136,7 @@ const Location = () => {
                     <div className="p-6 mx-auto">
                         {/* Header and Search */}
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">Location Management</h2>
                             <div className="relative w-full sm:max-w-xs">
                                 <input
                                     type="text"

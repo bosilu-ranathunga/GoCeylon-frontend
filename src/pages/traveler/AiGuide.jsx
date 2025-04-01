@@ -67,6 +67,7 @@ export default function AiGuide() {
         // Update UI immediately
         setMessages(updatedHistory);
         setInput("");
+        setLoading(true);  // Set loading state to true when sending the message
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/chat/chat`, {
@@ -79,7 +80,7 @@ export default function AiGuide() {
                     history: updatedHistory.map(msg => ({
                         role: msg.role === "user" ? "user" : "model",
                         parts: msg.text,
-                    }))
+                    })),
                 }),
             });
 
@@ -94,9 +95,10 @@ export default function AiGuide() {
                 ...prevMessages,
                 { role: "bot", text: data.response }
             ]);
-
         } catch (error) {
             console.error("Error fetching AI response:", error);
+        } finally {
+            setLoading(false);  // Reset loading state when the request is complete
         }
     };
 
@@ -104,21 +106,21 @@ export default function AiGuide() {
     return (
         <>
             <TopAppBar />
-            <div className="container mx-auto p-6 mt-[4rem] bg-gray-50 min-h-screen">
-                <div className="flex-1 overflow-y-auto space-y-2">
+            <div className="container mx-auto p-6 mt-[4rem] bg-gray-100 min-h-screen">
+                <div className="flex-1 overflow-y-auto space-y-2 mb-[8rem]">
                     {messages.map((msg, index) => (
                         <div
                             key={index}
-                            className={`p-2 rounded-lg w-fit max-w-[80%] ${msg.role === "user" ? "ml-auto bg-blue-500 text-white" : "bg-gray-200"
+                            className={`p-2 rounded-lg w-fit max-w-[90%] ${msg.role === "user" ? "ml-auto bg-gray-500 text-white" : "bg-gray-200"
                                 }`}
                         >
                             {msg.text}
                         </div>
                     ))}
-                    {loading && <div className="p-2 bg-gray-200 rounded-lg">Typing...</div>}
+                    {loading && <div className="p-2 rounded-lg w-fit max-w-[90%] bg-gray-200">Typing...</div>}
                 </div>
             </div>
-            <div className="flex bg-white p-4 w-full bottom-[5rem] fixed items-center justify-between">
+            <div className="flex bg-white p-4 w-full bottom-[4.7rem] fixed items-center justify-between">
                 <input
                     className="flex-1 border border-gray-300 p-3 rounded-lg mr-4 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300 transition-all"
                     placeholder="Type your message..."

@@ -293,15 +293,14 @@ const AddAttractionForm = () => {
                         <button
                             type="button"
                             onClick={addPoint}
-                            className="bg-blue-500 text-white px-4 py-2"
+                            className="bg-gray-500 text-white px-4 py-2"
                         >
                             Add Point
                         </button>
 
                     </div>
 
-                    <button type="submit" className="bg-emerald-700 text-white px-4 py-2 w-full">Add Attraction</button>
-
+                    <button type="submit" class="bg-emerald-700 text-white px-6 py-3 rounded-lg w-full transition duration-300">Add Attraction</button>
                 </form>
             </div>
         </div>

@@ -12,6 +12,13 @@ const AttractionsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
+  // Helper function to strip HTML tags and truncate text to 12 words
+  const truncateDescription = (htmlString, wordLimit = 12) => {
+    const plainText = htmlString.replace(/<[^>]+>/g, '');
+    const words = plainText.split(/\s+/).filter(Boolean);
+    return words.slice(0, wordLimit).join(' ') + (words.length > wordLimit ? '...' : '');
+  };
+
   // Fetch all locations when the component mounts
   useEffect(() => {
     const fetchLocations = async () => {
@@ -34,7 +41,8 @@ const AttractionsPage = () => {
   const filteredLocations = locations.filter(location => {
     const matchesTag = selectedTag ? location.tags.includes(selectedTag) : true;
     const matchesSearchQuery =
-      location.name.toLowerCase().includes(searchQuery) || location.description.toLowerCase().includes(searchQuery);
+      location.name.toLowerCase().includes(searchQuery) ||
+      location.description.toLowerCase().includes(searchQuery);
     return matchesTag && matchesSearchQuery;
   });
 
@@ -53,12 +61,9 @@ const AttractionsPage = () => {
 
   return (
     <>
-
       <TopAppBar />
       <div className="container mx-auto p-6 mt-[4rem] bg-gray-100 min-h-screen">
-
         <div className="mb-[4rem]">
-
           {/* Search Bar */}
           <div className="mb-6 max-w-3xl mx-auto">
             <input
@@ -93,7 +98,7 @@ const AttractionsPage = () => {
                 <div
                   key={location._id}
                   className="border border-gray-300 rounded-xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300 ease-in-out"
-                  onClick={() => handleCardClick(location._id)} // Handle click
+                  onClick={() => handleCardClick(location._id)}
                 >
                   <div className="relative w-full h-56 sm:h-64 md:h-72 lg:h-80">
                     <img
@@ -103,13 +108,19 @@ const AttractionsPage = () => {
                     />
                   </div>
                   <div className="p-6 bg-white">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">{location.name}</h3>
-                    <p className="text-gray-600 text-base">{location.description}</p>
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                      {location.name}
+                    </h3>
+                    <p className="text-gray-600 text-base">
+                      {truncateDescription(location.description)}
+                    </p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-500 col-span-full">No attractions found matching the criteria.</p>
+              <p className="text-center text-gray-500 col-span-full">
+                No attractions found matching the criteria.
+              </p>
             )}
           </div>
         </div>

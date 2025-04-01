@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import axios from "axios";
+import API_BASE_URL from "../../config/config";
 import { useNavigate } from "react-router-dom";
 import {
     useReactTable,
@@ -17,11 +18,13 @@ const Tracking = () => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [data, setData] = useState([]);
 
+    const token = localStorage.getItem("authToken");
+
     // Fetch data from API
     const fetchData = async () => {
         try {
             const token = localStorage.getItem("authToken");
-            const response = await axios.get("http://localhost:3000/api/scaner/rfid", {
+            const response = await axios.get(`${API_BASE_URL}/api/scaner/rfid`, {
                 headers: {
                     "Authorization": `Bearer ${token}`, // Include token in the request header
                 }
@@ -37,6 +40,30 @@ const Tracking = () => {
         const interval = setInterval(fetchData, 1000); // Fetch data every 1 second
         return () => clearInterval(interval); // Cleanup on unmount
     }, []);
+
+    const handleScanerRecodeDownload = async () => {
+        try {
+            // Make the request to the backend to download the Excel file
+            const response = await axios.get(`${API_BASE_URL}/api/scaner/export`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                responseType: 'blob', // This ensures the response is treated as a file
+            });
+
+            // Create a link element to trigger the download
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'RFID_Records.xlsx'; // Specify the filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading file', error);
+            alert('Error downloading file');
+        }
+    };
 
     // Define columns
     const columns = useMemo(() => [
@@ -69,27 +96,14 @@ const Tracking = () => {
                     <div className="p-6 mx-auto">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
                             <h2 className="text-2xl font-bold text-gray-900">RFID Scan Records</h2>
-                            <div className="relative w-full sm:max-w-xs">
-                                <input
-                                    type="text"
-                                    value={globalFilter}
-                                    onChange={e => setGlobalFilter(e.target.value)}
-                                    placeholder="Search RFID..."
-                                    className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                                <svg
-                                    className="absolute left-3 top-3 h-5 w-5 text-gray-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                            <div className="flex gap-4">
+                                <div class="relative w-full sm:max-w-xs"><input type="text" placeholder="Search RFID..." class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="" /><svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
+                                <button
+                                    onClick={handleScanerRecodeDownload}
+                                    className="px-4 py-2 bg-[#007a55] text-white rounded-lg"
                                 >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    />
-                                </svg>
+                                    Generate
+                                </button>
                             </div>
                         </div>
 
