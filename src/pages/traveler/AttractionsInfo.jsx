@@ -22,12 +22,19 @@ const AttractionDetails = () => {
     fetchAttractionDetails();
   }, [id]);
 
+  const handleShowDirections = () => {
+    if (attraction.google_map_url) {
+      window.open(attraction.google_map_url, "_blank"); // Opens Google Maps in a new tab
+    } else {
+      alert("Google Maps URL not available for this attraction.");
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 mt-[4rem] bg-gray-50 min-h-screen">
-
       <TopNameBar title="Location" />
 
-      <h1 className="text-3xl font-bold text-center mb-4">{attraction.name || "Unknown Location"}</h1>
+      <h1 className="text-2xl font-bold text-center mb-4">{attraction.name || "Unknown Location"}</h1>
 
       <img
         src={attraction.image_url?.[0] || "default-image.jpg"}
@@ -36,23 +43,20 @@ const AttractionDetails = () => {
       />
 
       <div className="flex flex-col gap-4 mt-6">
-        <h2 className="text-xl font-semibold text-center">Choose a Guide</h2>
         <div className="flex flex-col gap-2">
           <button className="bg-green-800 text-white py-2 rounded-lg shadow-md" onClick={() => navigate('/user/booking/list')} >
-            Local Guide
+            Book Guide
           </button>
-          <button className="bg-green-800 text-white py-2 rounded-lg shadow-md">
-            AI Guide
+          <button className="bg-gray-500 text-white py-2 rounded-lg shadow-md" onClick={handleShowDirections} >
+            Show Directions
           </button>
         </div>
-        <button className="bg-green-600 text-white py-3 rounded-lg shadow-md font-semibold text-lg">
-          Show Directions
-        </button>
       </div>
 
-      <p className="text-gray-700 text-lg mt-6 leading-relaxed">
-        {attraction.description || "No description available"}
-      </p>
+      <div
+        className="text-gray-600 mt-5"
+        dangerouslySetInnerHTML={{ __html: attraction.description }}
+      ></div>
 
       <h2 className="text-2xl font-bold mt-8 mb-4 text-center">More Images</h2>
       <div className="grid grid-cols-2 gap-4">
@@ -60,11 +64,8 @@ const AttractionDetails = () => {
           <img key={index} src={img} alt={`Attraction Image ${index}`} className="w-full h-32 object-cover rounded-lg shadow-md" />
         ))}
       </div>
-
     </div>
   );
 };
 
 export default AttractionDetails;
-
-

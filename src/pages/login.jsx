@@ -45,9 +45,11 @@ const Login = () => {
       if (userType === 'guide') {
         navigate('/');
       } else if (userType === 'tourist') {
-        navigate('/user');
+        navigate('/user/');
       } else if (userType === 'admin') {
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard/');
+      } else if (userType === 'business_user') {
+        navigate('/business/');
       }
     } catch (err) {
       console.error('Login Failed:', err);

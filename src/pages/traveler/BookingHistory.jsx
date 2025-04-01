@@ -12,7 +12,14 @@ import { useModal } from '../../context/ModalContext';
 
 export default function BookingHistory() {
   const navigate = useNavigate();
-  const userId = '67dc5f1a395ce4427f1411d6'; // Hardcoded user ID
+
+  /*---------this is who we get loged user id-------------*/
+  const token = localStorage.getItem('authToken');
+  const decoded = JSON.parse(atob(token.split('.')[1]));
+  const userId = decoded.id;
+  console.log(userId);
+  /*------------------------------------------------------*/
+
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

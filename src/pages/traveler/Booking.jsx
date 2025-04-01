@@ -23,17 +23,22 @@ export default function Booking() {
         return <div className='text-center text-red-600 font-semibold'>No guide selected.</div>;
     }
 
-    /*---------this is who we get loged user id-------------*/
+    /*---------this is how we get the logged user's id-------------*/
     const token = localStorage.getItem('authToken');
     const decoded = JSON.parse(atob(token.split('.')[1]));
     const userId = decoded.id;
     console.log(userId);
-    /*------------------------------------------------------*/
+    /*--------------------------------------------------------------*/
 
     const handleBooking = async () => {
-
         if (!bookingDate || !bookingTime || !bookingLocation || !status) {
             alert('Please fill in all fields.');
+            return;
+        }
+
+        // Validate booking time (cannot exceed 24 hours)
+        if (bookingTime > 24) {
+            alert('Booking duration cannot be more than 24 hours.');
             return;
         }
 
@@ -41,7 +46,7 @@ export default function Booking() {
             b_date: bookingDate,
             b_time: bookingTime,
             b_location: bookingLocation,
-            b_user: '67dc5f1a395ce4427f1411d6', // Example user ID
+            b_user: userId,
             b_guide: guide._id, // Guide ID
             price: guide.price * bookingTime,
             status: status
@@ -73,7 +78,6 @@ export default function Booking() {
             setLoading(false);
             alert(`Failed to book the guide: ${error.response?.data?.message || 'Unknown error'}`);
         }
-
     };
 
     return (
@@ -110,6 +114,7 @@ export default function Booking() {
                     value={bookingTime}
                     onChange={(e) => setBookingTime(e.target.value)}
                     min="1"
+                    max="24"  // Set the maximum value to 24
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                 />
 
@@ -128,9 +133,7 @@ export default function Booking() {
                     onChange={(e) => setStatus(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                 >
-                    <option value="pending">Pending</option>
                     <option value="confirmed">Confirmed</option>
-                    <option value="cancelled">Cancelled</option>
                 </select>
 
                 <p className="text-lg font-bold text-green-800 mt-3">Total Price: ${guide.price * bookingTime}</p>

@@ -11,9 +11,6 @@ import AddAttractions from './pages/dashboard/AddAttractions';
 import BookingInfo from './pages/traveler/BookingInfo';
 import BookingList from './pages/traveler/BookingList';
 import BookingHistory from './pages/traveler/BookingHistory'
-import AddBusiness from './pages/business/AddBusiness';
-import Reviews from './pages/business/Reviews';
-import BusUpdate from './pages/business/Update';
 import Login from './pages/Login';
 import Test from './pages/Tests';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -29,6 +26,15 @@ import UpdateRFID from './pages/dashboard/UpdateRFID';
 import Scanner from './pages/traveler/Scaner';
 import PrivateRoute from './components/PrivateRoute';
 import Logout from './pages/Logout';
+
+import BusinessHome from './pages/business/Home';
+import AddBusiness from './pages/business/AddBusiness';
+import BusinessInfo from './pages/business/BusinessInfo';
+import BusUpdate from './pages/business/Update';
+import BusProfile from './pages/business/Profile';
+
+import PointGuide from './pages/traveler/PointGuide';
+
 
 export default function App() {
   return (
@@ -51,6 +57,8 @@ export default function App() {
           <Route path='/user/bookinghistory' element={<PrivateRoute element={<BookingHistory />} allowedUserType="tourist" />} />
           <Route path='/user/scaner' element={<PrivateRoute element={<Scanner />} allowedUserType="tourist" />} />
           <Route path='/user/guide' element={<PrivateRoute element={<AiGuide />} allowedUserType="tourist" />} />
+          <Route path='/user/guide/point' element={<PrivateRoute element={<PointGuide />} allowedUserType="tourist" />} />
+
 
           <Route path="/admin/dashboard" element={<PrivateRoute element={<Dashboard />} allowedUserType="admin" />} />
           <Route path="/admin/locations" element={<PrivateRoute element={<Location />} allowedUserType="admin" />} />
@@ -63,11 +71,15 @@ export default function App() {
           <Route path="/admin/tracking" element={<PrivateRoute element={<Tracking />} allowedUserType="admin" />} />
           <Route path="/admin/guides" element={<PrivateRoute element={<Guides />} allowedUserType="admin" />} />
 
-          {/*
+
+          <Route path='/business/' element={<BusinessHome />} />
           <Route path='/business/add' element={<AddBusiness />} />
-          <Route path='/business/review' element={<Reviews />} />
-          <Route path='/business/update' element={<BusUpdate />} />
-          */}
+          <Route path='/business/info/:id' element={<BusinessInfo />} />
+          <Route path='/business/update/:businessId' element={<BusUpdate />} />
+          <Route path='/business/profile' element={<BusProfile />} />
+
+
+
 
           <Route path="/403" element={<Test />} />
 

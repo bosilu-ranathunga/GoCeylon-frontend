@@ -106,18 +106,35 @@ export default function UpdateRFID() {
         setErrors((prev) => ({ ...prev, nationality: "" }));
     };
 
+
+    const today = new Date(); // Get the current date
+    const birthdayDate = new Date(traveler.birthday); // Convert input to Date object
+
     const validateForm = () => {
         let newErrors = {};
-        if (!traveler.fullName.trim()) newErrors.fullName = "Full Name is required.";
+        if (!traveler.fullName.trim()) {
+            newErrors.fullName = "Full Name is required.";
+        } else if (!/^[A-Za-z.\s]+$/.test(traveler.fullName.trim())) {
+            newErrors.fullName = "Full Name cannot contain numbers or special characters.";
+        }
         if (!traveler.email.trim()) newErrors.email = "Email is required.";
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(traveler.email)) newErrors.email = "Invalid email format.";
-        if (!traveler.phoneNumber.trim()) newErrors.phoneNumber = "Phone Number is required.";
+        if (!traveler.phoneNumber.trim()) {
+            newErrors.phoneNumber = "Phone Number is required.";
+        } else if (!/^\d{10}$/.test(traveler.phoneNumber.trim())) {
+            newErrors.phoneNumber = "Phone Number must be exactly 10 digits.";
+        }
         else if (!/^\d+$/.test(traveler.phoneNumber)) newErrors.phoneNumber = "Phone number must contain only digits.";
+        if (!traveler.rfidTagCode.trim()) newErrors.rfidTagCode = "RFID Tag Code is required.";
         if (!traveler.nationality) newErrors.nationality = "Nationality is required.";
         if (!traveler.passportNumber.trim()) newErrors.passportNumber = "Passport Number is required.";
         if (!traveler.walletAmount) newErrors.walletAmount = "Wallet Amount is required.";
         else if (Number(traveler.walletAmount) < 0) newErrors.walletAmount = "Wallet amount cannot be negative.";
-        if (!traveler.birthday) newErrors.birthday = "Birthday is required.";
+        if (!traveler.birthday) {
+            newErrors.birthday = "Birthday is required.";
+        } else if (birthdayDate >= today) {
+            newErrors.birthday = "Birthday must be a date in the past.";
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -142,7 +159,7 @@ export default function UpdateRFID() {
                     {
                         label: 'OK',
                         onClick: closeModal,
-                        className: 'bg-blue-500 text-white hover:bg-blue-600'
+                        className: 'bg-[#007a55] w-[6rem] text-white'
                     }
                 ]
             });
@@ -155,7 +172,7 @@ export default function UpdateRFID() {
                     {
                         label: 'OK',
                         onClick: closeModal,
-                        className: 'bg-blue-500 text-white hover:bg-blue-600'
+                        className: 'bg-[#007a55] w-[6rem] text-white'
                     }
                 ]
             });
@@ -176,6 +193,16 @@ export default function UpdateRFID() {
             </div>
         );
     }
+
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            borderWidth: "1px",
+            borderColor: state.isFocused ? "#d1d5dc" : "#d1d5dc",
+            boxShadow: state.isFocused ? "0 0 0 1px #007a55" : "none", // Simulating focus:ring-2
+            "&:hover": { borderColor: "#007a55" }, // Change border on hover
+        }),
+    };
 
     return (
         <div className="flex h-screen bg-[#eee]">
@@ -218,13 +245,9 @@ export default function UpdateRFID() {
                         />
                         <div className="w-full">
                             <label className="block text-lg font-semibold text-gray-700 mb-1">Nationality</label>
-                            <Select
-                                options={countries}
-                                onChange={handleCountryChange}
-                                value={countries.find(c => c.value === traveler.nationality)}
-                                isClearable
-                                placeholder="Select a country..."
-                            />
+                            <Select options={countries} styles={customStyles} classNames={{
+                                control: () => "block text-lg text-gray-700 p-[4px] mb-1",
+                            }} onChange={handleCountryChange} value={countries.find(c => c.value === traveler.nationality) || null} isClearable placeholder="Select a country..." />
                             {errors.nationality && <p className="text-red-500 text-sm mt-1">{errors.nationality}</p>}
                         </div>
                         <InputField
@@ -255,7 +278,7 @@ export default function UpdateRFID() {
                             <button
                                 type="submit"
                                 disabled={updating}
-                                className={`bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-md transition ${updating ? "opacity-50 cursor-not-allowed" : "hover:bg-green-700"
+                                className={`bg-[#007a55] text-white text-lg font-semibold py-3 px-6 rounded-md transition ${updating ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                             >
                                 {updating ? "Updating..." : "Update Traveler"}

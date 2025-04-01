@@ -3,6 +3,9 @@ import Sidebar from "../../components/Sidebar";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from "../../config/config";
+import { useModal } from '../../context/ModalContext';
+import { MdDelete } from "react-icons/md";
+import { BiSolidEdit } from "react-icons/bi";
 import {
     useReactTable,
     getCoreRowModel,
@@ -17,6 +20,8 @@ const RfidList = () => {
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [data, setData] = useState([]);
+
+    const { showModal, closeModal } = useModal();
 
     const token = localStorage.getItem("authToken");
 
@@ -79,16 +84,16 @@ const RfidList = () => {
             cell: ({ row }) => (
                 <div className="flex space-x-2">
                     <button
-                        onClick={() => handleUpdate(row.original._id)}  // Navigate to update page
-                        className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                        onClick={() => handleUpdate(row.original._id)}
+                        className="px-2 py-1 w-15 bg-emerald-600 text-white rounded cursor-pointer flex flex-row items-center gap-[5px]"
                     >
-                        Edit
+                        <BiSolidEdit />Edit
                     </button>
                     <button
                         onClick={() => handleDelete(row.original._id)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                        className="px-2 py-1 bg-red-500 text-white rounded cursor-pointer flex flex-row items-center gap-[5px]"
                     >
-                        Delete
+                        <MdDelete />Delete
                     </button>
                 </div>
             ),
@@ -97,32 +102,43 @@ const RfidList = () => {
 
     // Action handlers
     const handleDelete = async (id) => {
-        try {
-            const response = await axios.delete(`${API_BASE_URL}/rfid/${id}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-            });
-            if (response.data.success) {
-                alert(`Successfully deleted RFID with ID: ${id}`);
-                fetchData(); // Refresh the data after deletion
-            } else {
-                console.error('Failed to delete');
-            }
-        } catch (error) {
-            console.error('Error deleting RFID:', error);
-        }
+        showModal({
+            type: 'delete',
+            title: 'Are you sure you want to delete this?',
+            content: 'Once you are delete this item you can\'t undo this process.',
+            buttons: [
+                {
+                    label: 'Confirm',
+                    onClick: async () => {
+                        try {
+                            const response = await axios.delete(`${API_BASE_URL}/rfid/${id}`, {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                },
+                            });
+                            if (response.data.success) {
+                                fetchData();
+                            } else {
+                                console.error('Failed to delete');
+                            }
+                        } catch (error) {
+                            console.error('Error deleting RFID:', error);
+                        }
+                        closeModal();
+                    },
+                    className: 'w-full px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700'
+                }, {
+                    label: 'Cancel',
+                    onClick: closeModal,
+                    className: 'w-full px-4 py-2 text-white bg-gray-500 border border-gray-500 rounded hover:bg-gray-600'
+                }
+            ]
+        });
     };
 
     const handleUpdate = (id) => {
         // Navigate to the update page with the RFID ID
         navigate(`/update-rfid/${id}`);
-    };
-
-    const handleView = (data) => {
-        // Add your view logic here
-        console.log('View data:', data);
-        alert(`View data: ${JSON.stringify(data)}`);
     };
 
     // Create table instance
