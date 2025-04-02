@@ -11,14 +11,14 @@ import { useModal } from '../../context/ModalContext';
 
 
 export default function BookingHistory() {
-  const navigate = useNavigate();
-
   /*---------this is who we get loged user id-------------*/
   const token = localStorage.getItem('authToken');
   const decoded = JSON.parse(atob(token.split('.')[1]));
   const userId = decoded.id;
   console.log(userId);
   /*------------------------------------------------------*/
+
+  const navigate = useNavigate();
 
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,17 +108,21 @@ export default function BookingHistory() {
     setEditBooking({ ...editBooking, [name]: value });
   };
 
+
   const handleEditSave = async () => {
     try {
-      // Calculate new price using the formula:
-      // newPrice = (previous price / previous time) * updated time
       const prevTime = parseFloat(initialEditBooking.b_time);
       const prevPrice = parseFloat(initialEditBooking.price);
       const updatedTime = parseFloat(editBooking.b_time);
 
-      // If previous time is valid, calculate new price
+      // Validate that the duration is between 1 and 24 hours
+      if (isNaN(updatedTime) || updatedTime < 1 || updatedTime > 24) {
+        alert("Booking duration must be between 1 and 24 hours.");
+        return;
+      }
+
       let newPrice = prevPrice;
-      if (!isNaN(prevTime) && prevTime > 0 && !isNaN(updatedTime)) {
+      if (!isNaN(prevTime) && prevTime > 0) {
         newPrice = (prevPrice / prevTime) * updatedTime;
       }
 
@@ -178,13 +182,13 @@ export default function BookingHistory() {
             <div className='flex flex-col p-5 bg-white border border-gray-100 rounded-xl shadow-md mb-4 hover:bg-green-100 transition duration-200'>
               <h3 className='text-xl font-semibold text-green-800'>{booking.b_guide.g_name}</h3>
               <p className='text-sm text-green-700'>Date: {booking.b_date}</p>
-              <p className='text-sm text-green-700'>Duratiopn(hours): {booking.b_time} hours</p>
+              <p className='text-sm text-green-700'>Duration(hours): {booking.b_time} hours</p>
               <p className='text-sm text-green-700'>Location: {booking.b_location}</p>
               <p className='text-sm text-green-700 font-bold'>Price: ${booking.price}</p>
               <div className="flex gap-4 mt-2">
-                <FaEdit className='text-yellow-500 cursor-pointer' onClick={() => handleEdit(booking)} />
-                <FaTrashAlt className='text-red-500 cursor-pointer' onClick={() => handleDelete(booking._id)} />
-                <FaEye className='text-yellow-500 cursor-pointer' onClick={() => navigate(`/user/booking/info/${booking._id}`)} />
+                <FaEdit className='text-black-500 cursor-pointer' onClick={() => handleEdit(booking)} />
+                <FaTrashAlt className='text-black-500 cursor-pointer' onClick={() => handleDelete(booking._id)} />
+                <FaEye className='text-black-500 cursor-pointer' onClick={() => navigate(`/user/booking/info/${booking._id}`)} />
 
               </div>
             </div>
