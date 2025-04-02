@@ -6,7 +6,7 @@ const PrivateRoute = ({ element, allowedUserType }) => {
     const location = useLocation();
 
     if (!token) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/logout" state={{ from: location }} replace />;
     }
 
     const decoded = JSON.parse(atob(token.split('.')[1]));  // Decode JWT to get userType
