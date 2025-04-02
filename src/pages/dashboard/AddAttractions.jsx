@@ -96,9 +96,22 @@ const AddAttractionForm = () => {
         let validationErrors = {};
         if (!attractionData.name.trim()) validationErrors.name = "Name is required";
         if (!attractionData.description.trim()) validationErrors.description = "Description is required";
-        if (!attractionData.google_map_url.trim()) validationErrors.google_map_url = "Google Map URL is required";
+        const googleMapUrlRegex = /^https:\/\/maps\.app\.goo\.gl\/[a-zA-Z0-9_-]+/;
+        if (!googleMapUrlRegex.test(attractionData.google_map_url)) {
+            validationErrors.google_map_url = "Invalid Google Map URL format. It should be from the Google Maps mobile app.";
+        }
         if (attractionData.tags.length === 0) validationErrors.tags = "At least one tag is required";
         if (attractionData.images.length === 0) validationErrors.images = "At least one image is required";
+
+        const poiIdRegex = /^PO\d{4}$/;
+        attractionData.points.forEach((poi, index) => {
+            if (!poi.point.trim()) {
+                validationErrors[`point${index}`] = `Point ${index + 1} is missing a Point ID`;
+            } else if (!poiIdRegex.test(poi.point)) {
+                validationErrors[`point${index}`] = `Point ${index + 1} must start with 'PO' followed by 4 digits`;
+            }
+            if (!poi.text.trim()) validationErrors[`text${index}`] = `Point ${index + 1} is missing a Description`;
+        });
 
         attractionData.points.forEach((poi, index) => {
             if (!poi.point.trim()) validationErrors[`point${index}`] = `Point ${index + 1} is missing a Point ID`;

@@ -78,10 +78,12 @@ export default function App() {
           <Route path='/business/update/:businessId' element={<BusUpdate />} />
           <Route path='/business/profile' element={<BusProfile />} />
 
-
+          <Route path='/' element={<Login />} />
 
 
           <Route path="/403" element={<Test />} />
+
+          <Route path="*" element={<Logout />} />
 
         </Routes>
       </Router>
