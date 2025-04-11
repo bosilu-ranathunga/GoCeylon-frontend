@@ -120,12 +120,11 @@ const UpdateAttractionForm = () => {
         let validationErrors = {};
         if (!attractionData.name.trim()) validationErrors.name = "Name is required";
         if (!attractionData.description.trim()) validationErrors.description = "Description is required";
-        if (!attractionData.google_map_url.trim()) validationErrors.google_map_url = "Google Map URL is required";
-        if (attractionData.tags.length === 0) validationErrors.tags = "At least one tag is required";
-        attractionData.points.forEach((poi, index) => {
-            if (!poi.point.trim()) validationErrors[`point${index}`] = `Point ${index + 1} is missing a Point ID`;
-            if (!poi.text.trim()) validationErrors[`text${index}`] = `Point ${index + 1} is missing a Description`;
-        });
+        const googleMapUrlRegex = /^https:\/\/maps\.app\.goo\.gl\/[a-zA-Z0-9_-]+/;
+        if (!googleMapUrlRegex.test(attractionData.google_map_url)) {
+            validationErrors.google_map_url = "Invalid Google Map URL format. It should be from the Google Maps mobile app.";
+        }
+
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) return;
         try {
@@ -178,6 +177,7 @@ const UpdateAttractionForm = () => {
                             placeholder="Enter attraction name"
                             className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                         />
+                        {errors.name && <p className="text-red-500">{errors.name}</p>}
                     </div>
 
                     {/* Description */}
@@ -207,6 +207,7 @@ const UpdateAttractionForm = () => {
                             placeholder="Enter Google Map URL"
                             className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                         />
+                        {errors.google_map_url && <p className="text-red-500">{errors.google_map_url}</p>}
                     </div>
 
                     {/* Tags */}
@@ -222,6 +223,7 @@ const UpdateAttractionForm = () => {
                             className="react-select-container"
                             classNamePrefix="react-select"
                         />
+                        {errors.tags && <p className="text-red-500">{errors.tags}</p>}
                     </div>
 
                     {/* Images */}
@@ -236,6 +238,7 @@ const UpdateAttractionForm = () => {
                             onChange={handleImageChange}
                             className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-green-400"
                         />
+                        {errors.images && <p className="text-red-500">{errors.images}</p>}
                     </div>
 
                     {/* Image Previews */}
@@ -278,6 +281,7 @@ const UpdateAttractionForm = () => {
                                     placeholder={`Point ${index + 1} ID`}
                                     className="border border-gray-300 rounded-lg p-3 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-green-400"
                                 />
+                                {errors[`point${index}`] && <p className="text-red-500">{errors[`point${index}`]}</p>}
                                 <input
                                     type="text"
                                     value={point.text}
@@ -285,6 +289,7 @@ const UpdateAttractionForm = () => {
                                     placeholder={`Point ${index + 1} Description`}
                                     className="border border-gray-300 rounded-lg p-3 w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-green-400"
                                 />
+                                {errors[`text${index}`] && <p className="text-red-500">{errors[`text${index}`]}</p>}
                                 <button
                                     type="button"
                                     onClick={() => removePoint(index)}
