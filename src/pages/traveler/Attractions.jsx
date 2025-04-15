@@ -64,31 +64,53 @@ const AttractionsPage = () => {
       <TopAppBar />
       <div className="container mx-auto p-6 mt-[4rem] bg-gray-100 min-h-screen">
         <div className="mb-[4rem]">
+
           {/* Search Bar */}
-          <div className="mb-6 max-w-3xl mx-auto">
-            <input
-              type="text"
-              placeholder="Search for attractions..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="w-full px-6 py-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400 text-gray-700 text-lg"
-            />
+          <div class="pb-4">
+            <div class="relative border-1 border-gray-300 rounded-lg">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                class="w-full px-4 py-3 pl-10 rounded-lg bg-gray-100 border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+              />
+              <svg
+                class="w-5 h-5 absolute left-3 top-3.5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
           </div>
 
-          {/* Tag Filter */}
-          <div className="mb-8 max-w-3xl mx-auto">
-            <select
-              onChange={handleTagChange}
-              value={selectedTag}
-              className="w-full px-6 py-3 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-700 text-lg"
-            >
-              <option value="">All Tags</option>
-              {tags.map(tag => (
-                <option key={tag} value={tag}>
+          <div className="mb-4">
+            <div className="flex overflow-x-auto pb-2 space-x-3 scrollbar-hide">
+              <button
+                className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${selectedTag === "" ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  } transition-colors`}
+                onClick={() => handleTagChange({ target: { value: "" } })}
+              >
+                All Tags
+              </button>
+              {tags.map((tag) => (
+                <button
+                  key={tag}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${selectedTag === tag ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    } transition-colors`}
+                  onClick={() => handleTagChange({ target: { value: tag } })}
+                >
                   {tag}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* Display filtered locations */}

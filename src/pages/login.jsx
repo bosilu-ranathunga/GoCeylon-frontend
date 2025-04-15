@@ -60,8 +60,8 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center relative">
-      <div className="bg-white bg-opacity-80 p-10 max-w-md w-full z-10 relative">
+    <div className="h-screen flex items-center justify-center relative lg:bg-gray-100">
+      <div className="bg-white bg-opacity-80 p-10 max-w-[400px] w-full z-10 relative lg:shadow-lg lg:rounded-lg">
         <div className="text-left mb-6">
           <h2 className="text-3xl font-semibold text-gray-800">Login To GoCeylon</h2>
           <p className="text-sm mt-2 text-gray-500">Discover Sri Lanka’s stunning destinations, rich culture, and unforgettable tours.</p>
@@ -106,7 +106,7 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-[#007a55] text-white py-3 rounded-lg hover:bg-green-700 transition duration-300"
+            className="w-full bg-[#007a55] text-white py-3 rounded-lg"
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
@@ -115,20 +115,8 @@ const Login = () => {
 
         <div className="mt-8">
           <p className="text-center text-gray-500 text-sm">Or Sign Up with</p>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <button onClick={() => handleUserTypeChange('Tourist')} className="p-3 flex flex-col items-center justify-center border border-gray-300 rounded-lg hover:border-emerald-500 transition-all">
-              <LuUser className="text-[#007a55] text-2xl" />
-              <span className="text-sm mt-1 text-gray-600">Tourist</span>
-            </button>
-            <button onClick={() => handleUserTypeChange('Guide')} className="p-3 flex flex-col items-center justify-center border border-gray-300 rounded-lg hover:border-emerald-500 transition-all">
-              <GrLocation className="text-[#007a55] text-2xl" />
-              <span className="text-sm mt-1 text-gray-600">Guide</span>
-            </button>
-            <button onClick={() => handleUserTypeChange('Businessman')} className="p-3 flex flex-col items-center justify-center border border-gray-300 rounded-lg hover:border-emerald-500 transition-all">
-              <LuBriefcaseBusiness className="text-[#007a55] text-2xl" />
-              <span className="text-sm mt-1 text-gray-600">Business</span>
-            </button>
-          </div>
+
+
         </div>
 
       </div>
