@@ -16,7 +16,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.querySelector('meta[name="theme-color"]').setAttribute("content", "#fffff");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#ffffff");
   }, []);
 
   const handleUserTypeChange = (type) => {
