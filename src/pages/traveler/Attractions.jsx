@@ -67,13 +67,13 @@ const AttractionsPage = () => {
 
           {/* Search Bar */}
           <div class="pb-4">
-            <div class="relative border-1 border-gray-300 rounded-lg">
+            <div class="relative bg-white border-1 border-gray-300 rounded-lg">
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                class="w-full px-4 py-3 pl-10 rounded-lg bg-gray-100 border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                class="w-full px-4 py-3 pl-10 rounded-lg border-0 focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
               />
               <svg
                 class="w-5 h-5 absolute left-3 top-3.5 text-gray-400"
@@ -92,9 +92,9 @@ const AttractionsPage = () => {
           </div>
 
           <div className="mb-4">
-            <div className="flex overflow-x-auto pb-2 space-x-3 scrollbar-hide">
+            <div className="flex overflow-x-auto space-x-3 scrollbar-hide">
               <button
-                className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${selectedTag === "" ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${selectedTag === "" ? "bg-[#007a551c] text-[#007a55]" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   } transition-colors`}
                 onClick={() => handleTagChange({ target: { value: "" } })}
               >
@@ -103,7 +103,7 @@ const AttractionsPage = () => {
               {tags.map((tag) => (
                 <button
                   key={tag}
-                  className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${selectedTag === tag ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium ${selectedTag === tag ? "bg-[#007a551c] text-[#007a55]" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     } transition-colors`}
                   onClick={() => handleTagChange({ target: { value: tag } })}
                 >
