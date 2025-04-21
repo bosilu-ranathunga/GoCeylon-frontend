@@ -3,7 +3,7 @@ import axios from 'axios';
 import { LuUser } from 'react-icons/lu';
 import { LuBriefcaseBusiness } from 'react-icons/lu';
 import { GrLocation } from 'react-icons/gr';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import API_BASE_URL from "../config/config";
 
 const Login = () => {
@@ -113,8 +113,8 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="mt-8">
-          <p className="text-center text-gray-500 text-sm">Or Sign Up with</p>
+        <div className="mt-4">
+          <p className="text-center text-gray-500 text-sm">Or <Link to="/" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
 
 
         </div>

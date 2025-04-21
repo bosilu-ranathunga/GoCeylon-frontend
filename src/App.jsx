@@ -53,7 +53,7 @@ export default function App() {
           <Route path='/user/booking' element={<PrivateRoute element={<Booking />} allowedUserType="tourist" />} />
           <Route path='/user/location/:id' element={<PrivateRoute element={<AttractionsInfo />} allowedUserType="tourist" />} />
           <Route path='/user/booking/info/:id' element={<PrivateRoute element={<BookingInfo />} allowedUserType="tourist" />} />
-          <Route path='/user/booking/list' element={<PrivateRoute element={<BookingList />} allowedUserType="tourist" />} />
+          <Route path='/user/booking/list/:id' element={<PrivateRoute element={<BookingList />} allowedUserType="tourist" />} />
           <Route path='/user/bookinghistory' element={<PrivateRoute element={<BookingHistory />} allowedUserType="tourist" />} />
           <Route path='/user/scaner' element={<PrivateRoute element={<Scanner />} allowedUserType="tourist" />} />
           <Route path='/user/guide' element={<PrivateRoute element={<AiGuide />} allowedUserType="tourist" />} />
