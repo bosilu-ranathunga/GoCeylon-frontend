@@ -44,7 +44,10 @@ const AttractionDetails = () => {
 
       <div className="flex flex-col gap-4 mt-6">
         <div className="flex flex-col gap-2">
-          <button className="bg-green-800 text-white py-2 rounded-lg shadow-md" onClick={() => navigate('/user/booking/list')} >
+          <button
+            className="bg-green-800 text-white py-2 rounded-lg shadow-md"
+            onClick={() => navigate(`/user/booking/list/${id}`)} // Pass the attraction ID as a query parameter
+          >
             Book Guide
           </button>
           <button className="bg-gray-500 text-white py-2 rounded-lg shadow-md" onClick={handleShowDirections} >
