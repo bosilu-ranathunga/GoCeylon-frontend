@@ -1,55 +1,84 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import backgroundImage from '../assets/images/pexels-dreamypixel-547116.jpg'; // Adjust the path based on your folder structure
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { LuUser } from 'react-icons/lu';
+import { LuBriefcaseBusiness } from 'react-icons/lu';
+import { GrLocation } from 'react-icons/gr';
+import { Link, useNavigate } from 'react-router-dom';
+import API_BASE_URL from "../config/config";
 
 const Login = () => {
-  const [userType, setUserType] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
 
-  const handleSignUpClick = () => {
-    // The "Sign Up" link can be used to show the user type buttons instead of a modal
-  };
+  const [userType, setUserType] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#ffffff");
+  }, []);
 
   const handleUserTypeChange = (type) => {
-    setUserType(type); // Update selected user type
-    if (type === 'Tourist') {
-      // Navigate to the user registration page for tourists immediately when Tourist is selected
-      navigate('/register1');
-    }
-    else if(type==='Guide'){
-      navigate('/register2');
+    setUserType(type);
+    const routes = {
+      Tourist: '/register1',
+      Guide: '/register2',
+      Businessman: '/register3',
+    };
+    navigate(routes[type]);
+  };
 
-    }
-    else if(type==='Businessman')
-    navigate('/register3');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, { email, password });
+      const { token } = response.data;
 
+      // Save the token in localStorage
+      localStorage.setItem('authToken', token);
+
+      // Redirect user based on userType (optional)
+      const userType = response.data.user.userType;
+      if (userType === 'guide') {
+        navigate('/');
+      } else if (userType === 'tourist') {
+        navigate('/user/');
+      } else if (userType === 'admin') {
+        navigate('/admin/dashboard/');
+      } else if (userType === 'business_user') {
+        navigate('/business/');
+      }
+    } catch (err) {
+      console.error('Login Failed:', err);
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="h-screen flex items-center justify-center relative">
-      {/* Background Image */}
-      <img
-        src={backgroundImage} // Use the imported image here
-        alt="GoCeylon Background"
-        className="absolute top-0 left-0 w-full h-full object-cover z-0"
-      />
-
-      <div className="bg-white bg-opacity-80 p-10 rounded-3xl shadow-2xl max-w-md w-full z-10 relative">
-        {/* Title */}
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-semibold text-gray-800">Welcome to GoCeylon</h2>
-          <p className="text-sm text-gray-500">Discover Sri Lanka's best destinations and tours</p>
+    <div className="h-screen flex items-center justify-center relative lg:bg-gray-100">
+      <div className="bg-white bg-opacity-80 p-10 max-w-[400px] w-full z-10 relative lg:shadow-lg lg:rounded-lg">
+        <div className="text-left mb-6">
+          <h2 className="text-3xl font-semibold text-gray-800">Login To GoCeylon</h2>
+          <p className="text-sm mt-2 text-gray-500">Discover Sri Lanka’s stunning destinations, rich culture, and unforgettable tours.</p>
         </div>
 
-        {/* Login Form */}
-        <form className="space-y-6">
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+        <form className="space-y-6" onSubmit={handleLogin}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               id="email"
               name="email"
-              className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 mt-2 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
               required
             />
           </div>
@@ -60,70 +89,36 @@ const Login = () => {
               type="password"
               id="password"
               name="password"
-              className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 mt-2 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
               required
             />
           </div>
 
-          {/* Remember Me & Forgot Password */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <input type="checkbox" id="remember" className="h-4 w-4 text-green-600" />
+              <input type="checkbox" id="remember" className="h-4 w-4 text-[#007a55]" />
               <label htmlFor="remember" className="text-sm text-gray-600">Remember me</label>
             </div>
-            <a href="" className="text-sm text-green-600 hover:underline">Forgot Password?</a>
+            <a href="#" className="text-sm text-[#007a55] hover:underline">Forgot Password?</a>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300"
+            className="w-full bg-[#007a55] text-white py-3 rounded-lg"
+            disabled={loading}
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
-        {/* Sign-up Link */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            New to GoCeylon? <a href="#" onClick={handleSignUpClick} className="text-green-600 hover:underline">Sign up</a>
-          </p>
+        <div className="mt-4">
+          <p className="text-center text-gray-500 text-sm">Or <Link to="/" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
+
+
         </div>
 
-        {/* User Type Buttons for Sign Up */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">Select Your Role</p>
-          <div className="flex justify-between mt-4">
-            <button
-              onClick={() => handleUserTypeChange('Guide')}
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
-            >
-              As a Guide
-            </button>
-            <button
-              onClick={() => handleUserTypeChange('Tourist')}
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
-            >
-              As a Tourist
-            </button>
-            <button
-              onClick={() => handleUserTypeChange('Businessman')}
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
-            >
-              As a Businessman
-            </button>
-          </div>
-        </div>
-
-        {/* Footer: Tourist-related icon */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-500">Explore Sri Lanka with ease</p>
-          <div className="flex justify-center space-x-4 mt-2">
-            <a href="" className="text-gray-600 hover:text-green-600"><i className="fas fa-map-marker-alt"></i> Destinations</a>
-            <a href="" className="text-gray-600 hover:text-green-600"><i className="fas fa-hotel"></i> Hotels</a>
-            <a href="" className="text-gray-600 hover:text-green-600"><i className="fas fa-bus"></i> Tours</a>
-          </div>
-        </div>
       </div>
     </div>
   );

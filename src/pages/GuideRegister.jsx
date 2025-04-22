@@ -1,109 +1,127 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const GuideRegister = () => {
-  const [step, setStep] = useState(1);
+const GuideRegistrationForm = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    g_name: '',
+    g_dob: '',
     email: '',
     password: '',
-    dob: '',
-    language: '',
-    gender: '',
+    language: [],
+    gender: 'Male',
     price: '',
-    location: '',
-    availability: '',
-    contactNumber: '',
-    validationReport: null,
+    location: [],
+    contact_number: '',
+    photo: null,
   });
 
+  const [locations, setLocations] = useState([]);
+  const [message, setMessage] = useState('');
+
+  const availableLanguages = ['English', 'Sinhala', 'Tamil', 'French', 'German', 'Spanish'];
+
+  // Fetch locations from API
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/location');
+        setLocations(res.data.locations);
+      } catch (error) {
+        console.error('Failed to fetch locations:', error);
+      }
+    };
+    fetchLocations();
+  }, []);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, files } = e.target;
+
+    if (name === 'photo') {
+      setFormData({ ...formData, photo: files[0] });
+    } else if (name === 'language' || name === 'location') {
+      const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+      setFormData({ ...formData, [name]: selectedOptions });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, validationReport: e.target.files[0] });
-  };
-
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Guide Registered Successfully!');
+    try {
+      const data = new FormData();
+      data.append('g_name', formData.g_name);
+      data.append('g_dob', formData.g_dob);
+      data.append('email', formData.email);
+      data.append('password', formData.password);
+      formData.language.forEach((lang) => data.append('language', lang));
+      data.append('gender', formData.gender);
+      data.append('price', formData.price);
+      formData.location.forEach((loc) => data.append('location', loc));
+      data.append('contact_number', formData.contact_number);
+      if (formData.photo) {
+        data.append('photo', formData.photo);
+      }
+
+      const res = await axios.post('http://localhost:3000/guides', data);
+      setMessage('Guide registered successfully!');
+      console.log(res.data);
+    } catch (error) {
+      console.error(error);
+      setMessage('Error: ' + (error.response?.data?.message || error.message));
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-semibold text-center mb-6">Guide Registration</h2>
-        
-        {step === 1 && (
-          <div>
-            <input 
-              type="text" 
-              name="name" 
-              placeholder="Name" 
-              value={formData.name} 
-              onChange={handleChange} 
-              className="w-full px-3 py-2 border rounded-lg mb-2" 
-              required
-            />
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email" 
-              value={formData.email} 
-              onChange={handleChange} 
-              className="w-full px-3 py-2 border rounded-lg mb-2" 
-              required
-            />
-            <input 
-              type="password" 
-              name="password" 
-              placeholder="Password" 
-              value={formData.password} 
-              onChange={handleChange} 
-              className="w-full px-3 py-2 border rounded-lg mb-2" 
-              required
-            />
-            <button 
-              onClick={nextStep} 
-              className="w-full bg-green-600 text-white py-2 rounded-lg"
-            >
-              Next
-            </button>
-          </div>
-        )}
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Register New Guide</h2>
+      {message && <div className="mb-4 text-center text-red-500">{message}</div>}
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
+        <input type="text" name="g_name" placeholder="Full Name" value={formData.g_name} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
 
-        {step === 2 && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input type="date" name="dob" value={formData.dob} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg mb-2" />
-            <input type="text" name="language" value={formData.language} onChange={handleChange} required placeholder="Languages" className="w-full px-3 py-2 border rounded-lg mb-2" />
-            <select name="gender" value={formData.gender} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg mb-2">
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-            <input type="number" name="price" value={formData.price} onChange={handleChange} required placeholder="Price per day" className="w-full px-3 py-2 border rounded-lg mb-2" />
-            <input type="text" name="location" value={formData.location} onChange={handleChange} required placeholder="Location" className="w-full px-3 py-2 border rounded-lg mb-2" />
-            <select name="availability" value={formData.availability} onChange={handleChange} required className="w-full px-3 py-2 border rounded-lg mb-2">
-              <option value="">Select Availability</option>
-              <option value="Available">Available</option>
-              <option value="Not Available">Not Available</option>
-            </select>
-            <input type="tel" name="contactNumber" value={formData.contactNumber} onChange={handleChange} required placeholder="Contact Number" className="w-full px-3 py-2 border rounded-lg mb-2" />
-            <input type="file" accept=".pdf,.doc,.docx,.jpg,.png" onChange={handleFileChange} required className="w-full px-3 py-2 border rounded-lg mb-2" />
-            <div className="flex justify-between">
-              <button onClick={prevStep} className="px-4 py-2 bg-gray-500 text-white rounded">Back</button>
-              <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded">Submit</button>
-            </div>
-          </form>
-        )}
-      </div>
+        <input type="date" name="g_dob" value={formData.g_dob} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
+
+        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
+
+        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
+
+        <label className="block text-sm font-medium text-gray-700">Languages</label>
+        <select name="language" multiple value={formData.language} onChange={handleChange} required className="w-full border px-4 py-2 rounded h-32">
+          {availableLanguages.map((lang) => (
+            <option key={lang} value={lang}>
+              {lang}
+            </option>
+          ))}
+        </select>
+
+        <label className="block text-sm font-medium text-gray-700">Gender</label>
+        <select name="gender" value={formData.gender} onChange={handleChange} required className="w-full border px-4 py-2 rounded">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <input type="number" name="price" placeholder="Price per Day" value={formData.price} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
+
+        <label className="block text-sm font-medium text-gray-700">Locations</label>
+        <select name="location" multiple value={formData.location} onChange={handleChange} required className="w-full border px-4 py-2 rounded h-32">
+          {locations.map((loc) => (
+            <option key={loc._id} value={loc._id}>
+              {loc.name}
+            </option>
+          ))}
+        </select>
+
+        <input type="text" name="contact_number" placeholder="Contact Number" value={formData.contact_number} onChange={handleChange} required className="w-full border px-4 py-2 rounded" />
+
+        <input type="file" name="photo" accept="image/*" onChange={handleChange} className="w-full" />
+
+        <button type="submit" className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition">
+          Register
+        </button>
+      </form>
     </div>
   );
 };
 
-export default GuideRegister;
+export default GuideRegistrationForm;

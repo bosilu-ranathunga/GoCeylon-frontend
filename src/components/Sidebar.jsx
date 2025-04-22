@@ -31,6 +31,7 @@ const Sidebar = () => {
             submenu: [
                 { name: "New RFID", icon: <GoDotFill />, path: "/admin/add-rfid" },
                 { name: "RFID List", icon: <GoDotFill />, path: "/admin/rfid" },
+                { name: "RFID Tracking", icon: <GoDotFill />, path: "/admin/tracking" },
             ],
         },
         { name: "Logout", icon: <MdLogout />, path: "/logout" },
