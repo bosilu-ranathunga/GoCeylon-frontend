@@ -1,19 +1,15 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaSearch, FaBell, FaUser } from "react-icons/fa";
-import { IoBookmarks } from "react-icons/io5";
-import { SiCodemagic } from "react-icons/si";
-import { IoMdBookmark } from "react-icons/io";
-
+import { FaHome, FaUser } from "react-icons/fa";
 
 const tabs = [
-    { name: "Home", icon: FaHome, path: "/user/" },
-    { name: "AI", icon: SiCodemagic, path: "/user/guide" },
-    { name: "Bookings", icon: IoMdBookmark, path: "/user/bookinghistory" },
-    { name: "Profile", icon: FaUser, path: "/user/profile" },
+    { name: "Home", icon: FaHome, path: "/business/" },
+    { name: "Profile", icon: FaUser, path: "/business/profile" },
 ];
 
-export default function BottomTabBar() {
+
+export default function BottomTabBarBusiness() {
+
     const location = useLocation();
 
     return (
@@ -32,5 +28,5 @@ export default function BottomTabBar() {
                 </Link>
             ))}
         </div>
-    );
+    )
 }

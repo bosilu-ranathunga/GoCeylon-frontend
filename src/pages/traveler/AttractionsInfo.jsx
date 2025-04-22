@@ -1,66 +1,74 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import TopNameBar from "../../components/TopNameBar";
+import API_BASE_URL from "../../config/config";
 
 const AttractionDetails = () => {
-    const navigate = useNavigate(); // Hook to navigate back
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [attraction, setAttraction] = useState({});
 
-    // Fake data for one attraction
-    const attraction = {
-        id: 1,
-        name: "Sigiriya Rock Fortress",
-        mainImage: "https://media.istockphoto.com/id/1146786448/photo/aerial-view-from-above-of-sigiriya-or-the-lion-rock-an-ancient-fortress-and-a-palace-with.jpg?s=1024x1024&w=is&k=20&c=ubzO1vUV3kEmaLIyKyPVqEjsxmEDAerySH47gVKVCzc=",
-        description: "Sigiriya, also known as Lion Rock, is an ancient rock fortress in Sri Lanka. Built by King Kasyapa, it features beautiful frescoes, a mirror wall, and breathtaking views from the summit.",
-        moreImages: [
-            "https://media.istockphoto.com/id/1207898566/photo/sigiriya-rock-sri-lanka.jpg?s=612x612&w=0&k=20&c=PLvcXC5ylG_BlsuQft5ZBMFIQlU2uR6plT8EZS7xPsQ=",
-            "https://media.istockphoto.com/id/1401075720/video/aerial-view-of-sigiriya-lion-rock-fortress.jpg?s=640x640&k=20&c=lM48l-VFMd_gyrfSDrVMG3aC1z95GtCCqxkMd3Cax7E=",
-            "https://media.istockphoto.com/id/1441928899/photo/mahout-riding-his-elephant-sigiriya-rock-on-the-background-sri-lanka.jpg?s=612x612&w=0&k=20&c=JC1fW_oI_9535lH8dZvQQZK5CPAZK269u_5XR3HZFIg="
-        ]
+  useEffect(() => {
+    const fetchAttractionDetails = async () => {
+      console.log(`Fetching data for attraction ID: ${id}`);
+      try {
+        const response = await axios.get(`${API_BASE_URL}/location/${id}`);
+        setAttraction(response.data || {}); // Ensure fallback to empty object
+      } catch (error) {
+        console.error("Error fetching attraction details:", error);
+      }
     };
+    fetchAttractionDetails();
+  }, [id]);
 
-    return (
-        <div className="p-4 pt-20 max-w-4xl mx-auto relative">
-            {/* Back Button */}
-            <button 
-                onClick={() => navigate(-1)} 
-                className="absolute top-4 left-4 bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-3 rounded-full shadow-md flex items-center"
-            >
-                ←
-            </button>
+  const handleShowDirections = () => {
+    if (attraction.google_map_url) {
+      window.open(attraction.google_map_url, "_blank"); // Opens Google Maps in a new tab
+    } else {
+      alert("Google Maps URL not available for this attraction.");
+    }
+  };
 
-            {/* Attraction Name */}
-            <h1 className="text-3xl font-bold text-center mb-4">{attraction.name}</h1>
+  return (
+    <div className="container mx-auto p-6 mt-[4rem] bg-gray-50 min-h-screen">
+      <TopNameBar title="Location" />
 
-            {/* Main Image */}
-            <img src={attraction.mainImage} alt={attraction.name} className="w-full h-56 object-cover rounded-lg shadow-md" />
+      <h1 className="text-2xl font-bold text-center mb-4">{attraction.name || "Unknown Location"}</h1>
 
-            {/* Guide Options */}
-            <div className="flex flex-col gap-4 mt-6">
-                <h2 className="text-xl font-semibold text-center">Choose a Guide</h2>
-                <div className="flex flex-col gap-2">
-                    <button className="bg-green-800 text-white py-2 rounded-lg shadow-md">Local Guide</button>
-                    <button className="bg-green-800 text-white py-2 rounded-lg shadow-md">AI Guide</button>
-                </div>
+      <img
+        src={attraction.image_url?.[0] || "default-image.jpg"}
+        alt={attraction.name || "Unknown Location"}
+        className="w-full h-56 object-cover rounded-lg shadow-md"
+      />
 
-                {/* Show Directions */}
-                <button className="bg-green-600 text-white py-3 rounded-lg shadow-md font-semibold text-lg">
-                    Show Directions
-                </button>
-            </div>
-
-            {/* Description */}
-            <p className="text-gray-700 text-lg mt-6 leading-relaxed">
-                {attraction.description}
-            </p>
-
-            {/* More Images */}
-            <h2 className="text-2xl font-bold mt-8 mb-4 text-center">More Images</h2>
-            <div className="grid grid-cols-2 gap-4">
-                {attraction.moreImages.map((img, index) => (
-                    <img key={index} src={img} alt={`Attraction ${index}`} className="w-full h-32 object-cover rounded-lg shadow-md" />
-                ))}
-            </div>
+      <div className="flex flex-col gap-4 mt-6">
+        <div className="flex flex-col gap-2">
+          <button
+            className="bg-green-800 text-white py-2 rounded-lg shadow-md"
+            onClick={() => navigate(`/user/booking/list/${id}`)} // Pass the attraction ID as a query parameter
+          >
+            Book Guide
+          </button>
+          <button className="bg-gray-500 text-white py-2 rounded-lg shadow-md" onClick={handleShowDirections} >
+            Show Directions
+          </button>
         </div>
-    );
+      </div>
+
+      <div
+        className="text-gray-600 mt-5"
+        dangerouslySetInnerHTML={{ __html: attraction.description }}
+      ></div>
+
+      <h2 className="text-2xl font-bold mt-8 mb-4 text-center">More Images</h2>
+      <div className="grid grid-cols-2 gap-4">
+        {attraction.image_url?.slice(1).map((img, index) => (
+          <img key={index} src={img} alt={`Attraction Image ${index}`} className="w-full h-32 object-cover rounded-lg shadow-md" />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default AttractionDetails;

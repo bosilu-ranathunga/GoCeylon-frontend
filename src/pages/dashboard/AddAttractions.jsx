@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import Sidebar from '../../components/Sidebar';
 import Select from "react-select";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import API_BASE_URL from "../../config/config";
 
 const AddAttractionForm = () => {
 
@@ -95,9 +96,22 @@ const AddAttractionForm = () => {
         let validationErrors = {};
         if (!attractionData.name.trim()) validationErrors.name = "Name is required";
         if (!attractionData.description.trim()) validationErrors.description = "Description is required";
-        if (!attractionData.google_map_url.trim()) validationErrors.google_map_url = "Google Map URL is required";
+        const googleMapUrlRegex = /^https:\/\/maps\.app\.goo\.gl\/[a-zA-Z0-9_-]+/;
+        if (!googleMapUrlRegex.test(attractionData.google_map_url)) {
+            validationErrors.google_map_url = "Invalid Google Map URL format. It should be from the Google Maps mobile app.";
+        }
         if (attractionData.tags.length === 0) validationErrors.tags = "At least one tag is required";
         if (attractionData.images.length === 0) validationErrors.images = "At least one image is required";
+
+        const poiIdRegex = /^PO\d{4}$/;
+        attractionData.points.forEach((poi, index) => {
+            if (!poi.point.trim()) {
+                validationErrors[`point${index}`] = `Point ${index + 1} is missing a Point ID`;
+            } else if (!poiIdRegex.test(poi.point)) {
+                validationErrors[`point${index}`] = `Point ${index + 1} must start with 'PO' followed by 4 digits`;
+            }
+            if (!poi.text.trim()) validationErrors[`text${index}`] = `Point ${index + 1} is missing a Description`;
+        });
 
         attractionData.points.forEach((poi, index) => {
             if (!poi.point.trim()) validationErrors[`point${index}`] = `Point ${index + 1} is missing a Point ID`;
@@ -126,8 +140,11 @@ const AddAttractionForm = () => {
             // Debugging the formData (since console.log can't print FormData directly)
             console.log("Form data before submission:", attractionData);
 
-            const response = await axios.post("http://localhost:3000/location/", formData, {
+            const token = localStorage.getItem("authToken");
+
+            const response = await axios.post(`${API_BASE_URL}/location/`, formData, {
                 headers: {
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "multipart/form-data",
                 },
             });
@@ -289,15 +306,14 @@ const AddAttractionForm = () => {
                         <button
                             type="button"
                             onClick={addPoint}
-                            className="bg-blue-500 text-white px-4 py-2"
+                            className="bg-gray-500 text-white px-4 py-2"
                         >
                             Add Point
                         </button>
 
                     </div>
 
-                    <button type="submit" className="bg-emerald-700 text-white px-4 py-2 w-full">Add Attraction</button>
-
+                    <button type="submit" class="bg-emerald-700 text-white px-6 py-3 rounded-lg w-full transition duration-300">Add Attraction</button>
                 </form>
             </div>
         </div>
