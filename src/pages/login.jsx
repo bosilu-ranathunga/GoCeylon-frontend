@@ -101,7 +101,7 @@ const Login = () => {
               <input type="checkbox" id="remember" className="h-4 w-4 text-[#007a55]" />
               <label htmlFor="remember" className="text-sm text-gray-600">Remember me</label>
             </div>
-            <a href="#" className="text-sm text-[#007a55] hover:underline">Forgot Password?</a>
+            <Link to="/reset" className="text-sm text-[#007a55] hover:underline">Forgot Password?</Link>
           </div>
 
           <button
@@ -114,9 +114,7 @@ const Login = () => {
         </form>
 
         <div className="mt-4">
-          <p className="text-center text-gray-500 text-sm">Or <Link to="/" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
-
-
+          <p className="text-center text-gray-500 text-sm">OR <Link to="/" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
         </div>
 
       </div>
