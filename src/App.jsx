@@ -26,6 +26,7 @@ import UpdateRFID from './pages/dashboard/UpdateRFID';
 import Scanner from './pages/traveler/Scaner';
 import PrivateRoute from './components/PrivateRoute';
 import Logout from './pages/Logout';
+import PasswordReset from './pages/PasswordReset';
 
 import BusinessHome from './pages/business/Home';
 import AddBusiness from './pages/business/AddBusiness';
@@ -80,9 +81,8 @@ export default function App() {
 
           <Route path='/' element={<Login />} />
 
-
-          <Route path="/403" element={<Test />} />
-
+          <Route path='/reset' element={<PasswordReset />} />
+          <Route path="/403" element={<Logout />} />
           <Route path="*" element={<Logout />} />
 
         </Routes>
