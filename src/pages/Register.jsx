@@ -321,7 +321,7 @@ export default function RegistrationForm() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen overflow-hidden fixed w-full bg-gray-50">
             {/* App-like header */}
             <header className="bg-[#007a55] text-white py-4 px-5 flex items-center shadow-sm">
                 {step > 1 && !isSubmitted && (
@@ -337,7 +337,7 @@ export default function RegistrationForm() {
             </header>
 
             {/* Progress indicator */}
-            <div className="flex justify-center py-4 bg-white border-b">
+            <div className="flex justify-center py-4">
                 <div className="flex space-x-3">
                     {Array.from({ length: totalSteps() }).map((_, index) => (
                         <div
@@ -350,7 +350,7 @@ export default function RegistrationForm() {
             </div>
 
             {/* Form content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto h-[calc(100vh_-_188px)] overflow-scroll max-h-[calc(100vh_-_188px)]">
                 <AnimatePresence mode="wait">
                     {isSubmitted ? (
                         <motion.div
@@ -747,7 +747,7 @@ export default function RegistrationForm() {
 
             {/* Fixed bottom buttons */}
             {!isSubmitted && (
-                <div className="px-5 py-4 border-t border-gray-200 bg-white shadow-md">
+                <div className="px-5 py-4 border-t absolute w-full bottom-0 border-gray-200 bg-white shadow-md">
                     {step < 3 && (
                         <button
                             className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium flex items-center justify-center shadow-sm hover:bg-[#006045] transition-colors disabled:opacity-70"
