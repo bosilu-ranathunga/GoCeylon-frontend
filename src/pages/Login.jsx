@@ -114,7 +114,7 @@ const Login = () => {
         </form>
 
         <div className="mt-4">
-          <p className="text-center text-gray-500 text-sm">OR <Link to="/" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
+          <p className="text-center text-gray-500 text-sm">OR <Link to="/register" className="text-sm text-[#007a55] hover:underline">Sign Up</Link></p>
         </div>
 
       </div>
