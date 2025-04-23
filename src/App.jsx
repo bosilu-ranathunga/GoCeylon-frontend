@@ -35,6 +35,8 @@ import BusUpdate from './pages/business/Update';
 import BusProfile from './pages/business/Profile';
 
 import PointGuide from './pages/traveler/PointGuide';
+import Register from './pages/UserRegister';
+import Register1 from './pages/Register';
 
 
 export default function App() {
@@ -80,6 +82,9 @@ export default function App() {
           <Route path='/business/profile' element={<BusProfile />} />
 
           <Route path='/' element={<Login />} />
+
+          <Route path='/register' element={<Register1 />} />
+
 
           <Route path='/reset' element={<PasswordReset />} />
           <Route path="/403" element={<Logout />} />
