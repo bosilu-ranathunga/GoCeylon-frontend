@@ -3,6 +3,11 @@ import axios from "axios";
 import API_BASE_URL from "../config/config";
 
 export default function Register() {
+
+  useEffect(() => {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
+  }, []);
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
