@@ -1,7 +1,9 @@
 "use client"
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Check, ChevronLeft, ChevronRight, User, Mail, Phone, Lock, Loader2, Briefcase, MapPin } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
+import axios from "axios";
+import API_BASE_URL from "../config/config";
 
 const destinations = [
     {
@@ -39,6 +41,11 @@ const businessTypes = [
 ]
 
 export default function RegistrationForm() {
+
+    useEffect(() => {
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
+    }, []);
+
     const [step, setStep] = useState(1)
     const [formData, setFormData] = useState({
         userType: "",
@@ -245,18 +252,6 @@ export default function RegistrationForm() {
         }
     }
 
-    const handleSubmit = () => {
-        if (validateFinalStep()) {
-            setIsLoading(true)
-            // Simulate form submission
-            setTimeout(() => {
-                console.log("Form submitted:", formData)
-                setIsSubmitted(true)
-                setIsLoading(false)
-            }, 1000)
-        }
-    }
-
     const resetForm = () => {
         setIsSubmitted(false)
         setStep(1)
@@ -317,6 +312,45 @@ export default function RegistrationForm() {
                 }
             default:
                 return "Registration"
+        }
+    }
+
+    const handleTravelerSubmit = async () => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/users`, {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                password: formData.password,
+                destination: formData.destination
+            });
+            alert("User registered successfully!");
+            console.log(response.data);
+        } catch (error) {
+            alert("Error registering user");
+            console.error(error);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (validateFinalStep()) {
+            setIsLoading(true)
+            // Simulate form submission
+            setTimeout(() => {
+                console.log("Form submitted:", formData)
+                setIsSubmitted(true)
+                setIsLoading(false)
+            }, 1000)
+
+            if (formData.userType === "Traveller") {
+                // Handle traveller-specific submission logic here
+                handleTravelerSubmit();
+            } else if (formData.userType === "Guide") {
+                // Handle guide-specific submission logic here 
+            } else if (formData.userType === "Business") {
+                // Handle business-specific submission logic here
+            }
+
         }
     }
 
