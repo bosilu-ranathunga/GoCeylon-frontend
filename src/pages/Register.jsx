@@ -1,9 +1,9 @@
-"use client"
 import React, { useState, useEffect } from "react";
 import { Check, ChevronLeft, ChevronRight, User, Mail, Phone, Lock, Loader2, Briefcase, MapPin } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import axios from "axios";
 import API_BASE_URL from "../config/config";
+import { Link, useNavigate } from 'react-router-dom';
 
 const destinations = [
     {
@@ -41,6 +41,8 @@ const businessTypes = [
 ]
 
 export default function RegistrationForm() {
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
@@ -254,7 +256,6 @@ export default function RegistrationForm() {
 
     const resetForm = () => {
         setIsSubmitted(false)
-        setStep(1)
         setFormData({
             userType: "",
             name: "",
@@ -269,6 +270,7 @@ export default function RegistrationForm() {
             businessType: "",
             employeeCount: "",
         })
+        navigate('/login');
     }
 
     // Get icon for input field
@@ -324,23 +326,19 @@ export default function RegistrationForm() {
                 password: formData.password,
                 destination: formData.destination
             });
-            alert("User registered successfully!");
             console.log(response.data);
         } catch (error) {
             alert("Error registering user");
             console.error(error);
+        } finally {
+            setIsSubmitted(true);
+            setIsLoading(false);
         }
     };
 
     const handleSubmit = () => {
         if (validateFinalStep()) {
             setIsLoading(true)
-            // Simulate form submission
-            setTimeout(() => {
-                console.log("Form submitted:", formData)
-                setIsSubmitted(true)
-                setIsLoading(false)
-            }, 1000)
 
             if (formData.userType === "Traveller") {
                 // Handle traveller-specific submission logic here
@@ -358,6 +356,14 @@ export default function RegistrationForm() {
         <div className="flex flex-col min-h-screen overflow-hidden fixed w-full bg-gray-50">
             {/* App-like header */}
             <header className="bg-[#007a55] text-white py-4 px-5 flex items-center shadow-sm">
+                {step == 1 && (
+                    <button
+                        onClick={() => { navigate('/login'); }}
+                        className="mr-2 -ml-1 p-1.5 rounded-full hover:bg-[#006045] transition-colors"
+                    >
+                        <ChevronLeft size={22} />
+                    </button>
+                )}
                 {step > 1 && !isSubmitted && (
                     <button
                         onClick={goToPreviousStep}
@@ -408,7 +414,7 @@ export default function RegistrationForm() {
                                     className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium shadow-sm hover:bg-[#006045] transition-colors"
                                     onClick={resetForm}
                                 >
-                                    Register Another Account
+                                    Login To The Account
                                 </button>
                             </div>
                         </motion.div>
@@ -780,36 +786,38 @@ export default function RegistrationForm() {
             </div>
 
             {/* Fixed bottom buttons */}
-            {!isSubmitted && (
-                <div className="px-5 py-4 border-t absolute w-full bottom-0 border-gray-200 bg-white shadow-md">
-                    {step < 3 && (
-                        <button
-                            className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium flex items-center justify-center shadow-sm hover:bg-[#006045] transition-colors disabled:opacity-70"
-                            onClick={goToNextStep}
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                            ) : (
-                                <>
-                                    <span>Continue</span>
-                                    <ChevronRight size={20} className="ml-1" />
-                                </>
-                            )}
-                        </button>
-                    )}
+            {
+                !isSubmitted && (
+                    <div className="px-5 py-4 border-t absolute w-full bottom-0 border-gray-200 bg-white shadow-md">
+                        {step < 3 && (
+                            <button
+                                className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium flex items-center justify-center shadow-sm hover:bg-[#006045] transition-colors disabled:opacity-70"
+                                onClick={goToNextStep}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                                ) : (
+                                    <>
+                                        <span>Continue</span>
+                                        <ChevronRight size={20} className="ml-1" />
+                                    </>
+                                )}
+                            </button>
+                        )}
 
-                    {step === 3 && (
-                        <button
-                            className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium shadow-sm hover:bg-[#006045] transition-colors flex items-center justify-center disabled:opacity-70"
-                            onClick={handleSubmit}
-                            disabled={isLoading}
-                        >
-                            {isLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <span>Complete Registration</span>}
-                        </button>
-                    )}
-                </div>
-            )}
-        </div>
+                        {step === 3 && (
+                            <button
+                                className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium shadow-sm hover:bg-[#006045] transition-colors flex items-center justify-center disabled:opacity-70"
+                                onClick={handleSubmit}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <span>Complete Registration</span>}
+                            </button>
+                        )}
+                    </div>
+                )
+            }
+        </div >
     )
 }
