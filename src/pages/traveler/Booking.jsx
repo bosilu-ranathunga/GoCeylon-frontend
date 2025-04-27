@@ -21,6 +21,11 @@ export default function Booking() {
     const [loading, setLoading] = useState(false);
     const { showModal, closeModal } = useModal();
 
+    // pull userId from JWT
+    const token = localStorage.getItem('authToken');
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    const userid = decoded.id;
+
     useEffect(() => {
         document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
     }, []);
@@ -37,39 +42,22 @@ export default function Booking() {
         return age;
     };
 
-
-    // pull userId from JWT
-    const token = localStorage.getItem('authToken');
-    const decoded = JSON.parse(atob(token.split('.')[1]));
-    const userid = decoded.id;
-
-
-
     const handleBooking = async () => {
-        if (!expectedDuration || numberOfMembers < 1) {
-            return alert('Please enter valid duration and member count.');
-        }
-        if (expectedDuration > 24) {
-            return alert('Duration cannot exceed 24 hours.');
-        }
 
         const payload = {
             userId: userid,
             guideId: guide._id,
-            locationId: locationId,                            // comes from URL
-            expectedDuration: Number(expectedDuration),
-            numberOfMembers: Number(numberOfMembers),
+            locationId: locationId,
+            expectedDuration: 1,
+            numberOfMembers: 1,
             startAt: 0,
             endAt: 0,
             price: 0,
         };
-        console.log("This is working");
-        console.log(payload);
+
         try {
             setLoading(true);
-            const res = await axios.post(
-                `${API_BASE_URL}/booking`,    // match your backend route
-                payload,
+            const res = await axios.post(`${API_BASE_URL}/booking`, payload,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
@@ -111,7 +99,7 @@ export default function Booking() {
             </div>
 
             {/* Guide Basic Info */}
-            <div className="bg-white p-5 pb-[3rem]">
+            <div className="bg-white p-5 pb-[7rem]">
                 <h2 className="text-2xl font-bold text-gray-800 mb-1">{guide.g_name}</h2>
                 <p className="text-[#007a55] font-medium mb-4">Professional Tour Guide</p>
 
@@ -161,19 +149,15 @@ export default function Booking() {
                 </div>
             </div>
 
-            {/* Availability Notice */}
-            <div className="bg-[#e6f5f0] p-4 flex items-center justify-center border-y border-[#c5e8dc]">
-                <Calendar className="h-5 w-5 text-[#007a55] mr-2" />
-                <p className="text-sm font-medium text-[#007a55]">Available for bookings</p>
-            </div>
-
             {/* Fixed bottom button */}
             <div className="fixed bottom-0 left-0 right-0 px-5 py-4 border-t border-gray-200 bg-white shadow-lg">
                 <motion.button
                     whileTap={{ scale: 0.98 }}
+                    onClick={handleBooking}
+                    disabled={loading}
                     className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium shadow-sm hover:bg-[#006045] transition-colors"
                 >
-                    Request Booking
+                    {loading ? 'Requesting…' : 'Request Booking'}
                 </motion.button>
             </div>
         </div>
