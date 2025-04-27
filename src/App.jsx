@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Attractions from './pages/traveler/Attractions';
 import Profile from './pages/traveler/Profile';
 import Booking from './pages/traveler/Booking';
-import UserRegister from './pages/UserRegister';
 import GuideRegister from './pages/GuideRegister';
 import BusinessmanRegister from './pages/BusinessmanRegister'
 import AttractionsInfo from './pages/traveler/AttractionsInfo';
@@ -12,7 +11,6 @@ import BookingInfo from './pages/traveler/BookingInfo';
 import BookingList from './pages/traveler/BookingList';
 import BookingHistory from './pages/traveler/BookingHistory'
 import Login from './pages/Login';
-import Test from './pages/Tests';
 import Dashboard from './pages/dashboard/Dashboard';
 import AiGuide from './pages/traveler/AiGuide';
 import NewRFID from './pages/dashboard/NewRFID';
@@ -35,8 +33,8 @@ import BusUpdate from './pages/business/Update';
 import BusProfile from './pages/business/Profile';
 
 import PointGuide from './pages/traveler/PointGuide';
-import Register from './pages/UserRegister';
 import Register1 from './pages/Register';
+import Guide from './pages/guide/Guide';
 
 
 export default function App() {
@@ -47,7 +45,6 @@ export default function App() {
 
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
-          <Route path="/register1" element={<UserRegister />} />
           <Route path="/register2" element={<GuideRegister />} />
           <Route path="/register3" element={<BusinessmanRegister />} />
 
@@ -88,6 +85,7 @@ export default function App() {
 
           <Route path='/reset' element={<PasswordReset />} />
           <Route path="/403" element={<Logout />} />
+          <Route path="/guide" element={<Guide />} />
           <Route path="*" element={<Logout />} />
 
         </Routes>

@@ -1,154 +1,181 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import TopNameBar from "../../components/TopNameBar";
-import API_BASE_URL from "../../config/config";
+import TopNameBar from '../../components/TopNameBar';
+import API_BASE_URL from '../../config/config';
 import { useModal } from '../../context/ModalContext';
+import { motion } from "framer-motion"
+import { MapPin, Globe, User, Calendar } from "lucide-react"
+
+
 
 export default function Booking() {
+    const { state } = useLocation();
 
-    const location = useLocation();
     const navigate = useNavigate();
-    const { guide } = location.state || {};
+    const { guide } = state || {};
+    const locationId = guide?.id;
 
-    const [bookingDate, setBookingDate] = useState('');
-    const [bookingTime, setBookingTime] = useState('');
-    const [bookingLocation, setBookingLocation] = useState('');
-    const [status, setStatus] = useState('pending');
+    const [expectedDuration, setExpectedDuration] = useState('');
+    const [numberOfMembers, setNumberOfMembers] = useState(1);
     const [loading, setLoading] = useState(false);
-
     const { showModal, closeModal } = useModal();
 
-    if (!guide) {
-        return <div className='text-center text-red-600 font-semibold'>No guide selected.</div>;
-    }
+    useEffect(() => {
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
+    }, []);
 
-    /*---------this is how we get the logged user's id-------------*/
+
+    const calculateAge = (dob) => {
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+
+    // pull userId from JWT
     const token = localStorage.getItem('authToken');
     const decoded = JSON.parse(atob(token.split('.')[1]));
-    const userId = decoded.id;
-    console.log(userId);
-    /*--------------------------------------------------------------*/
+    const userid = decoded.id;
+
+
 
     const handleBooking = async () => {
-        if (!bookingDate || !bookingTime || !bookingLocation || !status) {
-            alert('Please fill in all fields.');
-            return;
+        if (!expectedDuration || numberOfMembers < 1) {
+            return alert('Please enter valid duration and member count.');
+        }
+        if (expectedDuration > 24) {
+            return alert('Duration cannot exceed 24 hours.');
         }
 
-        // Validate booking time (cannot exceed 24 hours)
-        if (bookingTime > 24) {
-            alert('Booking duration cannot be more than 24 hours.');
-            return;
-        }
-
-        const bookingData = {
-            b_date: bookingDate,
-            b_time: bookingTime,
-            b_location: bookingLocation,
-            b_user: userId,
-            b_guide: guide._id, // Guide ID
-            price: guide.price * bookingTime,
-            status: status
+        const payload = {
+            userId: userid,
+            guideId: guide._id,
+            locationId: locationId,                            // comes from URL
+            expectedDuration: Number(expectedDuration),
+            numberOfMembers: Number(numberOfMembers),
+            startAt: 0,
+            endAt: 0,
+            price: 0,
         };
-
+        console.log("This is working");
+        console.log(payload);
         try {
             setLoading(true);
-            const response = await axios.post(`${API_BASE_URL}/booking`, bookingData, {
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            const res = await axios.post(
+                `${API_BASE_URL}/booking`,    // match your backend route
+                payload,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            showModal({
+                type: 'success',
+                title: 'Requested!',
+                content: 'Your booking is pending confirmation.',
+                buttons: [
+                    {
+                        label: 'OK',
+                        onClick: () => {
+                            closeModal();
+                            navigate('/user/bookinghistory', { state: { booking: res.data } });
+                        },
+                        className: 'w-full py-2 bg-green-600 text-white rounded'
+                    }
+                ]
             });
+        } catch (err) {
+            console.error('Booking Error:', err.response?.data || err.message);
+            alert(`Booking failed: ${err.response?.data?.message || err.message}`);
+        } finally {
             setLoading(false);
-            if (response.status === 201 && response.data) {
-                showModal({
-                    type: 'success',
-                    title: 'Success!',
-                    content: 'Guide booked successfully!',
-                    buttons: [
-                        {
-                            label: 'Ok',
-                            onClick: closeModal,
-                            className: 'w-full px-4 py-2 text-white bg-[#007a55] rounded'
-                        }
-                    ]
-                });
-                navigate('/user/bookinghistory', { state: { booking: response.data } });
-            }
-        } catch (error) {
-            console.error('Booking Error:', error.response?.data || error.message);
-            setLoading(false);
-            alert(`Failed to book the guide: ${error.response?.data?.message || 'Unknown error'}`);
         }
     };
 
     return (
-        <div className='container mx-auto p-6 mt-[4rem] bg-gray-50 min-h-screen'>
+        <div className="flex flex-col min-h-screen bg-gray-50">
+            {/* Header */}
+            <TopNameBar title="Guide Profile" />
 
-            <TopNameBar title="Book a Guide" />
-
-            {/* Guide Info Card */}
-            <div className='mt-1 p-6 bg-white border border-gray-200 rounded-lg shadow-md'>
-                <h3 className='text-xl font-semibold text-green-800'>{guide.g_name}</h3>
-                <p className='text-sm text-green-700'>Language: {guide.language}</p>
-                <p className='text-sm text-green-700'>Price: ${guide.price} / hr</p>
-                <p className='text-sm text-green-700'>Location: {guide.location.join(', ')}</p>
-                <p className='text-sm text-green-700'>Contact: {guide.contact_number}</p>
-                <p className={`text-sm font-semibold ${guide.availability ? 'text-green-700' : 'text-red-600'}`}>
-                    {guide.availability ? 'Available' : 'Not Available'}
-                </p>
+            {/* Guide Image */}
+            <div className="w-full aspect-square bg-gray-200">
+                <img
+                    src={guide.image ? `${API_BASE_URL}/${guide.image}` : '/default-profile.png'}
+                    alt={`${guide.g_name}, Tour Guide`}
+                    className="w-full h-full object-cover"
+                />
             </div>
 
-            {/* Booking Form Directly Below Guide Info */}
-            <div className="mt-4 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Select Booking Date:</label>
-                <input
-                    type="date"
-                    value={bookingDate}
-                    onChange={(e) => setBookingDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                />
+            {/* Guide Basic Info */}
+            <div className="bg-white p-5 pb-[3rem]">
+                <h2 className="text-2xl font-bold text-gray-800 mb-1">{guide.g_name}</h2>
+                <p className="text-[#007a55] font-medium mb-4">Professional Tour Guide</p>
 
-                <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Select Duration (Hours):</label>
-                <input
-                    type="number"
-                    value={bookingTime}
-                    onChange={(e) => setBookingTime(e.target.value)}
-                    min="1"
-                    max="24"  // Set the maximum value to 24
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                />
+                <div className="space-y-5">
+                    {/* Age & Gender */}
+                    <div className="flex items-center">
+                        <div className="bg-[#e6f5f0] p-2 rounded-full mr-4">
+                            <User className="h-5 w-5 text-[#007a55]" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500 mb-0.5">Age & Gender</p>
+                            <p className="font-medium">
+                                {/*{guide.age} years • {guide.gender}*/}
+                                {calculateAge(guide.g_dob)} years • {guide.gender}
+                            </p>
+                        </div>
+                    </div>
 
-                <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Enter Location:</label>
-                <input
-                    type="text"
-                    placeholder="Enter location"
-                    value={bookingLocation}
-                    onChange={(e) => setBookingLocation(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                />
+                    {/* Languages */}
+                    <div className="flex items-center">
+                        <div className="bg-[#e6f5f0] p-2 rounded-full mr-4">
+                            <Globe className="h-5 w-5 text-[#007a55]" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500 mb-0.5">Languages</p>
+                            <p className="font-medium">{guide.language.join(", ")}</p>
+                        </div>
+                    </div>
 
-                <label className="block text-sm font-medium text-gray-700 mt-3 mb-2">Select Status:</label>
-                <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                >
-                    <option value="confirmed">Confirmed</option>
-                </select>
-
-                <p className="text-lg font-bold text-green-800 mt-3">Total Price: ${guide.price * bookingTime}</p>
-
-                <div className="flex justify-end gap-3 mt-4">
-                    <button
-                        onClick={handleBooking}
-                        className="bg-[#007a55] text-white px-4 py-2 rounded-lg"
-                        disabled={loading}
-                    >
-                        {loading ? 'Booking...' : 'Confirm Booking'}
-                    </button>
+                    {/* Support Locations */}
+                    <div className="flex">
+                        <div className="bg-[#e6f5f0] p-2 rounded-full mr-4 mt-0.5">
+                            <MapPin className="h-5 w-5 text-[#007a55]" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500 mb-0.5">Support Locations</p>
+                            <ul className="space-y-1">
+                                {guide.location.map((location, index) => (
+                                    <li key={index} className="font-medium flex items-center">
+                                        <span className="w-1.5 h-1.5 bg-[#007a55] rounded-full mr-2"></span>
+                                        {location.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            {/* Availability Notice */}
+            <div className="bg-[#e6f5f0] p-4 flex items-center justify-center border-y border-[#c5e8dc]">
+                <Calendar className="h-5 w-5 text-[#007a55] mr-2" />
+                <p className="text-sm font-medium text-[#007a55]">Available for bookings</p>
+            </div>
+
+            {/* Fixed bottom button */}
+            <div className="fixed bottom-0 left-0 right-0 px-5 py-4 border-t border-gray-200 bg-white shadow-lg">
+                <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-[#007a55] text-white py-3.5 rounded-lg font-medium shadow-sm hover:bg-[#006045] transition-colors"
+                >
+                    Request Booking
+                </motion.button>
+            </div>
         </div>
     );
 }
