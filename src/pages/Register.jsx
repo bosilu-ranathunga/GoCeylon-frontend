@@ -44,32 +44,43 @@ export default function RegistrationForm() {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
-    }, []);
-
     const [step, setStep] = useState(1)
     const [formData, setFormData] = useState({
         userType: "",
-        // Common fields
         name: "",
         email: "",
         phone: "",
         password: "",
         confirmPassword: "",
-        // Traveller specific
         destination: [],
-        // Guide specific
         languages: [],
         experience: "",
-        // Business specific
         companyName: "",
         businessType: "",
         employeeCount: "",
+        dob: "",
+        gender: "",
+        price: "",
+        location: [],
+        photo: null
     })
     const [errors, setErrors] = useState({})
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [locations, setLocations] = useState([]);
+
+    useEffect(() => {
+        document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
+        const fetchLocations = async () => {
+            try {
+                const res = await axios.get(`${API_BASE_URL}/location`);
+                setLocations(res.data.locations);
+            } catch (error) {
+                console.error('Failed to fetch locations:', error);
+            }
+        };
+        fetchLocations();
+    }, []);
 
     const totalSteps = () => {
         return 3 // User type + Personal info + Type-specific info
@@ -120,48 +131,72 @@ export default function RegistrationForm() {
     }
 
     const validateFinalStep = () => {
-        const newErrors = {}
+        const newErrors = {};
 
         if (formData.userType === "Traveller") {
             if (formData.destination.length === 0) {
-                newErrors.destination = "Please select at least one destination"
+                newErrors.destination = "Please select at least one destination";
             }
         } else if (formData.userType === "Guide") {
             if (formData.languages.length === 0) {
-                newErrors.languages = "Please select at least one language"
+                newErrors.languages = "Please select at least one language";
             }
-            if (!formData.experience) {
-                newErrors.experience = "Please select your experience level"
+            if (!formData.gender) {
+                newErrors.gender = "Please select your gender";
+            }
+            if (!formData.dob) {
+                newErrors.dob = "Please enter your date of birth";
+            }
+            if (!formData.price) {
+                newErrors.price = "Please enter your price per hour";
+            }
+            if (formData.location.length === 0) {
+                newErrors.location = "Please select at least one location";
             }
         } else if (formData.userType === "Business") {
             if (!formData.companyName.trim()) {
-                newErrors.companyName = "Company name is required"
+                newErrors.companyName = "Company name is required";
             }
             if (!formData.businessType) {
-                newErrors.businessType = "Please select your business type"
+                newErrors.businessType = "Please select your business type";
             }
             if (!formData.employeeCount) {
-                newErrors.employeeCount = "Please select employee count"
+                newErrors.employeeCount = "Please select employee count";
             }
         }
 
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     }
 
     const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData({
-            ...formData,
-            [name]: value,
-        })
+        const { name, value, type, files, multiple } = e.target;
+
+        if (type === 'file') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: files[0]
+            }));
+        } else if (multiple) {
+            // Handle multiple select
+            const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+            setFormData(prev => ({
+                ...prev,
+                [name]: selectedOptions
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value,
+            }));
+        }
 
         // Clear error when user types
         if (errors[name]) {
-            setErrors({
-                ...errors,
+            setErrors(prev => ({
+                ...prev,
                 [name]: undefined,
-            })
+            }));
         }
     }
 
@@ -269,6 +304,11 @@ export default function RegistrationForm() {
             companyName: "",
             businessType: "",
             employeeCount: "",
+            dob: "",
+            gender: "",
+            price: "",
+            location: [],
+            photo: null
         })
         navigate('/login');
     }
@@ -317,6 +357,7 @@ export default function RegistrationForm() {
         }
     }
 
+
     const handleTravelerSubmit = async () => {
         try {
             const response = await axios.post(`${API_BASE_URL}/users`, {
@@ -336,19 +377,104 @@ export default function RegistrationForm() {
         }
     };
 
-    const handleSubmit = () => {
-        if (validateFinalStep()) {
-            setIsLoading(true)
+    const handleGuideSubmit = async () => {
+        try {
+            setIsLoading(true);
+            const formDataToSend = new FormData();
 
-            if (formData.userType === "Traveller") {
-                // Handle traveller-specific submission logic here
-                handleTravelerSubmit();
-            } else if (formData.userType === "Guide") {
-                // Handle guide-specific submission logic here 
-            } else if (formData.userType === "Business") {
-                // Handle business-specific submission logic here
+            // Add all required fields
+            formDataToSend.append('g_name', formData.name);
+            formDataToSend.append('g_dob', formData.dob);
+            formDataToSend.append('email', formData.email);
+            formDataToSend.append('password', formData.password);
+            formDataToSend.append('gender', formData.gender);
+            formDataToSend.append('contact_number', formData.phone);
+
+            // Handle arrays properly
+            formData.languages.forEach(lang => {
+                formDataToSend.append('language[]', lang);
+            });
+
+            formData.location.forEach(loc => {
+                formDataToSend.append('location[]', loc);
+            });
+
+            // Add price as a number
+            formDataToSend.append('price', parseFloat(formData.price));
+
+            // Add photo if exists
+            if (formData.photo) {
+                formDataToSend.append('photo', formData.photo);
             }
 
+            console.log('Sending guide data:', {
+                g_name: formData.name,
+                g_dob: formData.dob,
+                email: formData.email,
+                gender: formData.gender,
+                contact_number: formData.phone,
+                languages: formData.languages,
+                locations: formData.location,
+                price: formData.price
+            });
+
+            const response = await axios.post(`${API_BASE_URL}/guides`, formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            if (response.data.success) {
+                setIsSubmitted(true);
+                setErrors({});
+            } else {
+                setErrors({ submit: response.data.message || "Registration failed" });
+            }
+        } catch (error) {
+            console.error('Guide registration error:', error);
+            console.error('Error response:', error.response?.data);
+            setErrors({ submit: error.response?.data?.message || "Error registering guide. Please try again." });
+        } finally {
+            setIsSubmitted(true);
+            setIsLoading(false);
+        }
+    };
+
+    const handleBusinessSubmit = async () => {
+        try {
+            setIsLoading(true);
+            const response = await axios.post(`${API_BASE_URL}/businesses`, {
+                name: formData.companyName,
+                email: formData.email,
+                phone: formData.phone,
+                password: formData.password,
+                businessType: formData.businessType,
+                employeeCount: formData.employeeCount
+            });
+
+            if (response.data.success) {
+                setIsSubmitted(true);
+            } else {
+                setErrors({ submit: response.data.message || "Registration failed" });
+            }
+        } catch (error) {
+            setErrors({ submit: error.response?.data?.message || "Error registering business" });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (validateFinalStep()) {
+            setIsLoading(true);
+
+            if (formData.userType === "Traveller") {
+                handleTravelerSubmit();
+            } else if (formData.userType === "Guide") {
+                handleGuideSubmit();
+            } else if (formData.userType === "Business") {
+                handleBusinessSubmit();
+            }
         }
     }
 
@@ -642,34 +768,135 @@ export default function RegistrationForm() {
                                     </div>
 
                                     <div className="mb-6">
-                                        <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1.5">
-                                            Years of Experience
+                                        <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1.5">
+                                            Gender
                                         </label>
                                         <select
-                                            id="experience"
-                                            name="experience"
-                                            value={formData.experience}
+                                            id="gender"
+                                            name="gender"
+                                            value={formData.gender}
                                             onChange={handleChange}
-                                            className={`appearance-none block w-full bg-white text-gray-700 border ${errors.experience ? "border-red-500" : "border-gray-300"
+                                            className={`appearance-none block w-full bg-white text-gray-700 border ${errors.gender ? "border-red-500" : "border-gray-300"
                                                 } rounded-lg py-3.5 px-4 leading-tight focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent transition-colors`}
                                         >
-                                            <option value="">Select experience</option>
-                                            <option value="0-1">Less than 1 year</option>
-                                            <option value="1-3">1-3 years</option>
-                                            <option value="3-5">3-5 years</option>
-                                            <option value="5-10">5-10 years</option>
-                                            <option value="10+">More than 10 years</option>
+                                            <option value="">Select gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
                                         </select>
-                                        {errors.experience && (
+                                        {errors.gender && (
                                             <motion.p
                                                 initial={{ opacity: 0, y: -10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 className="text-red-500 text-sm mt-1"
                                             >
-                                                {errors.experience}
+                                                {errors.gender}
                                             </motion.p>
                                         )}
                                     </div>
+
+                                    <div className="mb-6">
+                                        <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1.5 capitalize">
+                                            Price per houre
+                                        </label>
+                                        <input
+                                            className={`appearance-none block w-full bg-white text-gray-700 border ${errors.price ? "border-red-500" : "border-gray-300"
+                                                } rounded-lg py-3.5 pl-11 pr-4 leading-tight focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent transition-colors`}
+                                            type="number"
+                                            id="price"
+                                            name="price"
+                                            value={formData.price}
+                                            onChange={handleChange}
+                                        />
+                                        {errors.price && (
+                                            <motion.p
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="text-red-500 text-sm mt-1"
+                                            >
+                                                {errors.price}
+                                            </motion.p>
+                                        )}
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <label htmlFor="dob" className="block text-sm font-medium text-gray-700 mb-1.5 capitalize">
+                                            Birth Date
+                                        </label>
+                                        <input
+                                            className={`appearance-none block w-full bg-white text-gray-700 border ${errors.dob ? "border-red-500" : "border-gray-300"
+                                                } rounded-lg py-3.5 pl-11 pr-4 leading-tight focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent transition-colors`}
+                                            type="date"
+                                            id="dob"
+                                            name="dob"
+                                            value={formData.dob}
+                                            onChange={handleChange}
+                                        />
+                                        {errors.price && (
+                                            <motion.p
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="text-red-500 text-sm mt-1"
+                                            >
+                                                {errors.dob}
+                                            </motion.p>
+                                        )}
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <label htmlFor="photo" className="block text-sm font-medium text-gray-700 mb-1.5 capitalize">
+                                            Profile Photo
+                                        </label>
+                                        <input
+                                            className={`appearance-none block w-full bg-white text-gray-700 border ${errors.dob ? "border-red-500" : "border-gray-300"
+                                                } rounded-lg py-3.5 pl-11 pr-4 leading-tight focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent transition-colors`}
+                                            type="file"
+                                            id="photo"
+                                            accept="image/*"
+                                            name="photo"
+                                            onChange={handleChange}
+                                        />
+                                        {errors.photo && (
+                                            <motion.p
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="text-red-500 text-sm mt-1"
+                                            >
+                                                {errors.photo}
+                                            </motion.p>
+                                        )}
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1.5 capitalize">
+                                            Locations
+                                        </label>
+
+                                        <select
+                                            name="location"
+                                            id="location"
+                                            multiple
+                                            value={formData.location || []}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full border px-4 py-2 rounded h-32"
+                                        >
+                                            {locations && locations.map((loc) => (
+                                                <option key={loc._id} value={loc._id}>
+                                                    {loc.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {errors.location && (
+                                            <motion.p
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="text-red-500 text-sm mt-1"
+                                            >
+                                                {errors.location}
+                                            </motion.p>
+                                        )}
+                                    </div>
+
                                 </motion.div>
                             )}
 

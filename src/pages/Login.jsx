@@ -43,7 +43,7 @@ const Login = () => {
       // Redirect user based on userType (optional)
       const userType = response.data.user.userType;
       if (userType === 'guide') {
-        navigate('/');
+        navigate('/guide');
       } else if (userType === 'tourist') {
         navigate('/user/');
       } else if (userType === 'admin') {
