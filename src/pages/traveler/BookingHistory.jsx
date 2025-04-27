@@ -1,267 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import { useNavigate, Link } from 'react-router-dom';
-import { FaEye } from "react-icons/fa";
-import { IoMdSearch } from "react-icons/io";
-import TopAppBar from '../../components/TopAppBar';
-import BottomTabBar from '../../components/BottomTabBar';
-import API_BASE_URL from "../../config/config";
-import { useModal } from '../../context/ModalContext';
-
+import API_BASE_URL from '../../config/config';
 
 export default function BookingHistory() {
-  /*---------this is who we get loged user id-------------*/
-  const token = localStorage.getItem('authToken');
-  const decoded = JSON.parse(atob(token.split('.')[1]));
-  const userId = decoded.id;
-  console.log(userId);
-  /*------------------------------------------------------*/
-
-  const navigate = useNavigate();
-
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortOption, setSortOption] = useState('createdAt'); // Default sorting by Created Date
-  const [editBooking, setEditBooking] = useState(null);
-  const [initialEditBooking, setInitialEditBooking] = useState(null); // Store original booking info
-  const [showEditModal, setShowEditModal] = useState(false);
 
-  const { showModal, closeModal } = useModal();
+  const token = localStorage.getItem('authToken');
+  const decoded = JSON.parse(atob(token.split('.')[1]));
+  const userId = decoded.id;
 
-  useEffect(() => {
-    axios.get(`${API_BASE_URL}/booking/user/${userId}`)
-      .then(response => {
-        setBookings(response.data.bookings);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching bookings:', error);
-        setError(error);
-        setLoading(false);
-      });
-  }, [userId]);
-
-  const currentDate = new Date().toISOString().split('T')[0]; // Get today's date
-
-  const filteredBookings = bookings.filter(booking =>
-    booking.b_guide.g_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.b_location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.b_date.includes(searchQuery)
-  );
-
-  let upcomingBookings = filteredBookings.filter(booking => booking.b_date >= currentDate);
-  let pastBookings = filteredBookings.filter(booking => booking.b_date < currentDate);
-
-  const sortBookings = (bookings, option, isUpcoming) => {
-    return [...bookings].sort((a, b) => {
-      if (option === 'createdAt') {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      } else {
-        return isUpcoming
-          ? new Date(a.b_date) - new Date(b.b_date)
-          : new Date(b.b_date) - new Date(a.b_date);
-      }
-    });
-  };
-
-  upcomingBookings = sortBookings(upcomingBookings, sortOption, true);
-  pastBookings = sortBookings(pastBookings, sortOption, false);
-
-  const handleDelete = async (id) => {
-    showModal({
-      type: 'delete',
-      title: 'Are you sure you want to delete it?',
-      content: 'Once you are delete this item you can\'t undo this process',
-      buttons: [
-        {
-          label: 'Confirm',
-          onClick: async () => {
-            try {
-              await axios.delete(`${API_BASE_URL}/booking/delete/${id}`);
-              setBookings(bookings.filter(booking => booking._id !== id));
-            } catch (error) {
-              console.error('Error deleting booking:', error);
-            }
-            closeModal();
-          },
-          className: 'w-full px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700'
-        }, {
-          label: 'Cancel',
-          onClick: closeModal,
-          className: 'w-full px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-100'
-        }
-      ]
-    });
-  };
-
-  const handleEdit = (booking) => {
-    setEditBooking({ ...booking }); // Working copy to edit
-    setInitialEditBooking({ ...booking }); // Save the original booking data
-    setShowEditModal(true);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditBooking({ ...editBooking, [name]: value });
-  };
-
-
-  const handleEditSave = async () => {
+  // Function to fetch the booking history for the logged-in user
+  const fetchHistory = async () => {
     try {
-      const prevTime = parseFloat(initialEditBooking.b_time);
-      const prevPrice = parseFloat(initialEditBooking.price);
-      const updatedTime = parseFloat(editBooking.b_time);
-
-      // Validate that the duration is between 1 and 24 hours
-      if (isNaN(updatedTime) || updatedTime < 1 || updatedTime > 24) {
-        alert("Booking duration must be between 1 and 24 hours.");
-        return;
-      }
-
-      let newPrice = prevPrice;
-      if (!isNaN(prevTime) && prevTime > 0) {
-        newPrice = (prevPrice / prevTime) * updatedTime;
-      }
-
-      const updatedBooking = {
-        ...editBooking,
-        price: newPrice,
-      };
-
-      await axios.put(`${API_BASE_URL}/booking/update/${updatedBooking._id}`, updatedBooking);
-      setBookings(bookings.map(booking => booking._id === updatedBooking._id ? updatedBooking : booking));
-      setShowEditModal(false);
-    } catch (error) {
-      console.error('Error updating booking:', error);
+      // Make the API call to fetch bookings for the logged-in user
+      const res = await axios.get(`${API_BASE_URL}/booking/user/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setBookings(res.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (error) return <div className='text-red-500 font-semibold'>Error: {error.message}</div>;
+  useEffect(() => {
+    // Call the fetchHistory function when the component is mounted
+    fetchHistory();
+  }, [userId]);
+
+  const handleDownload = async (bookingId) => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/booking/receipt/${bookingId}`,
+        { responseType: 'blob', headers: { Authorization: `Bearer ${token}` } }
+      );
+      const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `receipt_${bookingId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Could not download receipt.');
+    }
+  };
+
+  // Display loading, error, or empty state if no bookings are found
+  if (loading) return <p>Loading booking history…</p>;
+  if (error) return <p className="text-red-600">Error: {error.message}</p>;
+  if (!bookings.length) return <p>No bookings found.</p>;
 
   return (
-    <>
-
-      <div className='container mx-auto p-6 mt-[4rem] bg-gray-100 min-h-screen'>
-        <TopAppBar />
-
-        <div className="mb-[4rem]">
-
-          <div className="flex flex-col gap-3 p-4 bg-white rounded-lg shadow-md">
-            {/* Search Bar */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search by Guide Name, Location, or Date"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 shadow-sm"
-              />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 pointer-events-none">
-                <IoMdSearch className="w-5 h-5" />
-              </span>
-            </div>
-            {/* Sort Options */}
-            <div className="flex items-center gap-2">
-              <label className="text-gray-600 text-sm">Sort by:</label>
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 shadow-sm"
-              >
-                <option value="createdAt">Created Date</option>
-                <option value="b_date">Booking Date</option>
-              </select>
-            </div>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Your Booking History</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {bookings.map((b) => (
+          <div key={b._id} className="p-4 border rounded shadow">
+            <h3 className="text-xl font-semibold">{b.guideId.g_name}</h3>
+            <p>Location: {b.locationId.locationName}</p>
+            <p>Start: {new Date(b.startAt).toLocaleString()}</p>
+            <p>End: {new Date(b.endAt).toLocaleString()}</p>
+            <p>Members: {b.numberOfMembers}</p>
+            <p>Price: ${b.price}</p>
+            <p>Status: {b.bookingStatus}</p>
+            <button
+              onClick={() => handleDownload(b._id)}
+              className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Download Receipt
+            </button>
           </div>
-
-          {upcomingBookings.length > 0 && <h3 className='text-xl mt-5 mb-2 font-bold text-gray-600'>Upcoming Bookings</h3>}
-          {upcomingBookings.map(booking => (
-            <div className='flex flex-col p-5 bg-white border border-gray-100 rounded-xl shadow-md mb-4 hover:bg-green-100 transition duration-200'>
-              <h3 className='text-xl font-semibold text-green-800'>{booking.b_guide.g_name}</h3>
-              <p className='text-sm text-green-700'>Date: {booking.b_date}</p>
-              <p className='text-sm text-green-700'>Duration(hours): {booking.b_time} hours</p>
-              <p className='text-sm text-green-700'>Location: {booking.b_location}</p>
-              <p className='text-sm text-green-700 font-bold'>Price: ${booking.price}</p>
-              <div className="flex gap-4 mt-2">
-                <FaEdit className='text-black-500 cursor-pointer' onClick={() => handleEdit(booking)} />
-                <FaTrashAlt className='text-black-500 cursor-pointer' onClick={() => handleDelete(booking._id)} />
-                <FaEye className='text-black-500 cursor-pointer' onClick={() => navigate(`/user/booking/info/${booking._id}`)} />
-
-              </div>
-            </div>
-          ))}
-
-          {pastBookings.length > 0 && <h3 className='text-xl mt-5 mb-2 font-bold text-gray-600'>Past Bookings</h3>}
-          {pastBookings.map(booking => (
-            <Link to={`/user/booking/info/${booking._id}`} key={booking._id}>
-              <div className='flex flex-col p-5 bg-white border border-gray-100 rounded-xl shadow-md mb-4 hover:bg-green-100 transition duration-200'>
-                <h3 className='text-xl font-semibold text-green-800'>{booking.b_guide.g_name}</h3>
-                <p className='text-sm text-green-700'>Date: {booking.b_date}</p>
-                <p className='text-sm text-green-700'>Duration(hours): {booking.b_time} hours</p>
-                <p className='text-sm text-green-700'>Location: {booking.b_location}</p>
-                <p className='text-sm text-green-700 font-bold'>Price: ${booking.price}</p>
-              </div>
-            </Link>
-          ))}
-
-        </div>
-
-        <BottomTabBar />
+        ))}
       </div>
-
-
-      {/* Edit Modal */}
-      {showEditModal && (
-        <div className="fixed inset-0 bg-[#0000009e] bg-opacity-50 flex justify-center items-center z-[100]">
-          <div className="bg-white m-5 p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h3 className="text-xl font-bold text-green-700">Edit Booking</h3>
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600" htmlFor="b_date">Date</label>
-              <input
-                type="date"
-                name="b_date"
-                value={editBooking.b_date}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                min={currentDate}
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600" htmlFor="b_time">Duration (Hours)</label>
-              <input
-                type="text"
-                name="b_time"
-                value={editBooking.b_time}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600" htmlFor="b_location">Location</label>
-              <input
-                type="text"
-                name="b_location"
-                value={editBooking.b_location}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm text-gray-600" htmlFor="b_price">Price</label>
-              <p className="text-sm text-gray-700">Price will be auto-calculated based on the new duration.</p>
-            </div>
-            <div className="flex justify-between">
-              <button onClick={() => setShowEditModal(false)} className="px-4 py-2 bg-red-500 text-white rounded-lg">Cancel</button>
-              <button onClick={handleEditSave} className="px-4 py-2 bg-green-500 text-white rounded-lg">Save</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </>
-
+    </div>
   );
 }

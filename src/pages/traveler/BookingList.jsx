@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import TopNameBar from "../../components/TopNameBar";
 import API_BASE_URL from "../../config/config";
+import { Search, Globe } from "lucide-react"
+import { motion } from "framer-motion"
+
 
 export default function BookingList() {
     const navigate = useNavigate();
@@ -54,63 +57,74 @@ export default function BookingList() {
         navigate('/user/booking', { state: { guide: updatedGuide } });
     };
 
-
     if (error) return <div className='text-red-500 font-semibold'>Error: {error.message}</div>;
 
     return (
-        <div className="max-w-md mx-auto px-4 pt-[4rem] pb-8 bg-white min-h-screen">
+        <div className="max-w-md mx-auto px-4 pt-[4rem] pb-8 bg-gray-50 min-h-screen">
             <TopNameBar title="Guides" />
-
-            {/* Search Input */}
-            <div className="mb-6 mt-4">
-                <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    placeholder="Search by name, language, or location..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 text-base"
-                />
+            {/* Search Bar - Fixed below header */}
+            <div className="fixed top-[60px] left-0 right-0 bg-white z-10 px-4 py-3 border-b border-gray-200">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search guides or languages..."
+                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent"
+                        onChange={handleSearchChange}
+                    />
+                </div>
             </div>
 
             {/* Display Guides */}
-            {filteredGuides.length > 0 ? (
-                filteredGuides.map((guide) => (
-                    <div
-                        key={guide._id}
-                        className="flex items-center gap-4 p-4 bg-gray-50 border border-gray-200 rounded-xl shadow-sm mb-4 hover:bg-gray-100 transition duration-200 cursor-pointer"
-                        onClick={() => handleGuideClick(guide, id)}
-                    >
-                        {/* Guide Image */}
-                        <div className="flex-shrink-0 w-16 h-16 rounded-full overflow-hidden border-2 border-indigo-300">
-                            <img
-                                src={guide.image ? `${API_BASE_URL}/${guide.image}` : '/default-profile.png'}
-                                alt={guide.g_name}
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
+            <div className="mt-[5rem]">
+                {filteredGuides.length > 0 ? (
+                    filteredGuides.map((guide) => (
+                        <motion.div
+                            key={guide.id}
+                            whileTap={{ scale: 0.98 }}
+                            className="bg-white rounded-lg shadow-sm overflow-hidden mb-3"
+                            onClick={() => handleGuideClick(guide, id)}
+                        >
+                            <div className="p-3 flex items-center">
+                                {/* Guide Image */}
+                                <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                                    <img
+                                        src={guide.image ? `${API_BASE_URL}/${guide.image}` : '/default-profile.png'}
+                                        alt={guide.g_name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
 
-                        {/* Guide Info */}
-                        <div className="flex-grow">
-                            <h3 className="text-lg font-semibold text-gray-800">{guide.g_name}</h3>
-                            <p className="text-sm text-gray-600">
-                                <span className="font-medium">Languages:</span>{' '}
-                                {Array.isArray(guide.language) ? guide.language.join(', ') : guide.language}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                <span className="font-medium">Location:</span>{' '}
-                                {Array.isArray(guide.location)
-                                    ? guide.location.map(loc => loc.name).join(', ')
-                                    : guide.location?.name || 'N/A'}
-                            </p>
-                            <p className={`text-sm font-semibold ${guide.availability ? 'text-green-600' : 'text-red-500'}`}>
-                                {guide.availability ? 'Available' : 'Not Available'}
-                            </p>
-                        </div>
-                    </div>
-                ))
-            ) : (
-                <p className="text-center text-gray-500 mt-10">No guides found...</p>
-            )}
+                                {/* Guide Info */}
+                                <div className="ml-3 flex-1">
+                                    <h3 className="font-semibold text-gray-800">{guide.g_name}</h3>
+
+                                    {/* Languages */}
+                                    <div className="flex items-center mt-1">
+                                        <Globe className="h-3.5 w-3.5 text-gray-400 mr-1.5" />
+                                        <span className="text-xs text-gray-600">{guide.language.join(", ")}</span>
+                                    </div>
+
+                                    {/* Availability Badge */}
+                                    <div className="mt-1.5">
+                                        {guide.availability ? (
+                                            <span className="inline-block text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full">
+                                                Available
+                                            </span>
+                                        ) : (
+                                            <span className="inline-block text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                                Unavailable
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500 mt-10">No guides found...</p>
+                )}
+            </div>
         </div>
     );
 }
