@@ -36,6 +36,10 @@ import PointGuide from './pages/traveler/PointGuide';
 import Register1 from './pages/Register';
 import Guide from './pages/guide/Guide';
 
+import GuideProfile from './pages/guide/Profile';
+import GuideBooking from './pages/guide/BookingHistory';
+import GuideBookingInfo from './pages/guide/BookingInfo';
+
 
 export default function App() {
   return (
@@ -85,7 +89,13 @@ export default function App() {
 
           <Route path='/reset' element={<PasswordReset />} />
           <Route path="/403" element={<Logout />} />
+
           <Route path="/guide" element={<Guide />} />
+          <Route path="/guide/bookinghistory" element={<GuideBooking />} />
+          <Route path="/guide/booking/info/:id" element={<GuideBookingInfo />} />
+          <Route path="/guide/profile" element={<GuideProfile />} />
+
+
           <Route path="*" element={<Logout />} />
 
         </Routes>
