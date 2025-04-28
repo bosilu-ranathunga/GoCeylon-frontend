@@ -43,7 +43,7 @@ export default function BookingHistory() {
 
   useEffect(() => {
     fetchHistory();
-  }, []); // No dependencies needed since token is static
+  }, []);
 
   // Sort bookings by createdAt (newest first)
   const sortedBookings = [...bookings].sort((a, b) => {
@@ -99,14 +99,21 @@ export default function BookingHistory() {
     }
   };
 
-  // Format date and time
   const formatDateTime = (timestamp) => {
     if (!timestamp || timestamp === 0) return 'Not specified';
     return new Date(timestamp).toLocaleString();
   };
 
   // Loading, error, or empty state
-  if (loading) return <p>Loading booking history…</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <TopAppBar />
+        <div className="spinner"></div>
+        <BottomTabBar />
+      </div>
+    );
+  }
   if (error) return <p className="text-red-600">Error: {error.message}</p>;
 
   return (
@@ -114,13 +121,13 @@ export default function BookingHistory() {
       <TopAppBar />
       {/* Bookings List - Scrollable */}
       {sortedBookings.length > 0 ? (
-        <div className="space-y-3 py-3">
+        <div className="space-y-3 pb-[5rem]">
           {sortedBookings.map((booking) => (
             <motion.div
               key={booking._id}
               whileTap={{ scale: 0.98 }}
               className="bg-white rounded-lg shadow-sm overflow-hidden"
-              onClick={() => navigate(`../user/booking/info/${booking._id}`)} // Adjust route as needed
+              onClick={() => navigate(`../user/booking/info/${booking._id}`)}
             >
               <div className="p-4">
                 {/* Status Badge */}
@@ -139,7 +146,7 @@ export default function BookingHistory() {
                   <span className="text-sm text-gray-600">{booking.expectedDuration} hour(s)</span>
                 </div>
 
-                {/* Location (mocked since locationId only has _id) */}
+                {/* Location */}
                 <p className="text-sm text-gray-500 mb-3">Location: {booking.locationId.name}</p>
 
                 {/* Guide Info */}
@@ -147,10 +154,10 @@ export default function BookingHistory() {
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full overflow-hidden mr-2">
                       <img
-                        src={`${API_BASE_URL}/${booking.guideId.image}`} // Normalize path
+                        src={`${API_BASE_URL}/${booking.guideId.image}`}
                         alt={booking.guideId.g_name}
                         className="w-full h-full object-cover"
-                        onError={(e) => (e.target.src = '/placeholder.svg')} // Fallback image
+                        onError={(e) => (e.target.src = '/placeholder.svg')}
                       />
                     </div>
                     <span className="text-sm">{booking.guideId.g_name}</span>
