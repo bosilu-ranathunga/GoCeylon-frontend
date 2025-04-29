@@ -93,7 +93,7 @@ export default function App() {
           <Route path='/reset' element={<PasswordReset />} />
           <Route path="/403" element={<Logout />} />
 
-          <Route path="/guide" element={<Guide />} />
+          <Route path="/guide" element={<GuideBooking />} />
           <Route path="/guide/bookinghistory" element={<GuideBooking />} />
           <Route path="/guide/booking/info/:id" element={<GuideBookingInfo />} />
           <Route path="/guide/profile" element={<GuideProfile />} />

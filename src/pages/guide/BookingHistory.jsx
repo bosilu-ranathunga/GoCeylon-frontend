@@ -123,8 +123,6 @@ export default function BookingHistory() {
                 <div className="flex items-center mb-3">
                   <Calendar className="h-4 w-4 text-gray-400 mr-2" />
                   <span className="text-sm text-gray-600 mr-4">{formatDateTime(booking.startAt)}</span>
-                  <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                  <span className="text-sm text-gray-600">{booking.expectedDuration} hour(s)</span>
                 </div>
 
                 {/* Location */}
