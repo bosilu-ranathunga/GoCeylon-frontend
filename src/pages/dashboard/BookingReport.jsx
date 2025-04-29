@@ -34,6 +34,7 @@ const BookingReport = () => {
             .then((response) => {
                 if (Array.isArray(response.data)) {
                     setBookingData(response.data);
+                    console.log(response.data);
                 } else {
                     console.error("Invalid API response format:", response.data);
                 }
@@ -70,10 +71,6 @@ const BookingReport = () => {
 
     const columns = useMemo(
         () => [
-            {
-                header: "Booking Code",
-                accessorKey: "code",
-            },
             {
                 header: "User",
                 accessorFn: (row) => row.userId?.name || "N/A",

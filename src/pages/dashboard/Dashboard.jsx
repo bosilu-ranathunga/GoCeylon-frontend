@@ -16,15 +16,18 @@ import {
     Tooltip,
     Legend,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
     const [stats, setStats] = useState(null);
     const [locationData, setLocationData] = useState([]);
     const [genderData, setGenderData] = useState([]);
     const [topLocations, setTopLocations] = useState([]);
+    const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const token = localStorage.getItem("authToken");
+    const navigate = useNavigate();
 
     // Fetch data from APIs
     useEffect(() => {
@@ -56,6 +59,12 @@ export default function Dashboard() {
                 });
                 setTopLocations(topLocationsResponse.data.data);
 
+                // Fetch bookings
+                const bookingsResponse = await axios.get(`${API_BASE_URL}/booking`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setBookings(bookingsResponse.data);
+
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -68,41 +77,29 @@ export default function Dashboard() {
         }
     }, [token]);
 
-    // Sample data for recent bookings (no API provided, replace with actual API if available)
-    const recentBookings = [
-        {
-            id: "B12345",
-            traveler: "John Smith",
-            guide: "Sarah Johnson",
-            location: "Swiss Alps",
-            date: "May 15, 2023",
-            status: "confirmed",
-        },
-        {
-            id: "B12346",
-            traveler: "Emma Davis",
-            guide: "Michael Chen",
-            location: "Tokyo, Japan",
-            date: "May 16, 2023",
-            status: "pending",
-        },
-        {
-            id: "B12347",
-            traveler: "Luis Rodriguez",
-            guide: "Elena Rodriguez",
-            location: "Barcelona, Spain",
-            date: "May 17, 2023",
-            status: "confirmed",
-        },
-        {
-            id: "B12348",
-            traveler: "Sophia Kim",
-            guide: "David Wilson",
-            location: "Berlin, Germany",
-            date: "May 18, 2023",
-            status: "cancelled",
-        },
-    ];
+    // Function to format date
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    // Function to get status color
+    const getStatusColor = (status) => {
+        switch (status) {
+            case "confirmed":
+                return "bg-green-100 text-green-800";
+            case "finish":
+                return "bg-blue-100 text-blue-800";
+            case "cancel":
+                return "bg-red-100 text-red-800";
+            default:
+                return "bg-gray-100 text-gray-800";
+        }
+    };
 
     // Colors for pie chart
     const GENDER_COLORS = ["#0088FE", "#FF8042"];
@@ -110,19 +107,8 @@ export default function Dashboard() {
     // Colors for bar chart
     const LOCATION_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#a4de6c"];
 
-    // Function to get status color
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "confirmed":
-                return "bg-green-100 text-green-800";
-            case "pending":
-                return "bg-yellow-100 text-yellow-800";
-            case "cancelled":
-                return "bg-red-100 text-red-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
+    // Get first 5 bookings
+    const recentBookings = bookings.slice(0, 5);
 
     if (loading) {
         return (
@@ -168,18 +154,6 @@ export default function Dashboard() {
                                         <Users className="h-6 w-6 text-blue-600" />
                                     </div>
                                 </div>
-                                <div className="mt-4 flex items-center">
-                                    <span className={`text-sm font-medium ${stats?.travelers.positive ? "text-green-600" : "text-red-600"}`}>
-                                        {stats?.travelers.positive ? "+" : ""}
-                                        {stats?.travelers.growth}%
-                                    </span>
-                                    {stats?.travelers.positive ? (
-                                        <ArrowUpRight className="h-4 w-4 text-green-600 ml-1" />
-                                    ) : (
-                                        <ArrowDownRight className="h-4 w-4 text-red-600 ml-1" />
-                                    )}
-                                    <span className="text-xs text-gray-500 ml-2">vs last month</span>
-                                </div>
                             </div>
 
                             {/* Guides Card */}
@@ -192,18 +166,6 @@ export default function Dashboard() {
                                     <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
                                         <Compass className="h-6 w-6 text-green-600" />
                                     </div>
-                                </div>
-                                <div className="mt-4 flex items-center">
-                                    <span className={`text-sm font-medium ${stats?.guides.positive ? "text-green-600" : "text-red-600"}`}>
-                                        {stats?.guides.positive ? "+" : ""}
-                                        {stats?.guides.growth}%
-                                    </span>
-                                    {stats?.guides.positive ? (
-                                        <ArrowUpRight className="h-4 w-4 text-green-600 ml-1" />
-                                    ) : (
-                                        <ArrowDownRight className="h-4 w-4 text-red-600 ml-1" />
-                                    )}
-                                    <span className="text-xs text-gray-500 ml-2">vs last month</span>
                                 </div>
                             </div>
 
@@ -218,18 +180,6 @@ export default function Dashboard() {
                                         <Briefcase className="h-6 w-6 text-purple-600" />
                                     </div>
                                 </div>
-                                <div className="mt-4 flex items-center">
-                                    <span className={`text-sm font-medium ${stats?.businesses.positive ? "text-green-600" : "text-red-600"}`}>
-                                        {stats?.businesses.positive ? "+" : ""}
-                                        {stats?.businesses.growth}%
-                                    </span>
-                                    {stats?.businesses.positive ? (
-                                        <ArrowUpRight className="h-4 w-4 text-green-600 ml-1" />
-                                    ) : (
-                                        <ArrowDownRight className="h-4 w-4 text-red-600 ml-1" />
-                                    )}
-                                    <span className="text-xs text-gray-500 ml-2">vs last month</span>
-                                </div>
                             </div>
 
                             {/* Locations Card */}
@@ -242,18 +192,6 @@ export default function Dashboard() {
                                     <div className="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
                                         <MapPin className="h-6 w-6 text-orange-600" />
                                     </div>
-                                </div>
-                                <div className="mt-4 flex items-center">
-                                    <span className={`text-sm font-medium ${stats?.locations.positive ? "text-green-600" : "text-red-600"}`}>
-                                        {stats?.locations.positive ? "+" : ""}
-                                        {stats?.locations.growth}%
-                                    </span>
-                                    {stats?.locations.positive ? (
-                                        <ArrowUpRight className="h-4 w-4 text-green-600 ml-1" />
-                                    ) : (
-                                        <ArrowDownRight className="h-4 w-4 text-red-600 ml-1" />
-                                    )}
-                                    <span className="text-xs text-gray-500 ml-2">vs last month</span>
                                 </div>
                             </div>
                         </div>
@@ -341,15 +279,17 @@ export default function Dashboard() {
                             <div className="bg-white rounded-lg shadow-sm p-6">
                                 <div className="flex justify-between items-center mb-6">
                                     <h3 className="text-lg font-semibold text-gray-800">Recent Bookings</h3>
-                                    <button className="text-sm text-[#007a55] font-medium">View All</button>
+                                    <button
+                                        onClick={() => navigate('/admin/booking')}
+                                        className="text-sm text-[#007a55] font-medium hover:text-[#006a45]"
+                                    >
+                                        View All
+                                    </button>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="min-w-full">
                                         <thead>
                                             <tr className="border-b border-gray-200">
-                                                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    ID
-                                                </th>
                                                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Traveler
                                                 </th>
@@ -366,14 +306,13 @@ export default function Dashboard() {
                                         </thead>
                                         <tbody className="divide-y divide-gray-200">
                                             {recentBookings.map((booking) => (
-                                                <tr key={booking.id}>
-                                                    <td className="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{booking.id}</td>
-                                                    <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-600">{booking.traveler}</td>
-                                                    <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-600">{booking.guide}</td>
-                                                    <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-600">{booking.date}</td>
+                                                <tr key={booking._id}>
+                                                    <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-600">{booking.userId?.name || 'N/A'}</td>
+                                                    <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-600">{booking.guideId?.g_name || 'N/A'}</td>
+                                                    <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-600">{formatDate(booking.createdAt)}</td>
                                                     <td className="px-3 py-3 whitespace-nowrap">
-                                                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(booking.status)}`}>
-                                                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(booking.bookingStatus)}`}>
+                                                            {booking.bookingStatus.charAt(0).toUpperCase() + booking.bookingStatus.slice(1)}
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -387,11 +326,8 @@ export default function Dashboard() {
                             <div className="bg-white rounded-lg shadow-sm p-6">
                                 <div className="flex justify-between items-center mb-6">
                                     <h3 className="text-lg font-semibold text-gray-800">Top Locations</h3>
-                                    <button className="text-sm text-[#007a55] font-medium">View All</button>
                                 </div>
-                                <div className="overflow
-
--x-auto">
+                                <div className="overflow-x-auto">
                                     <table className="min-w-full">
                                         <thead>
                                             <tr className="border-b border-gray-200">
@@ -401,9 +337,6 @@ export default function Dashboard() {
                                                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Bookings
                                                 </th>
-                                                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Growth
-                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200">
@@ -411,21 +344,6 @@ export default function Dashboard() {
                                                 <tr key={index}>
                                                     <td className="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{location.name}</td>
                                                     <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-600">{location.bookings}</td>
-                                                    <td className="px-3 py-3 whitespace-nowrap">
-                                                        <div className="flex items-center">
-                                                            <span
-                                                                className={`text-sm font-medium ${location.growth >= 0 ? "text-green-600" : "text-red-600"}`}
-                                                            >
-                                                                {location.growth >= 0 ? "+" : ""}
-                                                                {location.growth}%
-                                                            </span>
-                                                            {location.growth >= 0 ? (
-                                                                <ArrowUpRight className="h-4 w-4 text-green-600 ml-1" />
-                                                            ) : (
-                                                                <ArrowDownRight className="h-4 w-4 text-red-600 ml-1" />
-                                                            )}
-                                                        </div>
-                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>

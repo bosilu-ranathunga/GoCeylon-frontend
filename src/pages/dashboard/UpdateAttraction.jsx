@@ -310,7 +310,7 @@ const UpdateAttractionForm = () => {
     };
 
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen bg-gray-100">
             <Sidebar />
             <div className="flex-1 ml-64 overflow-y-auto h-screen">
                 <div className="mx-auto px-6 py-8">
@@ -352,7 +352,7 @@ const UpdateAttractionForm = () => {
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-8">
                             {/* Basic Info Card */}
-                            <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+                            <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
                                 <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
                                     <Info className="text-emerald-600" size={22} />
                                     <h2 className="text-xl font-semibold text-gray-800">Basic Information</h2>
@@ -485,7 +485,7 @@ const UpdateAttractionForm = () => {
                             </div>
 
                             {/* Images Card */}
-                            <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+                            <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
                                 <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
                                     <ImageIcon className="text-emerald-600" size={22} />
                                     <h2 className="text-xl font-semibold text-gray-800">Images</h2>
@@ -580,7 +580,7 @@ const UpdateAttractionForm = () => {
                             </div>
 
                             {/* Points of Interest Card */}
-                            <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+                            <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
                                 <div className="flex items-center justify-between pb-2 border-b border-gray-100">
                                     <div className="flex items-center gap-2">
                                         <MapPin className="text-emerald-600" size={22} />
@@ -677,7 +677,7 @@ const UpdateAttractionForm = () => {
                                 <button
                                     type="submit"
                                     disabled={isSaving}
-                                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg shadow-md transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg shadow-sm transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {isSaving ? (
                                         <>
