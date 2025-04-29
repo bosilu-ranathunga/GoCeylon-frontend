@@ -40,6 +40,8 @@ import GuideProfile from './pages/guide/Profile';
 import GuideBooking from './pages/guide/BookingHistory';
 import GuideBookingInfo from './pages/guide/BookingInfo';
 
+import BookingReport from './pages/dashboard/bookingReport';
+
 
 export default function App() {
   return (
@@ -94,6 +96,8 @@ export default function App() {
           <Route path="/guide/bookinghistory" element={<GuideBooking />} />
           <Route path="/guide/booking/info/:id" element={<GuideBookingInfo />} />
           <Route path="/guide/profile" element={<GuideProfile />} />
+
+          <Route path="/admin/booking" element={<BookingReport />} />
 
 
           <Route path="*" element={<Logout />} />

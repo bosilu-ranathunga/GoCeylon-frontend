@@ -14,15 +14,15 @@ import {
     getFilteredRowModel,
     flexRender,
 } from '@tanstack/react-table';
+import * as XLSX from 'xlsx';
 
 const RfidList = () => {
-    const navigate = useNavigate();  // Initialize useNavigate hook
+    const navigate = useNavigate();
     const [sorting, setSorting] = useState([]);
     const [globalFilter, setGlobalFilter] = useState('');
+    const [countryFilter, setCountryFilter] = useState('');
     const [data, setData] = useState([]);
-
     const { showModal, closeModal } = useModal();
-
     const token = localStorage.getItem("authToken");
 
     // Fetch data from API
@@ -43,13 +43,94 @@ const RfidList = () => {
         }
     };
 
+    const countries = [
+        { value: "US", label: "United States" },
+        { value: "UK", label: "United Kingdom" },
+        { value: "CA", label: "Canada" },
+        { value: "AU", label: "Australia" },
+        { value: "IN", label: "India" },
+        { value: "LK", label: "Sri Lanka" },
+        { value: "FR", label: "France" },
+        { value: "DE", label: "Germany" },
+    ];
+
     // Fetch data on component mount
     useEffect(() => {
         fetchData();
     }, []);
 
+    const filteredData = useMemo(() => {
+        let filtered = [...data];
+
+        // Apply country filter
+        if (countryFilter) {
+            filtered = filtered.filter(item => item.nationality === countryFilter);
+        }
+
+        // Apply global search filter
+        if (globalFilter) {
+            const searchTerm = globalFilter.toLowerCase();
+            filtered = filtered.filter(item =>
+                item.rfidTagCode.toLowerCase().includes(searchTerm) ||
+                item.fullName.toLowerCase().includes(searchTerm) ||
+                item.email.toLowerCase().includes(searchTerm) ||
+                item.phoneNumber.toLowerCase().includes(searchTerm) ||
+                item.nationality.toLowerCase().includes(searchTerm) ||
+                item.passportNumber.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        return filtered;
+    }, [data, countryFilter, globalFilter]);
+
+    // Function to generate and download Excel report
+    const generateExcelReport = () => {
+        // Use filtered rows from the table
+        const filteredRows = table.getFilteredRowModel().rows;
+
+        // Prepare data for Excel from filtered rows
+        const reportData = filteredRows.map((row, index) => ({
+            ID: index + 1,
+            'RFID Tag Code': row.original.rfidTagCode,
+            'Full Name': row.original.fullName,
+            Email: row.original.email,
+            'Phone Number': row.original.phoneNumber,
+            Country: row.original.nationality,
+            'Passport Number': row.original.passportNumber,
+            Wallet: row.original.walletAmount,
+        }));
+
+        // Create worksheet
+        const worksheet = XLSX.utils.json_to_sheet(reportData);
+
+        // Create workbook
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'RFID Records');
+
+        // Add headers styling
+        worksheet['!cols'] = [
+            { wch: 10 }, // ID column width
+            { wch: 20 }, // RFID Tag Code column width
+            { wch: 20 }, // Full Name column width
+            { wch: 30 }, // Email column width
+            { wch: 15 }, // Phone Number column width
+            { wch: 15 }, // Country column width
+            { wch: 20 }, // Passport Number column width
+            { wch: 10 }, // Wallet column width
+        ];
+
+        // Generate Excel file and trigger download
+        XLSX.writeFile(workbook, `RFID_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    };
+
     // Define columns
     const columns = useMemo(() => [
+        {
+            header: 'ID',
+            accessorFn: (row, index) => index + 1, // Sequential ID starting from 1
+            id: 'sequentialId',
+            enableSorting: false,
+        },
         {
             header: 'RFID Tag Code',
             accessorKey: 'rfidTagCode',
@@ -97,6 +178,7 @@ const RfidList = () => {
                     </button>
                 </div>
             ),
+            enableSorting: false,
         },
     ], []);
 
@@ -143,18 +225,13 @@ const RfidList = () => {
 
     // Create table instance
     const table = useReactTable({
-        data,
+        data: filteredData,
         columns,
-        state: {
-            sorting,
-            globalFilter,
-        },
+        state: { sorting },
         onSortingChange: setSorting,
-        onGlobalFilterChange: setGlobalFilter,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
     });
 
     return (
@@ -166,27 +243,66 @@ const RfidList = () => {
                         {/* Header and Search */}
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
                             <h2 className="text-2xl font-bold text-gray-900">RFID Management</h2>
-                            <div className="relative w-full sm:max-w-xs">
-                                <input
-                                    type="text"
-                                    value={globalFilter}
-                                    onChange={e => setGlobalFilter(e.target.value)}
-                                    placeholder="Search RFID..."
-                                    className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                                <svg
-                                    className="absolute left-3 top-3 h-5 w-5 text-gray-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            <div className="flex items-center gap-4">
+
+                                <div className="relative w-full sm:max-w-xs">
+                                    <input
+                                        type="text"
+                                        value={globalFilter}
+                                        onChange={e => setGlobalFilter(e.target.value)}
+                                        placeholder="Search here..."
+                                        className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md outline-none"
                                     />
-                                </svg>
+                                    <svg
+                                        className="absolute left-3 top-3 h-5 w-5 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div className="relative w-full max-w-xs">
+                                    <select
+                                        value={countryFilter}
+                                        onChange={e => setCountryFilter(e.target.value)}
+                                        className="block appearance-none w-full h-[42px] bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-10 rounded-md leading-tight focus:outline-none "
+                                    >
+                                        <option value="">All Countries</option>
+                                        {countries.map((country) => (
+                                            <option key={country.value} value={country.value}>
+                                                {country.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                        <svg
+                                            className="h-4 w-4"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.292l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={generateExcelReport}
+                                    className="px-4 py-2 bg-[#007a55] text-white rounded-md"
+                                >
+                                    Download
+                                </button>
                             </div>
                         </div>
 
