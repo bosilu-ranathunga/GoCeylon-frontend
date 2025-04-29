@@ -200,24 +200,20 @@ export default function BookingInfo() {
 
                     {/* Status Banner */}
                     <div
-                        className={`py-3 px-5 ${booking.bookingStatus === "cancelled" ? "bg-red-50" : "bg-[#e6f5f0]"
-                            } flex justify-between items-center`}
+                        className={`py-5 px-5 bg-white rounded-lg shadow-sm flex justify-between items-center`}
                     >
                         <div className="flex items-center">
                             {booking.bookingStatus === "cancelled" ? (
-                                <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                                <AlertCircle className="h-5 w-5 mr-2" />
                             ) : (
-                                <Calendar className="h-5 w-5 text-[#007a55] mr-2" />
+                                <Calendar className="h-5 w-5 mr-2" />
                             )}
                             <span
-                                className={`font-medium ${booking.bookingStatus === "cancelled"
-                                    ? "text-red-600"
-                                    : "text-[#007a55]"
-                                    }`}
+                                className={`font-medium ${booking.bookingStatus === "cancelled"}`}
                             >
                                 {booking.bookingStatus === "cancelled"
                                     ? "This booking has been cancelled"
-                                    : `Your booking is ${booking.bookingStatus}`}
+                                    : `Booking is ${booking.bookingStatus}`}
                             </span>
                         </div>
                         <span
@@ -312,26 +308,20 @@ export default function BookingInfo() {
                                 <div className="flex items-start">
                                     <Calendar className="h-5 w-5 text-gray-400 mt-0.5 mr-3" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Date</p>
+                                        <p className="text-sm text-gray-500">Start At</p>
                                         <p className="font-medium">{formatDateTime(booking.startAt)}</p>
                                     </div>
                                 </div>
 
+
                                 <div className="flex items-start">
-                                    <Clock className="h-5 w-5 text-gray- NBER OF PARTICIPANTS400 mt-0.5 mr-3" />
+                                    <Calendar className="h-5 w-5 text-gray-400 mt-0.5 mr-3" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Time</p>
-                                        <p className="font-medium">
-                                            {booking.startAt && booking.endAt
-                                                ? `${formatDateTime(booking.startAt).split(', ')[1]} - ${formatDateTime(booking.endAt).split(', ')[1]
-                                                }`
-                                                : "Not specified"}
-                                        </p>
-                                        <p className="text-sm text-gray-500">
-                                            {booking.expectedDuration} hours
-                                        </p>
+                                        <p className="text-sm text-gray-500">End At</p>
+                                        <p className="font-medium">{formatDateTime(booking.endAt)}</p>
                                     </div>
                                 </div>
+
 
                             </div>
                         </div>
