@@ -8,6 +8,9 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // Increase limit to 5MB (adjust as needed)
+      },
       manifest: {
         name: 'My React Vite PWA',
         short_name: 'ReactPWA',
