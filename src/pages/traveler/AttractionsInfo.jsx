@@ -113,7 +113,7 @@ const AttractionDetails = () => {
     try {
       const encodedLocation = encodeURIComponent(locationName)
       const response = await axios.get(
-        `http://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodedLocation}&aqi=no`,
+        `https://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodedLocation}&aqi=no`,
       )
 
       setWeather(response.data)
@@ -372,8 +372,8 @@ const AttractionDetails = () => {
         <div className="flex border-b">
           <button
             className={`flex-1 py-4 px-4 text-center font-medium transition-colors ${activeTab === "about"
-                ? "text-emerald-600 border-b-2 border-emerald-600"
-                : "text-gray-500 hover:text-gray-700"
+              ? "text-emerald-600 border-b-2 border-emerald-600"
+              : "text-gray-500 hover:text-gray-700"
               }`}
             onClick={() => setActiveTab("about")}
           >
@@ -385,8 +385,8 @@ const AttractionDetails = () => {
 
           <button
             className={`flex-1 py-4 px-4 text-center font-medium transition-colors ${activeTab === "photos"
-                ? "text-emerald-600 border-b-2 border-emerald-600"
-                : "text-gray-500 hover:text-gray-700"
+              ? "text-emerald-600 border-b-2 border-emerald-600"
+              : "text-gray-500 hover:text-gray-700"
               }`}
             onClick={() => setActiveTab("photos")}
           >
@@ -398,8 +398,8 @@ const AttractionDetails = () => {
 
           <button
             className={`flex-1 py-4 px-4 text-center font-medium transition-colors ${activeTab === "weather"
-                ? "text-emerald-600 border-b-2 border-emerald-600"
-                : "text-gray-500 hover:text-gray-700"
+              ? "text-emerald-600 border-b-2 border-emerald-600"
+              : "text-gray-500 hover:text-gray-700"
               }`}
             onClick={() => setActiveTab("weather")}
           >
