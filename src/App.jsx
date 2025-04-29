@@ -40,7 +40,7 @@ import GuideProfile from './pages/guide/Profile';
 import GuideBooking from './pages/guide/BookingHistory';
 import GuideBookingInfo from './pages/guide/BookingInfo';
 
-import BookingReport from './pages/dashboard/bookingReport';
+import BookingReport from './pages/dashboard/BookingReport';
 
 
 export default function App() {
