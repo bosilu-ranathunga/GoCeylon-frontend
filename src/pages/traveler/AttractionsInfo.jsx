@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
@@ -28,6 +26,10 @@ import {
   Info,
   ImageIcon,
   Bookmark,
+  Store,
+  Star,
+  Phone,
+  ExternalLink,
 } from "lucide-react"
 
 const AttractionDetails = () => {
@@ -49,12 +51,95 @@ const AttractionDetails = () => {
   const [isFavorite, setIsFavorite] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [activeTab, setActiveTab] = useState("about")
+  const [businesses, setBusinesses] = useState([])
+  const [businessesLoading, setBusinessesLoading] = useState(false)
   const imageRef = useRef(null)
   const headerRef = useRef(null)
   const contentRef = useRef(null)
 
   // WeatherAPI.com API key
   const WEATHER_API_KEY = "1ceadd56b96742dc9cf193920252804"
+
+  // Sample businesses data
+  const SAMPLE_BUSINESSES = [
+    {
+      id: "b1",
+      name: "Mountain View Restaurant",
+      type: "Restaurant",
+      rating: 4.7,
+      reviews: 128,
+      distance: "0.3 km",
+      description: "Local cuisine with panoramic views of the attraction",
+      contact: "+1 234-567-8901",
+      website: "https://example.com/mountainview",
+      image: "/placeholder.svg?height=80&width=80",
+    },
+    {
+      id: "b2",
+      name: "Adventure Tours",
+      type: "Tour Operator",
+      rating: 4.9,
+      reviews: 256,
+      distance: "0.5 km",
+      description: "Guided tours with experienced local guides",
+      contact: "+1 234-567-8902",
+      website: "https://example.com/adventuretours",
+      image: "/placeholder.svg?height=80&width=80",
+    },
+    {
+      id: "b3",
+      name: "Sunrise Hotel",
+      type: "Accommodation",
+      rating: 4.5,
+      reviews: 312,
+      distance: "0.8 km",
+      description: "Comfortable rooms with all amenities",
+      contact: "+1 234-567-8903",
+      website: "https://example.com/sunrisehotel",
+      image: "/placeholder.svg?height=80&width=80",
+    },
+    {
+      id: "b4",
+      name: "Local Crafts Shop",
+      type: "Shopping",
+      rating: 4.3,
+      reviews: 89,
+      distance: "0.4 km",
+      description: "Authentic handmade souvenirs and crafts",
+      contact: "+1 234-567-8904",
+      website: "https://example.com/localcrafts",
+      image: "/placeholder.svg?height=80&width=80",
+    },
+    {
+      id: "b5",
+      name: "Green Valley Cafe",
+      type: "Cafe",
+      rating: 4.6,
+      reviews: 175,
+      distance: "0.2 km",
+      description: "Organic coffee and freshly baked pastries",
+      contact: "+1 234-567-8905",
+      website: "https://example.com/greenvalley",
+      image: "/placeholder.svg?height=80&width=80",
+    },
+  ]
+
+  // Fetch businesses related to this attraction
+  const fetchBusinesses = async () => {
+    if (!id) return;
+
+    setBusinessesLoading(true);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/business/location/${id}`);
+      setBusinesses(response.data.businesses || []);
+    } catch (error) {
+      console.error("Error fetching businesses:", error);
+      // If API fails, use sample data as fallback
+      setBusinesses(SAMPLE_BUSINESSES);
+    } finally {
+      setBusinessesLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,6 +176,9 @@ const AttractionDetails = () => {
         if (response.data && response.data.name) {
           fetchWeatherData(response.data.name)
         }
+
+        // Fetch businesses related to this attraction
+        fetchBusinesses();
 
         // Check if this attraction is in favorites/bookmarks
         // This would typically come from your user preferences API
@@ -397,6 +485,19 @@ const AttractionDetails = () => {
           </button>
 
           <button
+            className={`flex-1 py-4 px-4 text-center font-medium transition-colors ${activeTab === "services"
+              ? "text-emerald-600 border-b-2 border-emerald-600"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
+            onClick={() => setActiveTab("services")}
+          >
+            <div className="flex flex-col items-center">
+              <Store className={`w-5 h-5 mb-1 ${activeTab === "services" ? "text-emerald-600" : "text-gray-400"}`} />
+              Services
+            </div>
+          </button>
+
+          <button
             className={`flex-1 py-4 px-4 text-center font-medium transition-colors ${activeTab === "weather"
               ? "text-emerald-600 border-b-2 border-emerald-600"
               : "text-gray-500 hover:text-gray-700"
@@ -560,6 +661,78 @@ const AttractionDetails = () => {
                 <p className="text-gray-600 text-sm">
                   Weather forecasts help you plan your visit. Check back closer to your trip date for the most accurate
                   forecast.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Services Tab Content */}
+          {activeTab === "services" && (
+            <div>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Nearby Services</h2>
+
+              {businessesLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="w-10 h-10 border-3 border-t-emerald-600 border-emerald-200 rounded-full animate-spin"></div>
+                </div>
+              ) : businesses.length > 0 ? (
+                <div className="space-y-4">
+                  {businesses.map((business) => (
+                    <div
+                      key={business._id || business.id}
+                      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+                      onClick={() => navigate(`/user/business/${business._id || business.id}`)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="flex">
+                        <div className="w-20 h-20 flex-shrink-0">
+                          <img
+                            src={business.images && business.images.length > 0 ? `${API_BASE_URL}/${business.images[0]}` : "/placeholder.svg?height=80&width=80"}
+                            alt={business.business_name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 p-3">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-semibold text-gray-800">{business.business_name}</h3>
+                              <div className="flex items-center mt-1">
+                                <span className="bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full">
+                                  {business.business_category}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-2">{business.description || "No description available"}</p>
+                          <div className="flex items-center justify-between mt-3">
+                            <div className="flex items-center text-sm text-emerald-600">
+                              <Phone className="w-4 h-4 mr-1" />
+                              <span>{business.contact_number}</span>
+                            </div>
+                            <a
+                              href="#"
+                              className="flex items-center text-sm text-gray-600 hover:text-emerald-600"
+                            >
+                              <ExternalLink className="w-4 h-4 mr-1" />
+                              <span>View Details</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-gray-50 rounded-xl p-8 text-center">
+                  <Store className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500">No businesses found near this attraction</p>
+                </div>
+              )}
+
+              <div className="mt-6 bg-gray-50 rounded-xl p-4 text-center">
+                <p className="text-gray-600 text-sm">
+                  These are businesses near this attraction. Contact them directly for current availability and
+                  services.
                 </p>
               </div>
             </div>

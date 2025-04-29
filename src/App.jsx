@@ -41,6 +41,7 @@ import GuideBooking from './pages/guide/BookingHistory';
 import GuideBookingInfo from './pages/guide/BookingInfo';
 
 import BookingReport from './pages/dashboard/BookingReport';
+import BusinesInfoForUser from './pages/traveler/BusinessInfo';
 
 
 export default function App() {
@@ -98,6 +99,8 @@ export default function App() {
           <Route path="/guide/profile" element={<GuideProfile />} />
 
           <Route path="/admin/booking" element={<BookingReport />} />
+
+          <Route path="/user/business/:id" element={<BusinesInfoForUser />} />
 
 
           <Route path="*" element={<Logout />} />

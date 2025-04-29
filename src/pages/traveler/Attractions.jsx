@@ -21,6 +21,7 @@ const AttractionsPage = () => {
 
   // Fetch all locations when the component mounts
   useEffect(() => {
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#007a55");
     const fetchLocations = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/location/`);
