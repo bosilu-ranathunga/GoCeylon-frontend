@@ -112,8 +112,8 @@ export default function RegistrationForm() {
 
         if (!formData.phone.trim()) {
             newErrors.phone = "Phone number is required"
-        } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ""))) {
-            newErrors.phone = "Phone number should be 10 digits"
+        } else if (!/^\d{12}$/.test(formData.phone.replace(/\D/g, ""))) {
+            newErrors.phone = "Number should be 12 digits (with country code)"
         }
 
         if (!formData.password) {
