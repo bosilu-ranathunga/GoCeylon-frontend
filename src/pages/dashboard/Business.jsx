@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import * as XLSX from 'xlsx';
 import Sidebar from "../../components/Sidebar";
 import API_BASE_URL from "../../config/config";
 import {
@@ -44,8 +43,48 @@ const Business = () => {
             });
     }, [token]);
 
+    // Function to generate and download Excel report
+    const generateExcelReport = () => {
+        // Use filtered rows from the table
+        const filteredRows = table.getFilteredRowModel().rows;
+
+        // Prepare data for Excel from filtered rows
+        const reportData = filteredRows.map((row, index) => ({
+            ID: index + 1,
+            Name: row.original.business_name,
+            Category: row.original.business_category,
+            Number: row.original.contact_number,
+            Address: row.original.address,
+        }));
+
+        // Create worksheet
+        const worksheet = XLSX.utils.json_to_sheet(reportData);
+
+        // Create workbook
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Businesses');
+
+        // Add headers styling
+        worksheet['!cols'] = [
+            { wch: 10 }, // ID column width
+            { wch: 20 }, // Name column width
+            { wch: 20 }, // Category column width
+            { wch: 15 }, // Number column width
+            { wch: 30 }, // Address column width
+        ];
+
+        // Generate Excel file and trigger download
+        XLSX.writeFile(workbook, `Businesses_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    };
+
     const columns = useMemo(
         () => [
+            {
+                header: 'ID',
+                accessorFn: (row, index) => index + 1,
+                id: 'sequentialId',
+                enableSorting: false,
+            },
             { header: "Name", accessorKey: "business_name" },
             { header: "Category", accessorKey: "business_category" },
             { header: "Number", accessorKey: "contact_number" },
@@ -65,21 +104,6 @@ const Business = () => {
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
     });
-
-    const exportToPDF = () => {
-        const doc = new jsPDF();
-        doc.text("Business Data", 14, 10);
-        autoTable(doc, {
-            head: [["Name", "Category", "Number", "Address"]],
-            body: businessData.map((row) => [
-                row.business_name,
-                row.business_category,
-                row.contact_number,
-                row.address,
-            ]),
-        });
-        doc.save("business_data.pdf");
-    };
 
     return (
         <div className="flex h-screen bg-[#eee]">
@@ -113,10 +137,10 @@ const Business = () => {
                                     </svg>
                                 </div>
                                 <button
-                                    onClick={exportToPDF}
+                                    onClick={generateExcelReport}
                                     className="px-4 py-2 bg-[#007a55] text-white rounded-md"
                                 >
-                                    Generate
+                                    Download
                                 </button>
                             </div>
                         </div>
