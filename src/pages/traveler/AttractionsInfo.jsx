@@ -400,21 +400,9 @@ const AttractionDetails = () => {
         </button>
 
         <div className="flex items-center space-x-2">
-          <button
-            className={`p-2 rounded-full ${isBookmarked ? "bg-emerald-100 text-emerald-600" : "bg-white/20 backdrop-blur-sm text-gray-800"} shadow-sm hover:bg-white/40 transition-colors`}
-            onClick={toggleBookmark}
-            aria-label={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
-          >
-            <Bookmark className={`w-5 h-5 ${isBookmarked ? "fill-emerald-600" : ""}`} />
-          </button>
 
-          <button
-            className={`p-2 rounded-full ${isFavorite ? "bg-red-100 text-red-600" : "bg-white/20 backdrop-blur-sm text-gray-800"} shadow-sm hover:bg-white/40 transition-colors`}
-            onClick={toggleFavorite}
-            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-          >
-            <Heart className={`w-5 h-5 ${isFavorite ? "fill-red-600" : ""}`} />
-          </button>
+
+
 
           <button
             className="p-2 rounded-full bg-white/20 backdrop-blur-sm shadow-sm text-gray-800 hover:bg-white/40 transition-colors"
@@ -438,7 +426,7 @@ const AttractionDetails = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"></div>
 
         {/* Attraction Name and Tags */}
-        <div className="absolute bottom-0 left-0 right-0 p-6">
+        <div className="absolute bottom-0 left-0 right-0 p-6 transform -translate-y-4">
           <div className="flex flex-wrap gap-2 mb-2">
             {attraction.tags?.map((tag, index) => (
               <span key={index} className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full">
@@ -447,15 +435,11 @@ const AttractionDetails = () => {
             ))}
           </div>
           <h1 className="text-3xl font-bold text-white drop-shadow-sm">{attraction.name || "Unknown Location"}</h1>
-          <div className="flex items-center mt-2">
-            <MapPin className="w-4 h-4 text-white/80 mr-1" />
-            <p className="text-white/80 text-sm">{attraction.location || "Location information unavailable"}</p>
-          </div>
         </div>
       </div>
 
       {/* Content Container */}
-      <div ref={contentRef} className="relative z-10 -mt-8 rounded-t-3xl bg-white shadow-lg">
+      <div ref={contentRef} className="relative z-10 -mt-8 rounded-t-3xl bg-white shadow-lg pb-20">
         {/* Tab Navigation */}
         <div className="flex border-b">
           <button
@@ -525,25 +509,7 @@ const AttractionDetails = () => {
               </div>
 
               {/* Quick Facts */}
-              <div className="bg-gray-50 rounded-xl p-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Quick Facts</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-start">
-                    <Calendar className="w-5 h-5 text-emerald-600 mt-0.5 mr-2" />
-                    <div>
-                      <p className="text-sm text-gray-500">Best Time to Visit</p>
-                      <p className="font-medium">Year-round</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <Clock className="w-5 h-5 text-emerald-600 mt-0.5 mr-2" />
-                    <div>
-                      <p className="text-sm text-gray-500">Suggested Duration</p>
-                      <p className="font-medium">2-3 hours</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
           )}
 

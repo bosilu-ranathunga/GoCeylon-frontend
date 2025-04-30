@@ -65,9 +65,9 @@ export default function Home() {
                             to={`/business/info/${business._id}`}
                             className="bg-white rounded-xl shadow-md p-4 flex flex-col"
                         >
-                            {business.ownerPhoto && (
+                            {business.images && (
                                 <img
-                                    src={`${API_BASE_URL}/${business.ownerPhoto}`}
+                                    src={`${API_BASE_URL}/${business.images[0]}`}
                                     alt={business.business_name}
                                     className="rounded-lg h-40 w-full object-cover mb-4"
                                 />
@@ -85,10 +85,6 @@ export default function Home() {
                             </p>
                             <p className="text-gray-600 mb-1">
                                 <span className="font-medium">Address:</span> {business.address}
-                            </p>
-                            <p className="text-gray-600 mb-1">
-                                <span className="font-medium">Hours:</span>{' '}
-                                {business.openingHours}
                             </p>
                             {business.description && (
                                 <p className="text-gray-600 mt-2">{business.description}</p>
