@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { useState, useEffect } from "react"
 import { ArrowLeft, Camera, MapPin, Phone, Store, FileText, Tag, Map } from "lucide-react"
 import { useNavigate } from "react-router-dom"
@@ -11,10 +10,6 @@ const CATEGORY_OPTIONS = [
     "Shop",
     "Adventure",
     "Transportation",
-    "Handicrafts",
-    "Bakery",
-    "Cafe",
-    "Tour Operator",
     "Other",
 ]
 
@@ -30,7 +25,7 @@ export default function AddBusiness() {
         related_locations: [],
     })
     const [locations, setLocations] = useState([])
-    const [errorMessage, setErrorMessage] = useState("")
+    const [errors, setErrors] = useState({})
     const [successMessage, setSuccessMessage] = useState("")
     const [loading, setLoading] = useState(false)
     const [imagePreview, setImagePreview] = useState(null)
@@ -39,7 +34,7 @@ export default function AddBusiness() {
 
     useEffect(() => {
         // Calculate form progress
-        const requiredFields = ["business_name", "business_category", "contact_number", "address"]
+        const requiredFields = ["business_name", "business_category", "contact_number", "address", "description"]
         const filledFields = requiredFields.filter((field) => formData[field]).length
         setFormProgress((filledFields / requiredFields.length) * 100)
 
@@ -59,35 +54,48 @@ export default function AddBusiness() {
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData({ ...formData, [name]: value })
+        setErrors({ ...errors, [name]: "" })
     }
 
     const handleFileChange = (e) => {
         const { name, files } = e.target
         if (name === "images" && files.length > 0) {
             setFormData({ ...formData, images: Array.from(files) })
-
-            // Create preview for the first image
             const reader = new FileReader()
             reader.onload = (e) => {
                 setImagePreview(e.target.result)
             }
             reader.readAsDataURL(files[0])
+            setErrors({ ...errors, images: "" })
         }
     }
 
     const handleLocationsChange = (e) => {
         const selected = Array.from(e.target.selectedOptions).map((opt) => opt.value)
         setFormData({ ...formData, related_locations: selected })
+        setErrors({ ...errors, related_locations: "" })
     }
 
     const validateForm = () => {
-        const { business_name, business_category, contact_number, address } = formData
-        if (!business_name || !business_category || !contact_number || !address) {
-            setErrorMessage("Please fill in all required fields.")
-            return false
+        const newErrors = {}
+        const { business_name, business_category, contact_number, address, description, images } = formData
+
+        // Check for empty required fields
+        if (!business_name.trim()) newErrors.business_name = "Business name is required."
+        if (!business_category) newErrors.business_category = "Business category is required."
+        if (!contact_number.trim()) newErrors.contact_number = "Contact number is required."
+        if (!address.trim()) newErrors.address = "Address is required."
+        if (!description.trim()) newErrors.description = "Description is required."
+        if (images.length === 0) newErrors.images = "At least one image is required."
+
+        // Validate phone number (10 digits starting with 0)
+        const phoneRegex = /^0\d{9}$/
+        if (contact_number && !phoneRegex.test(contact_number)) {
+            newErrors.contact_number = "Contact number must be a 10-digit number starting with 0."
         }
-        setErrorMessage("")
-        return true
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
     }
 
     const resetForm = () => {
@@ -102,6 +110,7 @@ export default function AddBusiness() {
         })
         setImagePreview(null)
         setActiveStep(1)
+        setErrors({})
     }
 
     const handleSubmit = async (e) => {
@@ -116,7 +125,7 @@ export default function AddBusiness() {
         const business_user = decoded.id
 
         if (!business_user) {
-            setErrorMessage("User ID not found. Please log in.")
+            setErrors({ general: "User ID not found. Please log in." })
             setLoading(false)
             return
         }
@@ -144,16 +153,14 @@ export default function AddBusiness() {
             if (response.ok) {
                 setSuccessMessage("Business created successfully!")
                 resetForm()
-
-                // Show success message then navigate after delay
                 setTimeout(() => {
                     navigate("/business")
                 }, 2000)
             } else {
-                setErrorMessage(result.error || "Failed to create business.")
+                setErrors({ general: result.error || "Failed to create business." })
             }
         } catch (error) {
-            setErrorMessage("An error occurred. Please try again.")
+            setErrors({ general: "An error occurred. Please try again." })
         } finally {
             setLoading(false)
         }
@@ -164,7 +171,25 @@ export default function AddBusiness() {
     }
 
     const nextStep = () => {
-        if (activeStep < 3) setActiveStep(activeStep + 1)
+        const stepErrors = {}
+        if (activeStep === 1) {
+            if (!formData.business_name.trim()) stepErrors.business_name = "Business name is required."
+            if (!formData.business_category) stepErrors.business_category = "Business category is required."
+            if (!formData.contact_number.trim()) stepErrors.contact_number = "Contact number is required."
+            const phoneRegex = /^0\d{9}$/
+            if (formData.contact_number && !phoneRegex.test(formData.contact_number)) {
+                stepErrors.contact_number = "Contact number must be a 10-digit number starting with 0."
+            }
+        } else if (activeStep === 2) {
+            if (!formData.address.trim()) stepErrors.address = "Address is required."
+            if (!formData.description.trim()) stepErrors.description = "Description is required."
+        } else if (activeStep === 3) {
+            if (formData.images.length === 0) stepErrors.images = "At least one image is required."
+        }
+        setErrors(stepErrors)
+        if (Object.keys(stepErrors).length === 0 && activeStep < 3) {
+            setActiveStep(activeStep + 1)
+        }
     }
 
     const prevStep = () => {
@@ -191,20 +216,17 @@ export default function AddBusiness() {
                 <div className="flex justify-center py-2 bg-white border-b border-gray-200">
                     <div className="flex space-x-4">
                         <div
-                            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${activeStep === 1 ? "bg-[#007a55] text-white" : "bg-gray-100 text-gray-600"
-                                }`}
+                            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${activeStep === 1 ? "bg-[#007a55] text-white" : "bg-gray-100 text-gray-600"}`}
                         >
                             1
                         </div>
                         <div
-                            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${activeStep === 2 ? "bg-[#007a55] text-white" : "bg-gray-100 text-gray-600"
-                                }`}
+                            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${activeStep === 2 ? "bg-[#007a55] text-white" : "bg-gray-100 text-gray-600"}`}
                         >
                             2
                         </div>
                         <div
-                            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${activeStep === 3 ? "bg-[#007a55] text-white" : "bg-gray-100 text-gray-600"
-                                }`}
+                            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${activeStep === 3 ? "bg-[#007a55] text-white" : "bg-gray-100 text-gray-600"}`}
                         >
                             3
                         </div>
@@ -214,9 +236,9 @@ export default function AddBusiness() {
 
             {/* Main content */}
             <div className="flex-1 pt-28 pb-24 px-4">
-                {errorMessage && (
+                {errors.general && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-center">
-                        {errorMessage}
+                        {errors.general}
                     </div>
                 )}
 
@@ -243,9 +265,10 @@ export default function AddBusiness() {
                                     placeholder="Enter business name"
                                     onChange={handleChange}
                                     value={formData.business_name}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent"
+                                    className={`w-full p-3 border ${errors.business_name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent`}
                                     required
                                 />
+                                {errors.business_name && <p className="text-red-500 text-sm mt-1">{errors.business_name}</p>}
                             </div>
 
                             <div className="bg-white rounded-xl shadow-sm p-4">
@@ -257,7 +280,7 @@ export default function AddBusiness() {
                                     name="business_category"
                                     value={formData.business_category}
                                     onChange={handleChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent appearance-none bg-white"
+                                    className={`w-full p-3 border ${errors.business_category ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent appearance-none bg-white`}
                                     required
                                 >
                                     <option value="">Select Category</option>
@@ -267,6 +290,7 @@ export default function AddBusiness() {
                                         </option>
                                     ))}
                                 </select>
+                                {errors.business_category && <p className="text-red-500 text-sm mt-1">{errors.business_category}</p>}
                             </div>
 
                             <div className="bg-white rounded-xl shadow-sm p-4">
@@ -280,9 +304,10 @@ export default function AddBusiness() {
                                     placeholder="Enter contact number"
                                     onChange={handleChange}
                                     value={formData.contact_number}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent"
+                                    className={`w-full p-3 border ${errors.contact_number ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent`}
                                     required
                                 />
+                                {errors.contact_number && <p className="text-red-500 text-sm mt-1">{errors.contact_number}</p>}
                             </div>
                         </div>
                     )}
@@ -303,23 +328,26 @@ export default function AddBusiness() {
                                     placeholder="Enter business address"
                                     onChange={handleChange}
                                     value={formData.address}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent"
+                                    className={`w-full p-3 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent`}
                                     required
                                 />
+                                {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
                             </div>
 
                             <div className="bg-white rounded-xl shadow-sm p-4">
                                 <div className="flex items-center mb-2">
                                     <FileText className="w-5 h-5 text-[#007a55] mr-2" />
-                                    <label className="font-medium text-gray-700">Description</label>
+                                    <label className="font-medium text-gray-700">Description *</label>
                                 </div>
                                 <textarea
                                     name="description"
                                     placeholder="Describe your business"
                                     onChange={handleChange}
                                     value={formData.description}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent min-h-[120px]"
+                                    className={`w-full p-3 border ${errors.description ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007a55] focus:border-transparent min-h-[120px]`}
+                                    required
                                 />
+                                {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                             </div>
 
                             <div className="bg-white rounded-xl shadow-sm p-4">
@@ -340,7 +368,7 @@ export default function AddBusiness() {
                                         </option>
                                     ))}
                                 </select>
-                                <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple locations</p>
+
                             </div>
                         </div>
                     )}
@@ -353,10 +381,9 @@ export default function AddBusiness() {
                             <div className="bg-white rounded-xl shadow-sm p-4">
                                 <div className="flex items-center mb-3">
                                     <Camera className="w-5 h-5 text-[#007a55] mr-2" />
-                                    <label className="font-medium text-gray-700">Upload Images</label>
+                                    <label className="font-medium text-gray-700">Upload Images *</label>
                                 </div>
 
-                                {/* Image preview */}
                                 {imagePreview ? (
                                     <div className="mb-4">
                                         <div className="relative w-full h-48 rounded-lg overflow-hidden mb-2">
@@ -371,7 +398,7 @@ export default function AddBusiness() {
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center mb-4">
+                                    <div className={`border-2 border-dashed ${errors.images ? 'border-red-500' : 'border-gray-300'} rounded-lg p-6 flex flex-col items-center justify-center mb-4`}>
                                         <Camera className="w-10 h-10 text-gray-400 mb-2" />
                                         <p className="text-gray-500 text-center">Tap to upload business images</p>
                                     </div>
@@ -387,12 +414,13 @@ export default function AddBusiness() {
                                     />
                                     <button
                                         type="button"
-                                        className="w-full py-3 border border-[#007a55] text-[#007a55] rounded-lg font-medium flex items-center justify-center"
+                                        className={`w-full py-3 border ${errors.images ? 'border-red-500' : 'border-[#007a55]'} text-[#007a55] rounded-lg font-medium flex items-center justify-center`}
                                     >
                                         <Camera className="w-4 h-4 mr-2" />
                                         {imagePreview ? "Change Images" : "Select Images"}
                                     </button>
                                 </div>
+                                {errors.images && <p className="text-red-500 text-sm mt-1">{errors.images}</p>}
                             </div>
 
                             <div className="bg-white rounded-xl shadow-sm p-4">
